@@ -1,0 +1,16 @@
+[
+{
+  "modid": "SpiceOfLife",
+  "name": "Spice of Life",
+  "description": "Encourages dietary variety through diminishing returns.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["squeek"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
