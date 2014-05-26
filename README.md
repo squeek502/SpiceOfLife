@@ -1,5 +1,5 @@
-Spice Of Life
-=============
+The Spice Of Life
+=================
 
 Minecraft mod that encourages dietary variety through dimishing returns
 
