@@ -79,8 +79,8 @@ public class FoodTracker implements IPlayerTracker
 	
 	public void syncFoodHistory(FoodHistory foodHistory)
 	{
-		PacketDispatcher.sendPacketToPlayer(new PacketFoodHistory(foodHistory, true).getPacket(), (Player) foodHistory.player);
 		PacketDispatcher.sendPacketToPlayer(new PacketFoodEatenAllTime(foodHistory.totalFoodsEatenAllTime).getPacket(), (Player) foodHistory.player);
+		PacketDispatcher.sendPacketToPlayer(new PacketFoodHistory(foodHistory, true).getPacket(), (Player) foodHistory.player);
 	}
 
 	public static boolean addFoodEatenByPlayer(ItemStack food, EntityPlayer player)

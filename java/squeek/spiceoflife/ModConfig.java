@@ -19,13 +19,13 @@ public class ModConfig
 			+ "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
 			+ "Available variables:\n"
 			+ "\tcount : The number of times the food has been eaten (out of the last max_history_length foods)\n"
-			+ "\tmax_history_length : The maximum number of foods that are stored in the history at a time\n"
+			+ "\tmax_history_length : The maximum number of foods that are stored in the history at a time (food.history.length)\n"
 			+ "\tcur_history_length : The current number of foods that are stored in the history (<= max_history_length)\n"
-			+ "\tfood_hunger_value : The default amount of hunger the food would restore (1 hunger unit = 1/2 hunger bar)\n"
+			+ "\tfood_hunger_value : The default amount of hunger the food would restore in hunger units (note: 1 hunger unit = 1/2 hunger bar)\n"
 			+ "\tfood_saturation_mod : The default saturation modifier of the food\n"
-			+ "\tcur_hunger : The current hunger value of the player (20 = full)\n"
+			+ "\tcur_hunger : The current hunger value of the player in hunger units (20 = full)\n"
 			+ "\tcur_saturation : The current saturation value of the player\n"
-			+ "\ttotal_food_eaten : The all-time total number of food ever eaten by the player\n"
+			+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n"
 			;
 	
 	public static int FOOD_HISTORY_LENGTH = ModConfig.FOOD_HISTORY_LENGTH_DEFAULT;
@@ -42,7 +42,11 @@ public class ModConfig
 	private static final String FOOD_EATEN_THRESHOLD_NAME = "new.player.food.eaten.threshold";
 	private static final int FOOD_EATEN_THRESHOLD_DEFAULT = ModConfig.FOOD_HISTORY_LENGTH / 2;
 	private static final String FOOD_EATEN_THRESHOLD_COMMENT = "The number of times a new player (by World) needs to eat before this mod has any effect";
-	
+
+	public static boolean CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT;
+	private static final String CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_NAME = "clear.history.after.food.eaten.threshold.reached";
+	private static final boolean CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT = false;
+	private static final String CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_COMMENT = "If true, a player's food history will be empty once they pass the new.player.food.eaten.treshold\nIf false, any food eaten before the threshold is passed will also count after it is passed";
 
 	private static Configuration config;
 
@@ -56,7 +60,8 @@ public class ModConfig
 		FOOD_HISTORY_LENGTH = config.get(CATEGORY_MAIN, FOOD_HISTORY_LENGTH_NAME, FOOD_HISTORY_LENGTH_DEFAULT, FOOD_HISTORY_LENGTH_COMMENT).getInt();
 		FOOD_HISTORY_PERSISTS_THROUGH_DEATH = config.get(CATEGORY_MAIN, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_NAME, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_COMMENT).getBoolean(FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT);
 		FOOD_EATEN_THRESHOLD = config.get(CATEGORY_MAIN, FOOD_EATEN_THRESHOLD_NAME, FOOD_EATEN_THRESHOLD_DEFAULT, FOOD_EATEN_THRESHOLD_COMMENT).getInt();
-
+		CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = config.get(CATEGORY_MAIN, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_NAME, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_COMMENT).getBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT);
+		
 		save();
 	}
 
@@ -76,6 +81,7 @@ public class ModConfig
 		data.writeShort(FOOD_HISTORY_LENGTH);
 		data.writeBoolean(FOOD_HISTORY_PERSISTS_THROUGH_DEATH);
 		data.writeInt(FOOD_EATEN_THRESHOLD);
+		data.writeBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD);
 	}
 
 	public static void unpack(DataInputStream data) throws IOException
@@ -84,6 +90,7 @@ public class ModConfig
 		FOOD_HISTORY_LENGTH = data.readShort();
 		FOOD_HISTORY_PERSISTS_THROUGH_DEATH = data.readBoolean();
 		FOOD_EATEN_THRESHOLD = data.readInt();
+		CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = data.readBoolean();
 		
 		FoodModifier.onFormulaChanged();
 	}

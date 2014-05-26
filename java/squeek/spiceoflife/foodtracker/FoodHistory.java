@@ -33,8 +33,14 @@ public class FoodHistory implements IExtendedEntityProperties
 	{
 		if (countsTowardsAllTime)
 			totalFoodsEatenAllTime++;
-		
-		return history.add(food);
+
+		if (ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD && countsTowardsAllTime && totalFoodsEatenAllTime == ModConfig.FOOD_EATEN_THRESHOLD)
+		{
+			history.clear();
+			return true;
+		}
+		else
+			return history.add(food);
 	}
 
 	public int getFoodCount(ItemStack food)
