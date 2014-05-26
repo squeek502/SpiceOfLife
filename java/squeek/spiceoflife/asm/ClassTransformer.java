@@ -4,9 +4,9 @@ import static org.objectweb.asm.Opcodes.*;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import squeek.spiceoflife.ModSpiceOfLife;
-import com.sun.xml.internal.ws.org.objectweb.asm.Type;
 
 public class ClassTransformer implements IClassTransformer
 {

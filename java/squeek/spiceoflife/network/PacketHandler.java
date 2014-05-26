@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.ModSpiceOfLife;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
 
@@ -24,7 +23,7 @@ public class PacketHandler implements IPacketHandler
 		{
 			packet = clazz;
 		}
-		
+
 		public static int getIdOf(PacketBase packet)
 		{
 			for (PacketType packetType : PacketType.values())
