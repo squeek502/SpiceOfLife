@@ -11,6 +11,8 @@ launcher/
 # Misc mod files
 media/
 libs/
+tests/
+dummy/
 
 # Tmp files
 *~
