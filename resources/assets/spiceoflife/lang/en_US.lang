@@ -1,0 +1,16 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=Nutritional value: 
+spiceoflife.tooltip.eaten.recently=Eaten %s out of the last %d foods
+spiceoflife.tooltip.not.eaten.recently=Not eaten recently
+spiceoflife.tooltip.food.until.enabled.1=Diminishing returns start after
+spiceoflife.tooltip.food.until.enabled.2=eating any food %d more times
+spiceoflife.tooltip.hunger=hunger
+
+# Advanced tooltip strings
+spiceoflife.tooltip.advanced.hunger.restored=Hunger restored: %s (default: %s)
+spiceoflife.tooltip.advanced.saturation.modifier=Saturation modifier: %s (default: %s)
+
+# Quantity descriptors
+spiceoflife.quantity.one.time=once
+spiceoflife.quantity.two.times=twice
+spiceoflife.quantity.x.times=%d times

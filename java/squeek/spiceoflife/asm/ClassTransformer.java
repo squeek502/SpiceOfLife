@@ -6,8 +6,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 import squeek.spiceoflife.ModSpiceOfLife;
-import squeek.spiceoflife.hooks.HookFoodStats;
-import squeek.spiceoflife.hooks.HookOnFoodEaten;
+import com.sun.xml.internal.ws.org.objectweb.asm.Type;
 
 public class ClassTransformer implements IClassTransformer
 {
@@ -24,7 +23,7 @@ public class ClassTransformer implements IClassTransformer
 			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "b" : "onFoodEaten", isObfuscated ? "(Labw;Luf;)Lye;" : "(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)Lnet/minecraft/item/ItemStack;");
 			if (methodNode != null)
 			{
-				addOnEatenHook(methodNode, HookOnFoodEaten.class, "onFoodEaten", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)V");
+				addOnEatenHook(methodNode, Hooks.class, "onFoodEaten", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)V");
 				return writeClassToBytes(classNode);
 			}
 		}
@@ -38,7 +37,20 @@ public class ClassTransformer implements IClassTransformer
 			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "a" : "addStats", "(IF)V");
 			if (methodNode != null)
 			{
-				addFoodStatsHook(methodNode, HookFoodStats.class, "getFoodModifier", "()F");
+				addFoodStatsHook(methodNode, Hooks.class, "getFoodModifier", "(Lnet/minecraft/util/FoodStats;IF)F");
+				return writeClassToBytes(classNode);
+			}
+		}
+		
+		if (name.equals("iguanaman.hungeroverhaul.IguanaFoodStats"))
+		{
+			ModSpiceOfLife.Log.info("Patching IguanaFoodStats...");
+			
+			ClassNode classNode = readClassFromBytes(bytes);
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "addStats", "(IF)V");
+			if (methodNode != null)
+			{
+				addFoodStatsHook(methodNode, Hooks.class, "getFoodModifier", "(Lnet/minecraft/util/FoodStats;IF)F");
 				return writeClassToBytes(classNode);
 			}
 		}
@@ -84,12 +96,28 @@ public class ClassTransformer implements IClassTransformer
 		return null;
 	}
 
+	private LabelNode findEndLabel(MethodNode method)
+	{
+		LabelNode lastLabel = null;
+		for (AbstractInsnNode instruction : method.instructions.toArray())
+		{
+			if (instruction instanceof LabelNode)
+				lastLabel = (LabelNode) instruction;
+		}
+		return lastLabel;
+	}
+
 	public void addOnEatenHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
 	{
 		AbstractInsnNode targetNode = findFirstInstructionOfType(method, ALOAD);
 
 		InsnList toInject = new InsnList();
 
+		/*
+		// equivalent to:
+		Hooks.onFoodEaten(this, world, player);
+		 */
+		
 		toInject.add(new VarInsnNode(ALOAD, 0)); 		// this
 		toInject.add(new VarInsnNode(ALOAD, 1)); 		// param1: world
 		toInject.add(new VarInsnNode(ALOAD, 2)); 		// param2: player
@@ -106,19 +134,50 @@ public class ClassTransformer implements IClassTransformer
 
 		InsnList toInject = new InsnList();
 
-		// modify foodLevel parameter
-		toInject.add(new VarInsnNode(ILOAD, 1)); 		// add the parameter to the stack
-		toInject.add(new InsnNode(I2F)); 				// convert to float for the multiplication
-		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
-		toInject.add(new InsnNode(FMUL)); 				// param * return value
-		toInject.add(new InsnNode(F2I)); 				// back to int
-		toInject.add(new VarInsnNode(ISTORE, 1)); 		// param = result
+		/*
+		// equivalent to:
+		int par1=0; float par2=0f;
+		
+		float modifier = Hooks.getFoodModifier(null, par1, par2);
+		
+		par1 *= modifier;
+		if (par2 > 0)
+			par2 *= modifier;
+		 */
 
-		// modify foodSaturationModifier parameter
-		toInject.add(new VarInsnNode(FLOAD, 2)); 		// add the parameter to the stack
+		LabelNode varStartLabel = new LabelNode();
+		LabelNode end = findEndLabel(method);
+		LocalVariableNode localVar = new LocalVariableNode("modifier", Type.FLOAT_TYPE.getDescriptor(), method.signature, varStartLabel, end, method.maxLocals);
+		method.maxLocals += Type.FLOAT_TYPE.getSize();
+		method.localVariables.add(localVar);
+
+		// get modifier
+		toInject.add(new VarInsnNode(ALOAD, 0));					// this
+		toInject.add(new VarInsnNode(ILOAD, 1));					// foodLevel
+		toInject.add(new VarInsnNode(FLOAD, 2));					// foodSaturationModifier
 		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
-		toInject.add(new InsnNode(FMUL)); 				// param * return value
-		toInject.add(new VarInsnNode(FSTORE, 2)); 		// param = result
+		toInject.add(new VarInsnNode(FSTORE, localVar.index));		// modifier = Hooks.getFoodModifier(...)
+		toInject.add(varStartLabel);								// variable scope start
+
+		// modify foodLevel parameter
+		toInject.add(new VarInsnNode(ILOAD, 1)); 					// add the parameter to the stack
+		toInject.add(new InsnNode(I2F)); 							// convert to float for the multiplication
+		toInject.add(new VarInsnNode(FLOAD, localVar.index)); 		// add the modifier to the stack
+		toInject.add(new InsnNode(FMUL)); 							// param * modifier
+		toInject.add(new InsnNode(F2I)); 							// back to int
+		toInject.add(new VarInsnNode(ISTORE, 1)); 					// param = result
+
+		// modify foodSaturationModifier parameter (if it's greater than 0)
+		toInject.add(new VarInsnNode(FLOAD, 2));					// param
+		toInject.add(new InsnNode(FCONST_0));						// 0
+		toInject.add(new InsnNode(FCMPL));							// compare floats
+		LabelNode labelIfNotGreaterThan0 = new LabelNode();			// label if the if condition fails
+		toInject.add(new JumpInsnNode(IFLE, labelIfNotGreaterThan0)); // if par2 <= 0 jump to label
+		toInject.add(new VarInsnNode(FLOAD, 2)); 					// add the parameter to the stack
+		toInject.add(new VarInsnNode(FLOAD, localVar.index));		// add the modifier to the stack
+		toInject.add(new InsnNode(FMUL)); 							// param * modifier
+		toInject.add(new VarInsnNode(FSTORE, 2)); 					// param = result
+		toInject.add(labelIfNotGreaterThan0);						// if par2 <=, jump here
 
 		method.instructions.insertBefore(targetNode, toInject);
 
