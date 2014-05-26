@@ -1,7 +1,7 @@
 [
 {
   "modid": "SpiceOfLife",
-  "name": "Spice of Life",
+  "name": "The Spice of Life",
   "description": "Encourages dietary variety through diminishing returns.",
   "version": "${version}",
   "mcversion": "${mcversion}",
