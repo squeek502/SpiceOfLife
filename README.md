@@ -3,7 +3,7 @@ The Spice Of Life
 
 Minecraft mod that encourages dietary variety through dimishing returns
 
-[Minecraft Forum Thread]()
+[Minecraft Forum Thread](http://www.minecraftforum.net/topic/2688857-)
 
 ###Building
 
