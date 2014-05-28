@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.Property;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 
 public class ModConfig
@@ -17,21 +18,20 @@ public class ModConfig
 
 	public static String FOOD_MODIFIER_FORMULA = ModConfig.FOOD_MODIFIER_FORMULA_STRING_DEFAULT;
 	private static final String FOOD_MODIFIER_FORMULA_STRING_NAME = "food.modifier.formula";
-	private static final String FOOD_MODIFIER_FORMULA_STRING_DEFAULT = "MAX(0, (1 - count/12))^MAX(0, food_hunger_value-ROUND(MAX(0, 1 - count/12), 0))";
-	private static final String FOOD_MODIFIER_FORMULA_STRING_COMMENT = 
+	private static final String FOOD_MODIFIER_FORMULA_STRING_DEFAULT = "MAX(0, (1 - count/12))^MIN(8, food_hunger_value)";
+	private static final String FOOD_MODIFIER_FORMULA_STRING_COMMENT =
 			"Uses the EvalEx expression parser\n"
-			+ "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
-			+ "Available variables:\n"
-			+ "\tcount : The number of times the food has been eaten (out of the last max_history_length foods)\n"
-			+ "\tmax_history_length : The maximum number of foods that are stored in the history at a time (food.history.length)\n"
-			+ "\tcur_history_length : The current number of foods that are stored in the history (<= max_history_length)\n"
-			+ "\tfood_hunger_value : The default amount of hunger the food would restore in hunger units (note: 1 hunger unit = 1/2 hunger bar)\n"
-			+ "\tfood_saturation_mod : The default saturation modifier of the food\n"
-			+ "\tcur_hunger : The current hunger value of the player in hunger units (20 = full)\n"
-			+ "\tcur_saturation : The current saturation value of the player\n"
-			+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n"
-			;
-	
+					+ "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
+					+ "Available variables:\n"
+					+ "\tcount : The number of times the food has been eaten (out of the last max_history_length foods)\n"
+					+ "\tmax_history_length : The maximum number of foods that are stored in the history at a time (food.history.length)\n"
+					+ "\tcur_history_length : The current number of foods that are stored in the history (<= max_history_length)\n"
+					+ "\tfood_hunger_value : The default amount of hunger the food would restore in hunger units (note: 1 hunger unit = 1/2 hunger bar)\n"
+					+ "\tfood_saturation_mod : The default saturation modifier of the food\n"
+					+ "\tcur_hunger : The current hunger value of the player in hunger units (20 = full)\n"
+					+ "\tcur_saturation : The current saturation value of the player\n"
+					+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n";
+
 	public static int FOOD_HISTORY_LENGTH = ModConfig.FOOD_HISTORY_LENGTH_DEFAULT;
 	private static final String FOOD_HISTORY_LENGTH_NAME = "food.history.length";
 	private static final int FOOD_HISTORY_LENGTH_DEFAULT = 12;
@@ -63,12 +63,19 @@ public class ModConfig
 		config.getCategory(CATEGORY_CLIENT).setComment(CATEGORY_CLIENT_COMMENT);
 		config.getCategory(CATEGORY_SERVER).setComment(CATEGORY_SERVER_COMMENT);
 
-		FOOD_MODIFIER_FORMULA = config.get(CATEGORY_SERVER, FOOD_MODIFIER_FORMULA_STRING_NAME, FOOD_MODIFIER_FORMULA_STRING_DEFAULT, FOOD_MODIFIER_FORMULA_STRING_COMMENT).getString();
+		Property FOOD_MODIFIER_PROPERTY = config.get(CATEGORY_SERVER, FOOD_MODIFIER_FORMULA_STRING_NAME, FOOD_MODIFIER_FORMULA_STRING_DEFAULT, FOOD_MODIFIER_FORMULA_STRING_COMMENT);
+
+		// enforce the new default if the config has the old default
+		if (FOOD_MODIFIER_PROPERTY.getString().equals("MAX(0, (1 - count/12))^MAX(0, food_hunger_value-ROUND(MAX(0, 1 - count/12), 0))"))
+			FOOD_MODIFIER_PROPERTY.set(FOOD_MODIFIER_FORMULA_STRING_DEFAULT);
+
+		FOOD_MODIFIER_FORMULA = FOOD_MODIFIER_PROPERTY.getString();
+
 		FOOD_HISTORY_LENGTH = config.get(CATEGORY_SERVER, FOOD_HISTORY_LENGTH_NAME, FOOD_HISTORY_LENGTH_DEFAULT, FOOD_HISTORY_LENGTH_COMMENT).getInt();
 		FOOD_HISTORY_PERSISTS_THROUGH_DEATH = config.get(CATEGORY_SERVER, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_NAME, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_COMMENT).getBoolean(FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT);
 		FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, FOOD_EATEN_THRESHOLD_NAME, FOOD_EATEN_THRESHOLD_DEFAULT, FOOD_EATEN_THRESHOLD_COMMENT).getInt();
 		CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_NAME, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_COMMENT).getBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT);
-		
+
 		save();
 	}
 
@@ -98,7 +105,7 @@ public class ModConfig
 		FOOD_HISTORY_PERSISTS_THROUGH_DEATH = data.readBoolean();
 		FOOD_EATEN_THRESHOLD = data.readInt();
 		CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = data.readBoolean();
-		
+
 		FoodModifier.onFormulaChanged();
 	}
 }

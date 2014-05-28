@@ -36,7 +36,7 @@ public class TooltipHandler
 			{
 				int count = FoodTracker.getFoodHistoryCountOf(event.itemStack, event.entityPlayer);
 				foodModifier = FoodModifier.getFoodModifier(event.entityPlayer, event.itemStack, event.entityPlayer.getFoodStats(), itemFood.getHealAmount(), itemFood.getSaturationModifier());
-				int actualHunger = (int) (itemFood.getHealAmount() * foodModifier);
+				int actualHunger = (int) (itemFood.getHealAmount() * foodModifier + 0.5f);
 				//float effectiveModifier = actualHunger / (float) itemFood.getHealAmount();
 
 				if (count > 0 || foodModifier != 1)
@@ -50,7 +50,7 @@ public class TooltipHandler
 
 			if (event.showAdvancedItemTooltips)
 			{
-				float hungerRestored = (int) (foodModifier * itemFood.getHealAmount()) / 2f;
+				float hungerRestored = (int) (foodModifier * itemFood.getHealAmount() + 0.5f) / 2f;
 				float saturationModifier = itemFood.getSaturationModifier();
 				saturationModifier = saturationModifier * (saturationModifier > 0 ? foodModifier : 1);
 				toolTipStringsToAdd.add(StatCollector.translateToLocalFormatted("spiceoflife.tooltip.advanced.hunger.restored", df.format(hungerRestored), df.format(itemFood.getHealAmount() / 2f)));
