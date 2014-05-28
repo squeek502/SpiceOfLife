@@ -148,7 +148,7 @@ public class ClassTransformer implements IClassTransformer
 		
 		float modifier = Hooks.getFoodModifier(null, par1, par2);
 		
-		par1 *= modifier;
+		par1 = (int) (par1 * modifier + .5f);
 		if (par2 > 0)
 			par2 *= modifier;
 		 */
@@ -167,11 +167,13 @@ public class ClassTransformer implements IClassTransformer
 		toInject.add(new VarInsnNode(FSTORE, localVar.index));		// modifier = Hooks.getFoodModifier(...)
 		toInject.add(varStartLabel);								// variable scope start
 
-		// modify foodLevel parameter
+		// modify foodLevel parameter (round to int)
 		toInject.add(new VarInsnNode(ILOAD, 1)); 					// add the parameter to the stack
 		toInject.add(new InsnNode(I2F)); 							// convert to float for the multiplication
 		toInject.add(new VarInsnNode(FLOAD, localVar.index)); 		// add the modifier to the stack
 		toInject.add(new InsnNode(FMUL)); 							// param * modifier
+		toInject.add(new LdcInsnNode(0.5f)); 						// 0.5f
+		toInject.add(new InsnNode(FADD)); 							// param * modifier + 0.5f
 		toInject.add(new InsnNode(F2I)); 							// back to int
 		toInject.add(new VarInsnNode(ISTORE, 1)); 					// param = result
 
