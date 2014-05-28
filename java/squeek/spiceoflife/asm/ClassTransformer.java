@@ -48,6 +48,10 @@ public class ClassTransformer implements IClassTransformer
 			
 			ClassNode classNode = readClassFromBytes(bytes);
 			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_75122_a", "(IF)V");
+			
+			if (methodNode == null)
+				methodNode = findMethodNodeOfClass(classNode, "addStats", "(IF)V");
+			
 			if (methodNode != null)
 			{
 				addFoodStatsHook(methodNode, Hooks.class, "getFoodModifier", "(Lnet/minecraft/util/FoodStats;IF)F");
