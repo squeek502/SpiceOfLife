@@ -47,11 +47,15 @@ public class ClassTransformer implements IClassTransformer
 			ModSpiceOfLife.Log.info("Patching IguanaFoodStats...");
 			
 			ClassNode classNode = readClassFromBytes(bytes);
-			MethodNode methodNode = findMethodNodeOfClass(classNode, "addStats", "(IF)V");
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_75122_a", "(IF)V");
 			if (methodNode != null)
 			{
 				addFoodStatsHook(methodNode, Hooks.class, "getFoodModifier", "(Lnet/minecraft/util/FoodStats;IF)F");
 				return writeClassToBytes(classNode);
+			}
+			else
+			{
+				ModSpiceOfLife.Log.warning(" addStats method in IguanaFoodStats not found");
 			}
 		}
 
