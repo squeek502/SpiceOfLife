@@ -46,6 +46,16 @@ public class FoodTracker implements IPlayerTracker
 	}
 
 	/**
+	 * Resync food history whenever a player changes dimensions
+	 */
+	@Override
+	public void onPlayerChangedDimension(EntityPlayer player)
+	{
+		FoodHistory foodHistory = FoodHistory.get(player);
+		syncFoodHistory(foodHistory);
+	}
+
+	/**
 	 * Save death-persistent data to avoid any rollbacks on respawn
 	 */
 	@ForgeSubscribe
@@ -117,11 +127,6 @@ public class FoodTracker implements IPlayerTracker
 
 	@Override
 	public void onPlayerLogout(EntityPlayer player)
-	{
-	}
-
-	@Override
-	public void onPlayerChangedDimension(EntityPlayer player)
 	{
 	}
 }
