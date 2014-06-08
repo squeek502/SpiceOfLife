@@ -37,11 +37,13 @@ public class TooltipOverlayHandler implements ITickHandler
 	private static Field mainSlot = null;
 	private static Method getStackMouseOver = null;
 	private static Field itemPanel = null;
+	private static boolean neiLoaded = false;
 	static
 	{
 		try 
 		{
-			if (Loader.isModLoaded("NotEnoughItems"))
+			neiLoaded = Loader.isModLoaded("NotEnoughItems");
+			if (neiLoaded)
 			{
 				Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
 				itemPanel = LayoutManager.getDeclaredField("itemPanel");
@@ -124,10 +126,11 @@ public class TooltipOverlayHandler implements ITickHandler
 					int barsNeeded = (int) Math.ceil(defaultFoodValues.hunger / 2f);
 					int saturationBarsNeeded = (int) Math.max(1, Math.ceil(Math.abs(defaultFoodValues.getSaturationIncrement()) / 2f));
 
+					boolean needsCoordinateShift = isTinkersContainerGui || (!isTinkersContainerGui && !neiLoaded);
 					//int toolTipTopY = Hooks.toolTipY;
 					//int toolTipLeftX = Hooks.toolTipX;
-					int toolTipBottomY = Hooks.toolTipY + Hooks.toolTipH + 1 + (isTinkersContainerGui ? -Hooks.toolTipH + 1 : 0);
-					int toolTipRightX = Hooks.toolTipX + Hooks.toolTipW + 1 + (isTinkersContainerGui ? 3 : 0);
+					int toolTipBottomY = Hooks.toolTipY + Hooks.toolTipH + 1 + (needsCoordinateShift ? 3 : 0);
+					int toolTipRightX = Hooks.toolTipX + Hooks.toolTipW + 1 + (needsCoordinateShift ? 3 : 0);
 
 					boolean shouldDrawBelow = toolTipBottomY + 20 < scale.getScaledHeight() - 3;
 

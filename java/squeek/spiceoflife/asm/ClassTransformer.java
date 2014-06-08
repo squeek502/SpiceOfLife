@@ -69,7 +69,7 @@ public class ClassTransformer implements IClassTransformer
 			ModSpiceOfLife.Log.info("Patching GuiContainer...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
-			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "a" : "drawHoveringText", "(Ljava/util/List;IILnet/minecraft/client/gui/FontRenderer;)V");
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "drawHoveringText", isObfuscated ? "(Ljava/util/List;IILavi;)V" : "(Ljava/util/List;IILnet/minecraft/client/gui/FontRenderer;)V");
 
 			if (methodNode != null)
 			{
@@ -262,14 +262,15 @@ public class ClassTransformer implements IClassTransformer
 	{
 		AbstractInsnNode targetNode = null;
 
+		// get last drawGradientRect call
 		for (AbstractInsnNode instruction : method.instructions.toArray())
 		{
-			if (instruction.getOpcode() == PUTFIELD)
+			if (instruction.getOpcode() == INVOKEVIRTUAL)
 			{
-				FieldInsnNode fieldInsn = (FieldInsnNode) instruction;
+				MethodInsnNode methodInsn = (MethodInsnNode) instruction;
 				
-				if (fieldInsn.name.equals(isObfuscated ? "n" : "zLevel"))
-					targetNode = instruction.getPrevious().getPrevious();
+				if (methodInsn.desc.equals("(IIIIII)V"))
+					targetNode = instruction;
 			}
 		}
 		if (targetNode != null)
@@ -306,7 +307,7 @@ public class ClassTransformer implements IClassTransformer
 		toInject.add(new VarInsnNode(ILOAD, h.index));
 		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
 		
-		method.instructions.insertBefore(targetNode, toInject);
+		method.instructions.insert(targetNode, toInject);
 
 		ModSpiceOfLife.Log.info(" Patched " + method.name);
 	}
