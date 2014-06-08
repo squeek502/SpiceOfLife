@@ -40,10 +40,13 @@ public class ModSpiceOfLife
 	public void init(FMLInitializationEvent event)
 	{
 		MinecraftForge.EVENT_BUS.register(new FoodTracker());
-		MinecraftForge.EVENT_BUS.register(new TooltipHandler());
-		MinecraftForge.EVENT_BUS.register(new HUDOverlayHandler());
 		GameRegistry.registerPlayerTracker(new FoodTracker());
-	    TickRegistry.registerTickHandler(new TooltipOverlayHandler(), Side.CLIENT);
+		if (event.getSide() == Side.CLIENT)
+		{
+			MinecraftForge.EVENT_BUS.register(new TooltipHandler());
+			MinecraftForge.EVENT_BUS.register(new HUDOverlayHandler());
+		    TickRegistry.registerTickHandler(new TooltipOverlayHandler(), Side.CLIENT);
+		}
 	}
 
 	@EventHandler

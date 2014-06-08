@@ -189,7 +189,7 @@ public class ModConfig
 	 */
 	private static final String CATEGORY_FOODGROUPS = "foodgroups";
 	private static final String CATEGORY_FOODGROUPS_COMMENT =
-			COMMENT_SERVER_SIDE_OPTIONS
+			COMMENT_SERVER_SIDE_OPTIONS + "\n"
 					+ "NOTE: Food groups are a work-in-progress; not all features have been implemented and/or tested";
 
 	public static void init(File file)
