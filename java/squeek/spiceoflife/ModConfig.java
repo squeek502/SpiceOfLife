@@ -46,22 +46,6 @@ public class ModConfig
 	private static final String CATEGORY_SERVER_COMMENT =
 			COMMENT_SERVER_SIDE_OPTIONS;
 
-	public static String FOOD_MODIFIER_FORMULA = ModConfig.FOOD_MODIFIER_FORMULA_STRING_DEFAULT;
-	private static final String FOOD_MODIFIER_FORMULA_STRING_NAME = "food.modifier.formula";
-	private static final String FOOD_MODIFIER_FORMULA_STRING_DEFAULT = "MAX(0, (1 - count/12))^MIN(8, food_hunger_value)";
-	private static final String FOOD_MODIFIER_FORMULA_STRING_COMMENT =
-			"Uses the EvalEx expression parser\n"
-					+ "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
-					+ "Available variables:\n"
-					+ "\tcount : The number of times the food has been eaten (out of the last max_history_length foods)\n"
-					+ "\tmax_history_length : The maximum number of foods that are stored in the history at a time (food.history.length)\n"
-					+ "\tcur_history_length : The current number of foods that are stored in the history (<= max_history_length)\n"
-					+ "\tfood_hunger_value : The default amount of hunger the food would restore in hunger units (note: 1 hunger unit = 1/2 hunger bar)\n"
-					+ "\tfood_saturation_mod : The default saturation modifier of the food\n"
-					+ "\tcur_hunger : The current hunger value of the player in hunger units (20 = full)\n"
-					+ "\tcur_saturation : The current saturation value of the player\n"
-					+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n";
-
 	public static int FOOD_HISTORY_LENGTH = ModConfig.FOOD_HISTORY_LENGTH_DEFAULT;
 	private static final String FOOD_HISTORY_LENGTH_NAME = "food.history.length";
 	private static final int FOOD_HISTORY_LENGTH_DEFAULT = 12;
@@ -161,6 +145,22 @@ public class ModConfig
 					+ "For example, a " + FOOD_HISTORY_LENGTH_NAME + " length of 12 will store a max of 2 foods that restored 6 hunger each, \n"
 					+ "3 foods that restored 4 hunger each, 12 foods that restored 1 hunger each, etc\n"
 					+ "NOTE: " + FOOD_HISTORY_LENGTH_NAME + " uses hunger units, where 1 hunger unit = 1/2 hunger bar";
+
+	public static String FOOD_MODIFIER_FORMULA = ModConfig.FOOD_MODIFIER_FORMULA_STRING_DEFAULT;
+	private static final String FOOD_MODIFIER_FORMULA_STRING_NAME = "food.modifier.formula";
+	private static final String FOOD_MODIFIER_FORMULA_STRING_DEFAULT = "MAX(0, (1 - count/12))^MIN(8, food_hunger_value)";
+	private static final String FOOD_MODIFIER_FORMULA_STRING_COMMENT =
+			"Uses the EvalEx expression parser\n"
+					+ "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
+					+ "Available variables:\n"
+					+ "\tcount : The number of times the food (or its food group) has been eaten within the food history\n"
+					+ "\tmax_history_length : The maximum length of the food history (see " + FOOD_HISTORY_LENGTH_NAME + ")\n"
+					+ "\tcur_history_length : The current length of the food history (<= max_history_length)\n"
+					+ "\tfood_hunger_value : The default amount of hunger the food would restore in hunger units (1 hunger unit = 1/2 hunger bar)\n"
+					+ "\tfood_saturation_mod : The default saturation modifier of the food\n"
+					+ "\tcur_hunger : The current hunger value of the player in hunger units (20 = full)\n"
+					+ "\tcur_saturation : The current saturation value of the player\n"
+					+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n";
 
 	/*
 	 * CLIENT
