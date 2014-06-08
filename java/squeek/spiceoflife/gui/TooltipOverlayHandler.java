@@ -136,7 +136,7 @@ public class TooltipOverlayHandler implements ITickHandler
 
 					int rightX = toolTipRightX - 3;
 					int leftX = rightX - (Math.max(barsNeeded * 9, saturationBarsNeeded * 6)) - 4;
-					int topY = (shouldDrawBelow ? toolTipBottomY : Hooks.toolTipY - 20);
+					int topY = (shouldDrawBelow ? toolTipBottomY : Hooks.toolTipY - 20 + (needsCoordinateShift ? -4 : 0));
 					int bottomY = topY + (shouldDrawBelow ? 20 : 20);
 
 					boolean wasLightingEnabled = GL11.glIsEnabled(GL11.GL_LIGHTING);
