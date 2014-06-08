@@ -1,5 +1,6 @@
 package squeek.spiceoflife.gui;
 
+import java.text.DecimalFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -23,13 +24,28 @@ public class HUDOverlayHandler
 	byte alphaDir = 1;
 
 	private static final ResourceLocation modIcons = new ResourceLocation(ModInfo.MODID.toLowerCase(), "textures/icons.png");
+	private static final DecimalFormat df = new DecimalFormat("##.##");
+
+	@ForgeSubscribe
+	public void onTextRender(RenderGameOverlayEvent.Text textEvent)
+	{
+		if (textEvent.type != RenderGameOverlayEvent.ElementType.TEXT)
+			return;
+
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.gameSettings.showDebugInfo)
+		{
+			FoodStats stats = mc.thePlayer.getFoodStats();
+			textEvent.left.add("hunger: " + stats.getFoodLevel() + ", saturation: " + df.format(stats.getSaturationLevel()));
+		}
+	}
 
 	@ForgeSubscribe
 	public void onRender(RenderGameOverlayEvent.Post event)
 	{
 		if (event.type != RenderGameOverlayEvent.ElementType.FOOD)
 			return;
-		
+
 		if (!ModConfig.SHOW_FOOD_VALUES_OVERLAY && !ModConfig.SHOW_SATURATION_OVERLAY)
 			return;
 
