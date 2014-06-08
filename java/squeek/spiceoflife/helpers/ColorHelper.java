@@ -5,20 +5,20 @@ import net.minecraft.util.EnumChatFormatting;
 public class ColorHelper
 {
 	private static final EnumChatFormatting colorRange[] = {
-		EnumChatFormatting.DARK_RED,
-		EnumChatFormatting.RED,
-		EnumChatFormatting.GOLD,
-		EnumChatFormatting.YELLOW,
-		EnumChatFormatting.DARK_GREEN,
-		EnumChatFormatting.GREEN,
-		EnumChatFormatting.AQUA
+	EnumChatFormatting.DARK_RED,
+	EnumChatFormatting.RED,
+	EnumChatFormatting.GOLD,
+	EnumChatFormatting.YELLOW,
+	EnumChatFormatting.DARK_GREEN,
+	EnumChatFormatting.GREEN,
+	EnumChatFormatting.AQUA
 	};
 
 	private static final EnumChatFormatting booleanColorRange[] = {
-		EnumChatFormatting.DARK_RED,
-		EnumChatFormatting.RED,
-		EnumChatFormatting.DARK_GREEN,
-		EnumChatFormatting.GREEN
+	EnumChatFormatting.DARK_RED,
+	EnumChatFormatting.RED,
+	EnumChatFormatting.DARK_GREEN,
+	EnumChatFormatting.GREEN
 	};
 
 	public static String getRelativeColor(double val, double min, double max)
@@ -32,6 +32,15 @@ public class ColorHelper
 
 		int index = (int) (((val - min) / (max - min)) * (colorRange.length - 1));
 		return colorRange[Math.max(0, Math.min(colorRange.length - 1, index))].toString();
+	}
+
+	public static int getRelativeColorInt(double val, double min, double max)
+	{
+		//float f = (float)(par4 >> 24 & 255) / 255.0F;
+		//float f1 = (float)(par4 >> 16 & 255) / 255.0F;
+		//float f2 = (float)(par4 >> 8 & 255) / 255.0F;
+		//float f3 = (float)(par4 & 255) / 255.0F;
+		return 0xAA00FF00;
 	}
 
 	public static String getBooleanColor(boolean val)

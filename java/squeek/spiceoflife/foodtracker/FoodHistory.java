@@ -4,17 +4,18 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 
 public class FoodHistory implements IExtendedEntityProperties
 {
 	public static final String TAG_KEY = ModInfo.MODID + "History";
 	public final EntityPlayer player;
-	public final FixedSizeQueue<ItemStack> history = new FixedSizeQueue<ItemStack>(ModConfig.FOOD_HISTORY_LENGTH);
+	protected FixedSizeQueue<FoodEaten> history = ModConfig.USE_HUNGER_QUEUE ? new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH) : new FixedFoodQueue(ModConfig.FOOD_HISTORY_LENGTH);
 	public int totalFoodsEatenAllTime = 0;
 
 	public FoodHistory(EntityPlayer player)
@@ -24,12 +25,19 @@ public class FoodHistory implements IExtendedEntityProperties
 			player.registerExtendedProperties(FoodHistory.TAG_KEY, this);
 	}
 
-	public boolean addFood(ItemStack food)
+	public void onHistoryTypeChanged()
 	{
-		return addFood(food, true);
+		FixedSizeQueue<FoodEaten> oldHistory = history;
+		history = ModConfig.USE_HUNGER_QUEUE ? new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH) : new FixedFoodQueue(ModConfig.FOOD_HISTORY_LENGTH);
+		history.addAll(oldHistory);
 	}
 
-	public boolean addFood(ItemStack food, boolean countsTowardsAllTime)
+	public boolean addFood(FoodEaten foodEaten)
+	{
+		return addFood(foodEaten, true);
+	}
+
+	public boolean addFood(FoodEaten foodEaten, boolean countsTowardsAllTime)
 	{
 		if (countsTowardsAllTime)
 			totalFoodsEatenAllTime++;
@@ -40,26 +48,40 @@ public class FoodHistory implements IExtendedEntityProperties
 			return true;
 		}
 		else
-			return history.add(food);
+			return history.add(foodEaten);
 	}
 
 	public int getFoodCount(ItemStack food)
 	{
 		int count = 0;
-		for (ItemStack foodInHistory : history)
+		FoodGroup foodGroup = null;
+		
+		if (ModConfig.USE_FOOD_GROUPS)
+			foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
+
+		for (FoodEaten foodEaten : history)
 		{
-			if (food.isItemEqual(foodInHistory) && ItemStack.areItemStackTagsEqual(food, foodInHistory))
+			if ((food.isItemEqual(foodEaten.itemStack) && ItemStack.areItemStackTagsEqual(food, foodEaten.itemStack))
+					||
+					(ModConfig.USE_FOOD_GROUPS && foodGroup != null && foodGroup.equals(foodEaten.foodGroup)))
+			{
 				count += 1;
+			}
 		}
 		return count;
 	}
 
-	public int getHistorySize()
+	public FixedSizeQueue<FoodEaten> getHistory()
 	{
-		return history.size();
+		return history;
+	}
+	
+	public int getHistoryLengthInRelevantUnits()
+	{
+		return ModConfig.USE_HUNGER_QUEUE ? ((FixedHungerQueue) history).hunger() : history.size();
 	}
 
-	public ItemStack getLastEatenFood()
+	public FoodEaten getLastEatenFood()
 	{
 		return history.peekLast();
 	}
@@ -81,13 +103,9 @@ public class FoodHistory implements IExtendedEntityProperties
 		{
 			if (compound != null || ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH)
 			{
-				NBTTagList nbtHistory = new NBTTagList();
-				for (ItemStack food : history)
-				{
-					NBTTagCompound nbtFood = new NBTTagCompound();
-					food.writeToNBT(nbtFood);
-					nbtHistory.appendTag(nbtFood);
-				}
+				NBTTagCompound nbtHistory = new NBTTagCompound();
+
+				history.writeToNBT(nbtHistory);
 
 				if (ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH)
 					persistentCompound.setTag("History", nbtHistory);
@@ -121,14 +139,9 @@ public class FoodHistory implements IExtendedEntityProperties
 			NBTTagCompound nonPersistentCompound = compound != null ? compound.getCompoundTag(TAG_KEY) : new NBTTagCompound();
 			NBTTagCompound persistentCompound = rootPersistentCompound.getCompoundTag(TAG_KEY);
 
-			NBTTagList nbtHistory = ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH ? persistentCompound.getTagList("History") : nonPersistentCompound.getTagList("History");
+			NBTTagCompound nbtHistory = ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH ? persistentCompound.getCompoundTag("History") : nonPersistentCompound.getCompoundTag("History");
 
-			for (int i = 0; i < nbtHistory.tagCount(); i++)
-			{
-				NBTTagCompound nbtFood = (NBTTagCompound) nbtHistory.tagAt(i);
-
-				addFood(ItemStack.loadItemStackFromNBT(nbtFood), false);
-			}
+			history.readFromNBT(nbtHistory);
 
 			totalFoodsEatenAllTime = persistentCompound.getInteger("Total");
 		}

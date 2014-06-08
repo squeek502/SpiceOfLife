@@ -13,6 +13,7 @@ media/
 libs/
 tests/
 dummy/
+sources/
 
 # Tmp files
 *~

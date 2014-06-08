@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
 import squeek.spiceoflife.ModConfig;
 import com.udojava.evalex.Expression;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class FoodModifier
 {
@@ -29,18 +28,20 @@ public class FoodModifier
 
 	public static float getFoodModifier(EntityPlayer player, ItemStack food, FoodStats foodStats, int hunger, float saturationModifier)
 	{
+		if (!ModConfig.FOOD_MODIFIER_ENABLED)
+			return 1f;
+		
+		/*
+		// debug only
+		int warningToRememberToRemoveThis;
+		if (food.getItem() == Item.appleRed)
+			return -1;
+		*/
+		
 		FoodHistory foodHistory = FoodHistory.get(player);
 		int count = foodHistory.getFoodCount(food);
-		int historySize = foodHistory.getHistorySize();
+		int historySize = foodHistory.getHistoryLengthInRelevantUnits();
 		int totalFoodsEaten = foodHistory.totalFoodsEatenAllTime;
-
-		// server adds it to the food tracker immediately, so get the count before the last food was eaten
-		if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-		{
-			count -= 1;
-			historySize -= 1;
-			totalFoodsEaten -= 1;
-		}
 
 		if (ModConfig.FOOD_EATEN_THRESHOLD > 0 && totalFoodsEaten < ModConfig.FOOD_EATEN_THRESHOLD)
 			return 1f;
@@ -55,5 +56,15 @@ public class FoodModifier
 				.eval();
 
 		return result.floatValue();
+	}
+	
+	public static FoodValues getModifiedFoodValues(FoodValues foodValues, float modifier)
+	{
+		return foodValues.getModified(modifier);
+	}
+	
+	public static FoodValues modifyFoodValues(FoodValues foodValues, float modifier)
+	{
+		return foodValues.modify(modifier);
 	}
 }

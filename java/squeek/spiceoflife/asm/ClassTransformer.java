@@ -4,9 +4,9 @@ import static org.objectweb.asm.Opcodes.*;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import squeek.spiceoflife.ModSpiceOfLife;
+import squeek.spiceoflife.foodtracker.FoodValues;
 
 public class ClassTransformer implements IClassTransformer
 {
@@ -37,29 +37,84 @@ public class ClassTransformer implements IClassTransformer
 			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "a" : "addStats", "(IF)V");
 			if (methodNode != null)
 			{
-				addFoodStatsHook(methodNode, Hooks.class, "getFoodModifier", "(Lnet/minecraft/util/FoodStats;IF)F");
+				addFoodStatsHook(methodNode, Hooks.class, "getModifiedFoodValues", "(Lnet/minecraft/util/FoodStats;IF)Lsqueek/spiceoflife/foodtracker/FoodValues;");
 				return writeClassToBytes(classNode);
 			}
 		}
-		
+
 		if (name.equals("iguanaman.hungeroverhaul.IguanaFoodStats"))
 		{
 			ModSpiceOfLife.Log.info("Patching IguanaFoodStats...");
-			
+
 			ClassNode classNode = readClassFromBytes(bytes);
 			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_75122_a", "(IF)V");
-			
+
 			if (methodNode == null)
 				methodNode = findMethodNodeOfClass(classNode, "addStats", "(IF)V");
-			
+
 			if (methodNode != null)
 			{
-				addFoodStatsHook(methodNode, Hooks.class, "getFoodModifier", "(Lnet/minecraft/util/FoodStats;IF)F");
+				addFoodStatsHook(methodNode, Hooks.class, "getModifiedFoodValues", "(Lnet/minecraft/util/FoodStats;IF)Lsqueek/spiceoflife/foodtracker/FoodValues;");
 				return writeClassToBytes(classNode);
 			}
 			else
 			{
-				ModSpiceOfLife.Log.warning(" addStats method in IguanaFoodStats not found");
+				ModSpiceOfLife.Log.warning("addStats method in IguanaFoodStats not found");
+			}
+		}
+		
+		if (name.equals("net.minecraft.client.gui.inventory.GuiContainer") || name.equals("awy"))
+		{
+			boolean isObfuscated = name.equals("awy");
+			ModSpiceOfLife.Log.info("Patching GuiContainer...");
+
+			ClassNode classNode = readClassFromBytes(bytes);
+			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "a" : "drawHoveringText", "(Ljava/util/List;IILnet/minecraft/client/gui/FontRenderer;)V");
+
+			if (methodNode != null)
+			{
+				addDrawHoveringTextHook(methodNode, Hooks.class, "onDrawHoveringText", "(IIII)V", isObfuscated);
+				return writeClassToBytes(classNode);
+			}
+			else
+			{
+				ModSpiceOfLife.Log.warning("drawHoveringText method in GuiContainer not found");
+			}
+		}
+
+		if (name.equals("codechicken.core.gui.GuiDraw"))
+		{
+			ModSpiceOfLife.Log.info("Patching CodeChickenCore's GuiDraw...");
+
+			ClassNode classNode = readClassFromBytes(bytes);
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "drawTooltipBox", "(IIII)V");
+
+			if (methodNode != null)
+			{
+				addCodeChickenDrawHoveringTextHook(methodNode, Hooks.class, "onDrawHoveringText", "(IIII)V");
+				return writeClassToBytes(classNode);
+			}
+			else
+			{
+				ModSpiceOfLife.Log.warning("drawTooltipBox method in GuiDraw not found");
+			}
+		}
+		
+		if (name.equals("tconstruct.client.gui.NewContainerGui"))
+		{
+			ModSpiceOfLife.Log.info("Patching TConstruct's NewContainerGui...");
+
+			ClassNode classNode = readClassFromBytes(bytes);
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_102021_a", "(Ljava/util/List;II)V");
+
+			if (methodNode != null)
+			{
+				addDrawHoveringTextHook(methodNode, Hooks.class, "onDrawHoveringText", "(IIII)V", false);
+				return writeClassToBytes(classNode);
+			}
+			else
+			{
+				ModSpiceOfLife.Log.warning("func_102021_a method in NewContainerGui not found");
 			}
 		}
 
@@ -94,6 +149,16 @@ public class ClassTransformer implements IClassTransformer
 		return null;
 	}
 
+	private AbstractInsnNode findFirstInstruction(MethodNode method)
+	{
+		for (AbstractInsnNode instruction : method.instructions.toArray())
+		{
+			if (instruction.getType() != AbstractInsnNode.LABEL && instruction.getType() != AbstractInsnNode.LINE)
+				return instruction;
+		}
+		return null;
+	}
+
 	private AbstractInsnNode findFirstInstructionOfType(MethodNode method, int bytecode)
 	{
 		for (AbstractInsnNode instruction : method.instructions.toArray())
@@ -114,6 +179,18 @@ public class ClassTransformer implements IClassTransformer
 		}
 		return lastLabel;
 	}
+	
+	private LocalVariableNode findLocalVariableOfMethod(MethodNode method, String varName, String varDesc)
+	{
+		for (LocalVariableNode localVar : method.localVariables)
+		{
+			if (localVar.name.equals(varName) && localVar.desc.equals(varDesc))
+			{
+				return localVar;
+			}
+		}
+		return null;
+	}
 
 	public void addOnEatenHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
 	{
@@ -125,7 +202,7 @@ public class ClassTransformer implements IClassTransformer
 		// equivalent to:
 		Hooks.onFoodEaten(this, world, player);
 		 */
-		
+
 		toInject.add(new VarInsnNode(ALOAD, 0)); 		// this
 		toInject.add(new VarInsnNode(ALOAD, 1)); 		// param1: world
 		toInject.add(new VarInsnNode(ALOAD, 2)); 		// param2: player
@@ -146,49 +223,117 @@ public class ClassTransformer implements IClassTransformer
 		// equivalent to:
 		int par1=0; float par2=0f;
 		
-		float modifier = Hooks.getFoodModifier(null, par1, par2);
+		squeek.spiceoflife.foodtracker.FoodValues modifiedFoodValues = Hooks.getModifiedFoodValues(null, par1, par2);
 		
-		par1 = (int) (par1 * modifier + .5f);
-		if (par2 > 0)
-			par2 *= modifier;
-		 */
+		par1 = modifiedFoodValues.hunger;
+		par2 = modifiedFoodValues.saturationModifier;
+		*/
 
 		LabelNode varStartLabel = new LabelNode();
 		LabelNode end = findEndLabel(method);
-		LocalVariableNode localVar = new LocalVariableNode("modifier", Type.FLOAT_TYPE.getDescriptor(), method.signature, varStartLabel, end, method.maxLocals);
-		method.maxLocals += Type.FLOAT_TYPE.getSize();
+		LocalVariableNode localVar = new LocalVariableNode("modifiedFoodValues", "Lsqueek/spiceoflife/foodtracker/FoodValues;", null, varStartLabel, end, method.maxLocals);
+		method.maxLocals += 1;
 		method.localVariables.add(localVar);
 
-		// get modifier
+		// get modifiedFoodValues
 		toInject.add(new VarInsnNode(ALOAD, 0));					// this
 		toInject.add(new VarInsnNode(ILOAD, 1));					// foodLevel
 		toInject.add(new VarInsnNode(FLOAD, 2));					// foodSaturationModifier
 		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
-		toInject.add(new VarInsnNode(FSTORE, localVar.index));		// modifier = Hooks.getFoodModifier(...)
+		toInject.add(new VarInsnNode(ASTORE, localVar.index));		// modifiedFoodValues = Hooks.getFoodModifier(...)
 		toInject.add(varStartLabel);								// variable scope start
 
-		// modify foodLevel parameter (round to int)
-		toInject.add(new VarInsnNode(ILOAD, 1)); 					// add the parameter to the stack
-		toInject.add(new InsnNode(I2F)); 							// convert to float for the multiplication
-		toInject.add(new VarInsnNode(FLOAD, localVar.index)); 		// add the modifier to the stack
-		toInject.add(new InsnNode(FMUL)); 							// param * modifier
-		toInject.add(new LdcInsnNode(0.5f)); 						// 0.5f
-		toInject.add(new InsnNode(FADD)); 							// param * modifier + 0.5f
-		toInject.add(new InsnNode(F2I)); 							// back to int
-		toInject.add(new VarInsnNode(ISTORE, 1)); 					// param = result
+		// set foodLevel parameter
+		toInject.add(new VarInsnNode(ALOAD, localVar.index));		// modifiedFoodValues
+		toInject.add(new FieldInsnNode(GETFIELD, FoodValues.class.getName().replace('.', '/'), "hunger", "I"));
+		toInject.add(new VarInsnNode(ISTORE, 1)); 					// param = modifiedFoodValues.hunger
 
-		// modify foodSaturationModifier parameter (if it's greater than 0)
-		toInject.add(new VarInsnNode(FLOAD, 2));					// param
-		toInject.add(new InsnNode(FCONST_0));						// 0
-		toInject.add(new InsnNode(FCMPL));							// compare floats
-		LabelNode labelIfNotGreaterThan0 = new LabelNode();			// label if the if condition fails
-		toInject.add(new JumpInsnNode(IFLE, labelIfNotGreaterThan0)); // if par2 <= 0 jump to label
-		toInject.add(new VarInsnNode(FLOAD, 2)); 					// add the parameter to the stack
-		toInject.add(new VarInsnNode(FLOAD, localVar.index));		// add the modifier to the stack
-		toInject.add(new InsnNode(FMUL)); 							// param * modifier
-		toInject.add(new VarInsnNode(FSTORE, 2)); 					// param = result
-		toInject.add(labelIfNotGreaterThan0);						// if par2 <=, jump here
+		// set foodSaturationModifier parameter
+		toInject.add(new VarInsnNode(ALOAD, localVar.index));		// modifiedFoodValues
+		toInject.add(new FieldInsnNode(GETFIELD, FoodValues.class.getName().replace('.', '/'), "saturationModifier", "F"));
+		toInject.add(new VarInsnNode(FSTORE, 2)); 					// param = modifiedFoodValues.saturationModifier
 
+		method.instructions.insertBefore(targetNode, toInject);
+
+		ModSpiceOfLife.Log.info(" Patched " + method.name);
+	}
+
+	public void addDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc, boolean isObfuscated)
+	{
+		AbstractInsnNode targetNode = null;
+
+		for (AbstractInsnNode instruction : method.instructions.toArray())
+		{
+			if (instruction.getOpcode() == PUTFIELD)
+			{
+				FieldInsnNode fieldInsn = (FieldInsnNode) instruction;
+				
+				if (fieldInsn.name.equals(isObfuscated ? "n" : "zLevel"))
+					targetNode = instruction.getPrevious().getPrevious();
+			}
+		}
+		if (targetNode != null)
+		{
+			ModSpiceOfLife.Log.info(" Found target node");
+		}
+		else
+		{
+			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; target node not found");
+			return;
+		}
+		
+		LocalVariableNode x = findLocalVariableOfMethod(method, "i1", "I");
+		LocalVariableNode y = findLocalVariableOfMethod(method, "j1", "I");
+		LocalVariableNode w = findLocalVariableOfMethod(method, "k", "I");
+		LocalVariableNode h = findLocalVariableOfMethod(method, "k1", "I");
+		
+		if (x == null || y == null || w == null || h == null)
+		{
+			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; local variables not found");
+			return;
+		}
+
+		InsnList toInject = new InsnList();
+
+		/*
+		// equivalent to:
+		Hooks.onDrawHoveringText(0, 0, 0, 0);
+		*/
+		
+		toInject.add(new VarInsnNode(ILOAD, x.index));
+		toInject.add(new VarInsnNode(ILOAD, y.index));
+		toInject.add(new VarInsnNode(ILOAD, w.index));	
+		toInject.add(new VarInsnNode(ILOAD, h.index));
+		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
+		
+		method.instructions.insertBefore(targetNode, toInject);
+
+		ModSpiceOfLife.Log.info(" Patched " + method.name);
+	}
+
+	public void addCodeChickenDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
+	{
+		AbstractInsnNode targetNode = findFirstInstruction(method);
+		
+		if (targetNode == null)
+		{
+			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; not able to find a suitable injection point");
+			return;
+		}
+
+		InsnList toInject = new InsnList();
+
+		/*
+		// equivalent to:
+		Hooks.onDrawHoveringText(0, 0, 0, 0);
+		*/
+		
+		toInject.add(new VarInsnNode(ILOAD, 0));	// x
+		toInject.add(new VarInsnNode(ILOAD, 1));	// y
+		toInject.add(new VarInsnNode(ILOAD, 2));	// w
+		toInject.add(new VarInsnNode(ILOAD, 3));	// h
+		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
+		
 		method.instructions.insertBefore(targetNode, toInject);
 
 		ModSpiceOfLife.Log.info(" Patched " + method.name);

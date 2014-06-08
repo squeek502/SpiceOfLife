@@ -22,7 +22,7 @@ public class PacketConfigSync extends PacketBase
 	@Override
 	public void unpack(DataInputStream data, INetworkManager manager, EntityPlayer player) throws IOException
 	{
-		ModConfig.unpack(data);
+		ModConfig.unpack(data, player);
 	}
 
 }

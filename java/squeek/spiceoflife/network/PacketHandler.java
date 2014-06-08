@@ -15,7 +15,8 @@ public class PacketHandler implements IPacketHandler
 	{
 		ConfigSync(PacketConfigSync.class),
 		FoodHistory(PacketFoodHistory.class),
-		FoodEatenAllTime(PacketFoodEatenAllTime.class);
+		FoodEatenAllTime(PacketFoodEatenAllTime.class),
+		FoodGroup(PacketFoodGroup.class);
 
 		public Class<? extends PacketBase> packet = null;
 

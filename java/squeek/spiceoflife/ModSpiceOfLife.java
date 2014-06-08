@@ -3,7 +3,10 @@ package squeek.spiceoflife;
 import java.util.logging.Logger;
 import net.minecraftforge.common.MinecraftForge;
 import squeek.spiceoflife.foodtracker.FoodTracker;
-import squeek.spiceoflife.foodtracker.TooltipHandler;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.gui.HUDOverlayHandler;
+import squeek.spiceoflife.gui.TooltipOverlayHandler;
+import squeek.spiceoflife.gui.TooltipHandler;
 import squeek.spiceoflife.network.PacketHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -14,8 +17,10 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "")
+@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "after:HungerOverhaul;after:TConstruct")
 @NetworkMod(channels = {ModInfo.NETCHANNEL}, clientSideRequired = true, serverSideRequired = false, packetHandler = PacketHandler.class)
 public class ModSpiceOfLife
 {
@@ -36,7 +41,9 @@ public class ModSpiceOfLife
 	{
 		MinecraftForge.EVENT_BUS.register(new FoodTracker());
 		MinecraftForge.EVENT_BUS.register(new TooltipHandler());
+		MinecraftForge.EVENT_BUS.register(new HUDOverlayHandler());
 		GameRegistry.registerPlayerTracker(new FoodTracker());
+	    TickRegistry.registerTickHandler(new TooltipOverlayHandler(), Side.CLIENT);
 	}
 
 	@EventHandler
@@ -47,5 +54,7 @@ public class ModSpiceOfLife
 	@EventHandler
     public void serverStarting(FMLServerStartingEvent event)
 	{
+		event.registerServerCommand(new Command());
+		FoodGroupRegistry.serverInit();
 	}
 }
