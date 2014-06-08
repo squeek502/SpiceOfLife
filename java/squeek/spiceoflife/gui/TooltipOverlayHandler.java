@@ -33,8 +33,8 @@ public class TooltipOverlayHandler implements ITickHandler
 	//private static final Field guiLeft = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiLeft", "field_74198_m", "p"));
 	//private static final Field guiTop = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiTop", "field_74197_n", "q"));
 	private static final Field theSlot = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "theSlot", "field_82320_o", "t"));
-	private static final Class<?> tinkersContainerGui = ReflectionHelper.getClass(TooltipOverlayHandler.class.getClassLoader(), "tconstruct.client.gui.NewContainerGui");
-	private static final Field mainSlot = ReflectionHelper.findField(tinkersContainerGui, "mainSlot");
+	private static Class<?> tinkersContainerGui = null;
+	private static Field mainSlot = null;
 	private static Method getStackMouseOver = null;
 	private static Field itemPanel = null;
 	static
@@ -50,7 +50,21 @@ public class TooltipOverlayHandler implements ITickHandler
 		}
 		catch(Exception e)
 		{
-			ModSpiceOfLife.Log.warning("Unable to integrate the food values tooltip overlay with NEI: " + e.getMessage());
+			ModSpiceOfLife.Log.warning("Unable to integrate the food values tooltip overlay with NEI: ");
+			e.printStackTrace();
+		}
+		
+		try
+		{
+			if (Loader.isModLoaded("TConstruct"))
+			{
+				tinkersContainerGui = ReflectionHelper.getClass(TooltipOverlayHandler.class.getClassLoader(), "tconstruct.client.gui.NewContainerGui");
+				mainSlot = ReflectionHelper.findField(tinkersContainerGui, "mainSlot");
+			}
+		}
+		catch(Exception e)
+		{
+			ModSpiceOfLife.Log.warning("Unable to integrate the food values tooltip overlay with Tinkers Construct: ");
 			e.printStackTrace();
 		}
 	}
