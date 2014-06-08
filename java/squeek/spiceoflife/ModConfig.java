@@ -48,7 +48,7 @@ public class ModConfig
 
 	public static String FOOD_MODIFIER_FORMULA = ModConfig.FOOD_MODIFIER_FORMULA_STRING_DEFAULT;
 	private static final String FOOD_MODIFIER_FORMULA_STRING_NAME = "food.modifier.formula";
-	private static final String FOOD_MODIFIER_FORMULA_STRING_DEFAULT = "MAX(0, (1 - count/12))^MAX(0, food_hunger_value-ROUND(MAX(0, 1 - count/12), 0))";
+	private static final String FOOD_MODIFIER_FORMULA_STRING_DEFAULT = "MAX(0, (1 - count/12))^MIN(8, food_hunger_value)";
 	private static final String FOOD_MODIFIER_FORMULA_STRING_COMMENT =
 			"Uses the EvalEx expression parser\n"
 					+ "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
@@ -64,7 +64,7 @@ public class ModConfig
 
 	public static int FOOD_HISTORY_LENGTH = ModConfig.FOOD_HISTORY_LENGTH_DEFAULT;
 	private static final String FOOD_HISTORY_LENGTH_NAME = "food.history.length";
-	private static final int FOOD_HISTORY_LENGTH_DEFAULT = 24;
+	private static final int FOOD_HISTORY_LENGTH_DEFAULT = 12;
 	private static final String FOOD_HISTORY_LENGTH_COMMENT =
 			"The maximum amount of eaten foods stored in the history at a time";
 
