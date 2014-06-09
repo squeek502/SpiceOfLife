@@ -114,6 +114,9 @@ public class HUDOverlayHandler
 				mc.ingameGUI.drawTexturedModalRect(x, y, 0, 0, 9, 9);
 		}
 		disableAlpha(alpha);
+
+		// rebind default icons
+		mc.getTextureManager().bindTexture(Gui.icons);
 	}
 
 	public static void drawHungerOverlay(int hungerRestored, int foodLevel, Minecraft mc, int left, int top, float alpha)
