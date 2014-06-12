@@ -1,0 +1,20 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=Питательная ценность: 
+spiceoflife.tooltip.eaten.recently=Съедено %s из последних %d
+spiceoflife.tooltip.eaten.recently.hunger=Eaten %s in the last %s hunger
+spiceoflife.tooltip.not.eaten.recently=Не было съедено недавно
+spiceoflife.tooltip.food.until.enabled.1=Уменьшение питательности начинается после
+spiceoflife.tooltip.food.until.enabled.2=употребления любой еды более %d %s
+spiceoflife.tooltip.times.singular=раза
+spiceoflife.tooltip.times.plural=раз
+spiceoflife.tooltip.hunger=голода
+spiceoflife.tooltip.food.group=Группа еды: 
+
+# Advanced tooltip strings
+spiceoflife.tooltip.advanced.hunger.restored=Голода восстановлено: %s (по-умолч.: %s)
+spiceoflife.tooltip.advanced.saturation.modifier=Модификатор насыщенности: %s (по-умолч.: %s)
+
+# Quantity descriptors
+spiceoflife.quantity.one.time=один раз
+spiceoflife.quantity.two.times=дважды
+spiceoflife.quantity.x.times=%d раз
