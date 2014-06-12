@@ -2,9 +2,11 @@ package squeek.spiceoflife.foodtracker;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.Packet8UpdateHealth;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
@@ -89,6 +91,26 @@ public class FoodTracker implements IPlayerTracker
 
 		// server needs to send any loaded data to the client
 		syncFoodHistory(foodHistory);
+	}
+
+	
+	/**
+	 * Sync saturation whenever it changes (vanilla MC only syncs when it hits 0)
+	 */
+	private float lastSaturationLevel = 0;
+	
+	@ForgeSubscribe
+	public void onLivingUpdateEvent(LivingUpdateEvent event)
+	{
+		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.entity instanceof EntityPlayer))
+			return;
+		
+		EntityPlayer player = (EntityPlayer) event.entity;
+		
+        if (this.lastSaturationLevel != player.getFoodStats().getSaturationLevel())
+        {
+            PacketDispatcher.sendPacketToPlayer(new Packet8UpdateHealth(player.getHealth(), player.getFoodStats().getFoodLevel(), player.getFoodStats().getSaturationLevel()), (Player) player);
+        }
 	}
 
 	public void syncFoodHistory(FoodHistory foodHistory)
