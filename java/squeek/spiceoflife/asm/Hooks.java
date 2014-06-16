@@ -1,7 +1,6 @@
 package squeek.spiceoflife.asm;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
 import net.minecraft.world.World;
@@ -11,6 +10,7 @@ import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodTracker;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.proxy.ProxyHungerOverhaul;
 
 public class Hooks
@@ -56,7 +56,7 @@ public class Hooks
 	public static void onFoodEaten(ItemStack itemStack, World world, EntityPlayer player)
 	{
 		// only react to ItemFood items (because things like TiC chisels use onFoodEaten)
-		if (itemStack.getItem() instanceof ItemFood)
+		if (FoodHelper.isFood(itemStack))
 		{
 			lastEatingPlayer = player;
 			lastFoodEaten = itemStack;

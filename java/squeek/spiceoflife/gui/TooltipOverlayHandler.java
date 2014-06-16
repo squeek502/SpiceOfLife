@@ -10,7 +10,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
@@ -21,6 +20,7 @@ import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.asm.Hooks;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodValues;
+import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.KeyHelper;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Loader;
@@ -114,7 +114,7 @@ public class TooltipOverlayHandler implements ITickHandler
 				}
 
 				// if the hovered stack is a food and there is no item being dragged
-				if (player.inventory.getItemStack() == null && hoveredStack != null && hoveredStack.getItem() instanceof ItemFood)
+				if (player.inventory.getItemStack() == null && hoveredStack != null && FoodHelper.isFood(hoveredStack))
 				{
 					FoodValues defaultFoodValues = FoodValues.get(hoveredStack);
 

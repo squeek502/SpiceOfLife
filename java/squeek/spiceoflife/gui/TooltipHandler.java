@@ -3,7 +3,6 @@ package squeek.spiceoflife.gui;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.item.ItemFood;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -16,6 +15,7 @@ import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.ColorHelper;
+import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.StringHelper;
 
 public class TooltipHandler
@@ -25,7 +25,7 @@ public class TooltipHandler
 	@ForgeSubscribe
 	public void onItemTooltip(ItemTooltipEvent event)
 	{
-		if (ModConfig.FOOD_MODIFIER_ENABLED && event.itemStack != null && event.itemStack.getItem() instanceof ItemFood)
+		if (ModConfig.FOOD_MODIFIER_ENABLED && event.itemStack != null && FoodHelper.isFood(event.itemStack))
 		{
 			int totalFoodEaten = FoodHistory.get(event.entityPlayer).totalFoodsEatenAllTime;
 			float foodModifier = 1f;

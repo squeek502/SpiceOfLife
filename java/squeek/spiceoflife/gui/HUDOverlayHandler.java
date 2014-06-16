@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.FoodStats;
@@ -17,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.foodtracker.FoodValues;
+import squeek.spiceoflife.helpers.FoodHelper;
 
 public class HUDOverlayHandler
 {
@@ -63,7 +63,7 @@ public class HUDOverlayHandler
 		if (ModConfig.SHOW_SATURATION_OVERLAY)
 			drawSaturationOverlay(0, stats.getSaturationLevel(), mc, left, top, 1f);
 
-		if (!ModConfig.SHOW_FOOD_VALUES_OVERLAY || heldItem == null || !(heldItem.getItem() instanceof ItemFood))
+		if (!ModConfig.SHOW_FOOD_VALUES_OVERLAY || heldItem == null || !FoodHelper.isFood(heldItem))
 		{
 			flashAlpha = 0;
 			alphaDir = 1;
