@@ -1,11 +1,11 @@
 package squeek.spiceoflife;
 
-import squeek.spiceoflife.foodtracker.FoodEaten;
-import squeek.spiceoflife.foodtracker.FoodHistory;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
+import squeek.spiceoflife.foodtracker.FoodEaten;
+import squeek.spiceoflife.foodtracker.FoodHistory;
 
 public class Command extends CommandBase
 {
@@ -28,7 +28,7 @@ public class Command extends CommandBase
 		for (FoodEaten foodEaten : FoodHistory.get(player).getHistory())
 		{
 			String foodEatenString = foodEaten.itemStack.getDisplayName() + ": " + foodEaten.hungerRestored + " / " + (foodEaten.foodGroup == null ? "null" : foodEaten.foodGroup.identifier);
-			icommandsender.sendChatToPlayer(ChatMessageComponent.createFromText(foodEatenString));
+			icommandsender.addChatMessage(new ChatComponentText(foodEatenString));
 		}
 	}
 

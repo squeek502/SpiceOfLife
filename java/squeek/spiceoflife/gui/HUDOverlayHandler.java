@@ -11,12 +11,12 @@ import net.minecraft.util.FoodStats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.event.ForgeSubscribe;
 import org.lwjgl.opengl.GL11;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class HUDOverlayHandler
 {
@@ -26,7 +26,7 @@ public class HUDOverlayHandler
 	private static final ResourceLocation modIcons = new ResourceLocation(ModInfo.MODID.toLowerCase(), "textures/icons.png");
 	private static final DecimalFormat df = new DecimalFormat("##.##");
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onTextRender(RenderGameOverlayEvent.Text textEvent)
 	{
 		if (textEvent.type != RenderGameOverlayEvent.ElementType.TEXT)
@@ -40,7 +40,7 @@ public class HUDOverlayHandler
 		}
 	}
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onRender(RenderGameOverlayEvent.Post event)
 	{
 		if (event.type != RenderGameOverlayEvent.ElementType.FOOD)

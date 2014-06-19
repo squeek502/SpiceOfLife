@@ -35,7 +35,7 @@ public class ProxyAgriculture
 		}
 		catch (Exception e)
 		{
-			ModSpiceOfLife.Log.warning("Unable to properly integrate with Agriculture (tooltips won't work): " + e.getMessage());
+			ModSpiceOfLife.Log.warn("Unable to properly integrate with Agriculture (tooltips won't work): " + e.getMessage());
 		}
 	}
 

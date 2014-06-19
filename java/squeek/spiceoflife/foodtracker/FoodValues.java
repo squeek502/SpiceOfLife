@@ -64,9 +64,9 @@ public class FoodValues
 			if (ProxyTiC.isSpecialFood(itemFood))
 				return ProxyTiC.getSpecialFoodValues(food);
 			else if (ProxyHungerOverhaul.foodValuesWillBeModified(food))
-				return ProxyHungerOverhaul.getModifiedFoodValues(itemFood);
+				return ProxyHungerOverhaul.getModifiedFoodValues(food);
 			else
-				return new FoodValues(itemFood.getHealAmount(), itemFood.getSaturationModifier());
+				return new FoodValues(itemFood.func_150905_g(food), itemFood.func_150906_h(food));
 		}
 		else if (ProxyAgriculture.isFood(food))
 			return ProxyAgriculture.getFoodValues(food);

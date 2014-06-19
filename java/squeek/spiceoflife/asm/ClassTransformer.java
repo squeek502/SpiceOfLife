@@ -59,7 +59,7 @@ public class ClassTransformer implements IClassTransformer
 			}
 			else
 			{
-				ModSpiceOfLife.Log.warning("addStats method in IguanaFoodStats not found");
+				ModSpiceOfLife.Log.warn("addStats method in IguanaFoodStats not found");
 			}
 		}
 		
@@ -78,7 +78,7 @@ public class ClassTransformer implements IClassTransformer
 			}
 			else
 			{
-				ModSpiceOfLife.Log.warning("drawHoveringText method in GuiContainer not found");
+				ModSpiceOfLife.Log.warn("drawHoveringText method in GuiContainer not found");
 			}
 		}
 
@@ -96,7 +96,7 @@ public class ClassTransformer implements IClassTransformer
 			}
 			else
 			{
-				ModSpiceOfLife.Log.warning("drawTooltipBox method in GuiDraw not found");
+				ModSpiceOfLife.Log.warn("drawTooltipBox method in GuiDraw not found");
 			}
 		}
 		
@@ -114,7 +114,7 @@ public class ClassTransformer implements IClassTransformer
 			}
 			else
 			{
-				ModSpiceOfLife.Log.warning("func_102021_a method in NewContainerGui not found");
+				ModSpiceOfLife.Log.warn("func_102021_a method in NewContainerGui not found");
 			}
 		}
 
@@ -279,7 +279,7 @@ public class ClassTransformer implements IClassTransformer
 		}
 		else
 		{
-			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; target node not found");
+			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; target node not found");
 			return;
 		}
 		
@@ -290,7 +290,7 @@ public class ClassTransformer implements IClassTransformer
 		
 		if (x == null || y == null || w == null || h == null)
 		{
-			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; local variables not found");
+			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; local variables not found");
 			return;
 		}
 
@@ -318,7 +318,7 @@ public class ClassTransformer implements IClassTransformer
 		
 		if (targetNode == null)
 		{
-			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; not able to find a suitable injection point");
+			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; not able to find a suitable injection point");
 			return;
 		}
 

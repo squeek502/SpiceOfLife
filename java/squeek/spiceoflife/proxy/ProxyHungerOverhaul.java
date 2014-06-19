@@ -41,7 +41,7 @@ public class ProxyHungerOverhaul
 		}
 		catch (Exception e)
 		{
-			ModSpiceOfLife.Log.warning("Unable to properly integrate with Hunger Overhaul (some food values may be incorrect): " + e.getMessage());
+			ModSpiceOfLife.Log.warn("Unable to properly integrate with Hunger Overhaul (some food values may be incorrect): " + e.getMessage());
 		}
 	}
 
@@ -50,7 +50,7 @@ public class ProxyHungerOverhaul
 		return modifyFoodValues && modFoodValueDivider != 1 && iguanaFood != null && !iguanaFood.isInstance(food.getItem());
 	}
 
-	public static FoodValues getModifiedFoodValues(ItemFood itemFood)
+	public static FoodValues getModifiedFoodValues(ItemStack food)
 	{
 		try
 		{
@@ -60,7 +60,7 @@ public class ProxyHungerOverhaul
 	
 			dummyFoodStats.setFoodLevel(0);
 			dummyFoodStats.setFoodSaturationLevel(0);
-			dummyFoodStats.addStats(itemFood);
+			dummyFoodStats.func_151686_a((ItemFood) food.getItem(), food);
 	
 			foodRegensHealth.setBoolean(null, wasRegenHealthEnabled);
 			

@@ -1,9 +1,8 @@
 package squeek.spiceoflife.foodtracker;
 
+import ibxm.Player;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet8UpdateHealth;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -12,16 +11,17 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
 import squeek.spiceoflife.network.PacketFoodHistory;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.IPlayerTracker;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
-public class FoodTracker implements IPlayerTracker
+public class FoodTracker
 {
 	/**
 	 * Add relevant extended entity data whenever an entity comes into existence
 	 */
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onEntityConstructing(EntityConstructing event)
 	{
 		if (event.entity instanceof EntityPlayer && FoodHistory.get((EntityPlayer) event.entity) == null)
@@ -34,37 +34,37 @@ public class FoodTracker implements IPlayerTracker
 	/**
 	 * Sync savedata/config whenever a player joins the server
 	 */
-	@Override
-	public void onPlayerLogin(EntityPlayer player)
+	@SubscribeEvent
+	public void onPlayerLogin(PlayerLoggedInEvent event)
 	{
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient())
 			return;
 
 		// server needs to send config settings to the client
-		ModConfig.sync(player);
+		ModConfig.sync(event.player);
 
 		// server needs to send food groups to the client
-		FoodGroupRegistry.sync(player);
+		FoodGroupRegistry.sync(event.player);
 
 		// server needs to send any loaded data to the client
-		FoodHistory foodHistory = FoodHistory.get(player);
+		FoodHistory foodHistory = FoodHistory.get(event.player);
 		syncFoodHistory(foodHistory);
 	}
 
 	/**
 	 * Resync food history whenever a player changes dimensions
 	 */
-	@Override
-	public void onPlayerChangedDimension(EntityPlayer player)
+	@SubscribeEvent
+	public void onPlayerChangedDimension(PlayerChangedDimensionEvent event)
 	{
-		FoodHistory foodHistory = FoodHistory.get(player);
+		FoodHistory foodHistory = FoodHistory.get(event.player);
 		syncFoodHistory(foodHistory);
 	}
 
 	/**
 	 * Save death-persistent data to avoid any rollbacks on respawn
 	 */
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onLivingDeathEvent(LivingDeathEvent event)
 	{
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.entity instanceof EntityPlayer))
@@ -79,14 +79,14 @@ public class FoodTracker implements IPlayerTracker
 	/**
 	 * Load any death-persistent savedata on respawn and sync it
 	 */
-	@Override
-	public void onPlayerRespawn(EntityPlayer player)
+	@SubscribeEvent
+	public void onPlayerRespawn(PlayerRespawnEvent event)
 	{
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient())
 			return;
 
 		// load any persistent food history data
-		FoodHistory foodHistory = FoodHistory.get(player);
+		FoodHistory foodHistory = FoodHistory.get(event.player);
 		foodHistory.loadNBTData(null);
 
 		// server needs to send any loaded data to the client
@@ -99,7 +99,7 @@ public class FoodTracker implements IPlayerTracker
 	 */
 	private float lastSaturationLevel = 0;
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onLivingUpdateEvent(LivingUpdateEvent event)
 	{
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.entity instanceof EntityPlayer))
@@ -146,10 +146,5 @@ public class FoodTracker implements IPlayerTracker
 	public static ItemStack getFoodLastEatenBy(EntityPlayer player)
 	{
 		return FoodHistory.get(player).getLastEatenFood().itemStack;
-	}
-
-	@Override
-	public void onPlayerLogout(EntityPlayer player)
-	{
 	}
 }

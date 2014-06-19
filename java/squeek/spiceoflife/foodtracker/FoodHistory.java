@@ -119,13 +119,13 @@ public class FoodHistory implements IExtendedEntityProperties
 		}
 
 		if (compound != null && !nonPersistentCompound.hasNoTags())
-			compound.setCompoundTag(TAG_KEY, nonPersistentCompound);
+			compound.setTag(TAG_KEY, nonPersistentCompound);
 
 		if (!persistentCompound.hasNoTags())
-			rootPersistentCompound.setCompoundTag(TAG_KEY, persistentCompound);
+			rootPersistentCompound.setTag(TAG_KEY, persistentCompound);
 
 		if (!player.getEntityData().hasKey(EntityPlayer.PERSISTED_NBT_TAG))
-			player.getEntityData().setCompoundTag(EntityPlayer.PERSISTED_NBT_TAG, rootPersistentCompound);
+			player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, rootPersistentCompound);
 	}
 
 	@Override

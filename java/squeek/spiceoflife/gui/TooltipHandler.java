@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.foodtracker.FoodHistory;
@@ -17,12 +16,13 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.ColorHelper;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.StringHelper;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class TooltipHandler
 {
 	private static final DecimalFormat df = new DecimalFormat("##.##");
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event)
 	{
 		if (ModConfig.FOOD_MODIFIER_ENABLED && event.itemStack != null && FoodHelper.isFood(event.itemStack))

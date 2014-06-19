@@ -2,7 +2,6 @@ package squeek.spiceoflife.gui;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.EnumSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -22,13 +21,14 @@ import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.KeyHelper;
-import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
-import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
-public class TooltipOverlayHandler implements ITickHandler
+public class TooltipOverlayHandler
 {
 	//private static final Field guiLeft = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiLeft", "field_74198_m", "p"));
 	//private static final Field guiTop = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiTop", "field_74197_n", "q"));
@@ -52,7 +52,7 @@ public class TooltipOverlayHandler implements ITickHandler
 		}
 		catch(Exception e)
 		{
-			ModSpiceOfLife.Log.warning("Unable to integrate the food values tooltip overlay with NEI: ");
+			ModSpiceOfLife.Log.error("Unable to integrate the food values tooltip overlay with NEI: ");
 			e.printStackTrace();
 		}
 		
@@ -66,20 +66,18 @@ public class TooltipOverlayHandler implements ITickHandler
 		}
 		catch(Exception e)
 		{
-			ModSpiceOfLife.Log.warning("Unable to integrate the food values tooltip overlay with Tinkers Construct: ");
+			ModSpiceOfLife.Log.error("Unable to integrate the food values tooltip overlay with Tinkers Construct: ");
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData)
+	@SubscribeEvent
+	public void onRenderTick(RenderTickEvent event)
 	{
-	}
-
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData)
-	{
-		if (ModConfig.SHOW_FOOD_VALUES_IN_TOOLTIP && type.contains(TickType.RENDER))
+		if (event.phase != TickEvent.Phase.END)
+			return;
+		
+		if (ModConfig.SHOW_FOOD_VALUES_IN_TOOLTIP)
 		{
 			Minecraft mc = Minecraft.getMinecraft();
 			EntityPlayer player = mc.thePlayer;
@@ -247,18 +245,6 @@ public class TooltipOverlayHandler implements ITickHandler
 				}
 			}
 		}
-	}
-
-	@Override
-	public EnumSet<TickType> ticks()
-	{
-		return EnumSet.of(TickType.RENDER, TickType.CLIENT);
-	}
-
-	@Override
-	public String getLabel()
-	{
-		return ModInfo.MODID;
 	}
 
 }
