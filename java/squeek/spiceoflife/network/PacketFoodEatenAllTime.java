@@ -1,10 +1,8 @@
 package squeek.spiceoflife.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
+import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 
 public class PacketFoodEatenAllTime extends PacketBase
@@ -21,16 +19,24 @@ public class PacketFoodEatenAllTime extends PacketBase
 	}
 
 	@Override
-	public void pack(DataOutputStream data) throws IOException
+	public void pack(IByteIO data)
 	{
 		data.writeInt(foodEatenAllTime);
 	}
 
 	@Override
-	public void unpack(DataInputStream data, INetworkManager manager, EntityPlayer player) throws IOException
+	public void unpack(IByteIO data)
 	{
-		FoodHistory foodHistory = FoodHistory.get(player) == null ? new FoodHistory(player) : FoodHistory.get(player);
+		this.foodEatenAllTime = data.readInt();
+	}
+
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
+		FoodHistory foodHistory = FoodHistory.get(player);
 		
-		foodHistory.totalFoodsEatenAllTime = data.readInt();
+		foodHistory.totalFoodsEatenAllTime = this.foodEatenAllTime;
+
+		return null;
 	}
 }

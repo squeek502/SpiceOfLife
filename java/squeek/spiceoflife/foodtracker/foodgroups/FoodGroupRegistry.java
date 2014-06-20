@@ -1,11 +1,10 @@
 package squeek.spiceoflife.foodtracker.foodgroups;
 
 import java.util.HashMap;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.network.PacketFoodGroup;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
 public class FoodGroupRegistry
 {
@@ -39,11 +38,11 @@ public class FoodGroupRegistry
 		return highestPriorityFoodGroup;
 	}
 	
-	public static void sync(EntityPlayer player)
+	public static void sync(EntityPlayerMP player)
 	{
 		for (FoodGroup foodGroup : foodGroups.values())
 		{
-			PacketDispatcher.sendPacketToPlayer(new PacketFoodGroup(foodGroup).getPacket(), (Player) player);
+			PacketDispatcher.get().sendTo(new PacketFoodGroup(foodGroup), player);
 		}
 	}
 	

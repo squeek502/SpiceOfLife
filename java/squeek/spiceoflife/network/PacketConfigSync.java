@@ -1,11 +1,9 @@
 package squeek.spiceoflife.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
 import squeek.spiceoflife.ModConfig;
+import squeek.spiceoflife.compat.IByteIO;
 
 public class PacketConfigSync extends PacketBase
 {	
@@ -14,15 +12,21 @@ public class PacketConfigSync extends PacketBase
 	}
 
 	@Override
-	public void pack(DataOutputStream data) throws IOException
+	public void pack(IByteIO data)
 	{
-		ModConfig.pack(data);
+		ModConfig.instance.pack(data);
 	}
 
 	@Override
-	public void unpack(DataInputStream data, INetworkManager manager, EntityPlayer player) throws IOException
+	public void unpack(IByteIO data)
 	{
-		ModConfig.unpack(data, player);
+		ModConfig.instance.unpack(data);
+	}
+
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
+		return ModConfig.instance.processAndReply(side, player);
 	}
 
 }

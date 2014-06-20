@@ -1,26 +1,35 @@
 package squeek.spiceoflife;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ConfigCategory;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
+import squeek.spiceoflife.compat.IByteIO;
+import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.interfaces.IPackable;
+import squeek.spiceoflife.interfaces.IPacketProcessor;
+import squeek.spiceoflife.network.PacketBase;
 import squeek.spiceoflife.network.PacketConfigSync;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
-public class ModConfig
+public class ModConfig implements IPackable, IPacketProcessor
 {
+	public static final ModConfig instance = new ModConfig();
+	
+	protected ModConfig()
+	{
+	}
+
 	private static Configuration config;
 
 	private static final String COMMENT_SERVER_SIDE_OPTIONS =
@@ -34,7 +43,10 @@ public class ModConfig
 	private static final String CATEGORY_MAIN_COMMENT =
 			COMMENT_SERVER_SIDE_OPTIONS;
 
-	public static boolean FOOD_MODIFIER_ENABLED = ModConfig.FOOD_MODIFIER_ENABLED_DEFAULT;
+	// whether or not food modifier is actually enabled (we either are the server or know the server has it enabled)
+	public static boolean FOOD_MODIFIER_ENABLED = false;
+	// the value written in the config file
+	public static boolean FOOD_MODIFIER_ENABLED_CONFIG_VAL = ModConfig.FOOD_MODIFIER_ENABLED_DEFAULT;
 	private static final String FOOD_MODIFIER_ENABLED_NAME = "food.modifier.enabled";
 	private static final boolean FOOD_MODIFIER_ENABLED_DEFAULT = true;
 	private static final String FOOD_MODIFIER_ENABLED_COMMENT = "If false, disables the entire diminishing returns part of the mod\nSet this to false if you only want the client-side tooltip/HUD additions";
@@ -202,7 +214,11 @@ public class ModConfig
 		 * MAIN
 		 */
 		config.getCategory(CATEGORY_MAIN).setComment(CATEGORY_MAIN_COMMENT);
-		FOOD_MODIFIER_ENABLED = config.get(CATEGORY_MAIN, FOOD_MODIFIER_ENABLED_NAME, FOOD_MODIFIER_ENABLED_DEFAULT, FOOD_MODIFIER_ENABLED_COMMENT).getBoolean(FOOD_MODIFIER_ENABLED_DEFAULT);
+		FOOD_MODIFIER_ENABLED_CONFIG_VAL = config.get(CATEGORY_MAIN, FOOD_MODIFIER_ENABLED_NAME, FOOD_MODIFIER_ENABLED_DEFAULT, FOOD_MODIFIER_ENABLED_COMMENT).getBoolean(FOOD_MODIFIER_ENABLED_DEFAULT);
+
+		// only use the config value immediately when server-side; the client assumes false until the server syncs the config
+		if (FMLCommonHandler.instance().getSide() == Side.SERVER)
+			FOOD_MODIFIER_ENABLED = FOOD_MODIFIER_ENABLED_CONFIG_VAL;
 
 		/*
 		 * SERVER
@@ -350,11 +366,12 @@ public class ModConfig
 	{
 		config.load();
 	}
-
-	public static void pack(DataOutputStream data) throws IOException
+	
+	@Override
+	public void pack(IByteIO data)
 	{
-		data.writeBoolean(FOOD_MODIFIER_ENABLED);
-		if (FOOD_MODIFIER_ENABLED)
+		data.writeBoolean(FOOD_MODIFIER_ENABLED_CONFIG_VAL);
+		if (FOOD_MODIFIER_ENABLED_CONFIG_VAL)
 		{
 			data.writeUTF(FOOD_MODIFIER_FORMULA);
 			data.writeShort(FOOD_HISTORY_LENGTH);
@@ -369,7 +386,8 @@ public class ModConfig
 		}
 	}
 
-	public static void unpack(DataInputStream data, EntityPlayer player) throws IOException
+	@Override
+	public void unpack(IByteIO data)
 	{
 		FOOD_MODIFIER_ENABLED = data.readBoolean();
 		if (FOOD_MODIFIER_ENABLED)
@@ -384,16 +402,30 @@ public class ModConfig
 			AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = data.readBoolean();
 			USE_HUNGER_QUEUE = data.readBoolean();
 			FOOD_HUNGER_ROUNDING_MODE_STRING = data.readUTF();
+		}
+	}
 
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
+		if (FOOD_MODIFIER_ENABLED)
+		{
 			setRoundingMode();
 			FoodModifier.onFormulaChanged();
 			FoodHistory.get(player).onHistoryTypeChanged();
 			FoodGroupRegistry.clear();
 		}
+		return null;
 	}
 
-	public static void sync(EntityPlayer player)
+	public static void sync(EntityPlayerMP player)
 	{
-		PacketDispatcher.sendPacketToPlayer(new PacketConfigSync().getPacket(), (Player) player);
+		PacketDispatcher.get().sendTo(new PacketConfigSync(), player);
+	}
+
+	public static void assumeClientOnly()
+	{
+		// assume false until the server syncs
+		FOOD_MODIFIER_ENABLED = false;
 	}
 }

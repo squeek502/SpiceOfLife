@@ -18,6 +18,11 @@ public class FoodHistory implements IExtendedEntityProperties
 	protected FixedSizeQueue<FoodEaten> history = ModConfig.USE_HUNGER_QUEUE ? new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH) : new FixedFoodQueue(ModConfig.FOOD_HISTORY_LENGTH);
 	public int totalFoodsEatenAllTime = 0;
 
+	public FoodHistory()
+	{
+		this(null);
+	}
+
 	public FoodHistory(EntityPlayer player)
 	{
 		this.player = player;
@@ -88,7 +93,10 @@ public class FoodHistory implements IExtendedEntityProperties
 
 	public static FoodHistory get(EntityPlayer player)
 	{
-		return (FoodHistory) player.getExtendedProperties(TAG_KEY);
+		FoodHistory foodHistory = (FoodHistory) player.getExtendedProperties(TAG_KEY);
+		if (foodHistory == null)
+			foodHistory = new FoodHistory(player);
+		return foodHistory;
 	}
 
 	@Override

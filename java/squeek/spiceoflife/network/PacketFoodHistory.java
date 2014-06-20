@@ -1,14 +1,10 @@
 package squeek.spiceoflife.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet;
+import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.FoodHistory;
-import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class PacketFoodHistory extends PacketBase
 {
@@ -32,12 +28,12 @@ public class PacketFoodHistory extends PacketBase
 	
 	public PacketFoodHistory(FoodEaten foodEaten)
 	{
-		this.foodHistory = new FoodHistory(null);
+		this.foodHistory = new FoodHistory();
 		foodHistory.addFood(foodEaten);
 	}
 
 	@Override
-	public void pack(DataOutputStream data) throws IOException
+	public void pack(IByteIO data)
 	{
 		if (foodHistory == null)
 			return;
@@ -47,30 +43,39 @@ public class PacketFoodHistory extends PacketBase
 
 		for (FoodEaten foodEaten : foodHistory.getHistory())
 		{
-			data.writeShort(foodEaten.hungerRestored);
-			data.writeUTF(foodEaten.foodGroup != null ? foodEaten.foodGroup.identifier : "");
-			Packet.writeItemStack(foodEaten.itemStack, data);
+			foodEaten.pack(data);
 		}
 	}
 
 	@Override
-	public void unpack(DataInputStream data, INetworkManager manager, EntityPlayer player) throws IOException
+	public void unpack(IByteIO data)
 	{
-		FoodHistory foodHistory = FoodHistory.get(player) == null ? new FoodHistory(player) : FoodHistory.get(player);
-
+		this.foodHistory = new FoodHistory();
 		shouldOverwrite = data.readBoolean();
-		if (shouldOverwrite)
-			foodHistory.getHistory().clear();
 		
 		short historySize = data.readShort();
 
 		for (int i = 0; i < historySize; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
-			foodEaten.hungerRestored = data.readShort();
-			foodEaten.foodGroup = FoodGroupRegistry.getFoodGroup(data.readUTF());
-			foodEaten.itemStack = Packet.readItemStack(data);
+			foodEaten.unpack(data);
+			foodHistory.addFood(foodEaten);
+		}
+	}
+
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
+		FoodHistory foodHistory = FoodHistory.get(player);
+
+		if (shouldOverwrite)
+			foodHistory.getHistory().clear();
+		
+		for (FoodEaten foodEaten : this.foodHistory.getHistory())
+		{
 			foodHistory.addFood(foodEaten, !shouldOverwrite);
 		}
+		
+		return null;
 	}
 }
