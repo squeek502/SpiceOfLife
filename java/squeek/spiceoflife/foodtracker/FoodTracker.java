@@ -1,6 +1,5 @@
 package squeek.spiceoflife.foodtracker;
 
-import ibxm.Player;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -8,7 +7,6 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import squeek.spiceoflife.ModConfig;
-import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
@@ -19,6 +17,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
 public class FoodTracker
 {
@@ -28,10 +27,9 @@ public class FoodTracker
 	@SubscribeEvent
 	public void onEntityConstructing(EntityConstructing event)
 	{
-		if (event.entity instanceof EntityPlayer && FoodHistory.get((EntityPlayer) event.entity) == null)
+		if (event.entity instanceof EntityPlayer)
 		{
-			EntityPlayer player = (EntityPlayer) event.entity;
-			new FoodHistory(player);
+			FoodHistory.get((EntityPlayer) event.entity);
 		}
 	}
 
@@ -42,10 +40,10 @@ public class FoodTracker
 	public void onPlayerLogin(PlayerLoggedInEvent event)
 	{
 		// server needs to send config settings to the client
-		ModConfig.sync(event.player);
+		ModConfig.sync((EntityPlayerMP) event.player);
 
 		// server needs to send food groups to the client
-		FoodGroupRegistry.sync(event.player);
+		FoodGroupRegistry.sync((EntityPlayerMP) event.player);
 
 		// server needs to send any loaded data to the client
 		FoodHistory foodHistory = FoodHistory.get(event.player);
@@ -94,6 +92,14 @@ public class FoodTracker
 		syncFoodHistory(foodHistory);
 	}
 
+	/**
+	 * Assume the server doesn't have the mod
+	 */
+	@SubscribeEvent
+	public void onClientConnectedToServer(ClientConnectedToServerEvent event)
+	{
+		ModConfig.assumeClientOnly();
+	}
 	
 	/**
 	 * Sync saturation whenever it changes (vanilla MC only syncs when it hits 0)
@@ -147,38 +153,5 @@ public class FoodTracker
 	public static ItemStack getFoodLastEatenBy(EntityPlayer player)
 	{
 		return FoodHistory.get(player).getLastEatenFood().itemStack;
-	}
-
-	@Override
-	public void connectionOpened(NetHandler netClientHandler, String server, int port, INetworkManager manager)
-	{
-		ModConfig.assumeClientOnly();
-	}
-
-	@Override
-	public void connectionClosed(INetworkManager manager)
-	{
-		ModConfig.assumeClientOnly();
-	}
-
-	@Override
-	public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
-	{
-	}
-
-	@Override
-	public String connectionReceived(NetLoginHandler netHandler, INetworkManager manager)
-	{
-		return null;
-	}
-
-	@Override
-	public void connectionOpened(NetHandler netClientHandler, MinecraftServer server, INetworkManager manager)
-	{
-	}
-
-	@Override
-	public void clientLoggedIn(NetHandler clientHandler, INetworkManager manager, Packet1Login login)
-	{
 	}
 }

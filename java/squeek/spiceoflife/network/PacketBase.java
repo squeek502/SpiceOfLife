@@ -1,44 +1,32 @@
 package squeek.spiceoflife.network;
 
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import squeek.spiceoflife.ModInfo;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.Packet;
 import squeek.spiceoflife.compat.ByteIO;
-import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.IPacketProcessor;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
 
-public abstract class PacketBase implements IPackable, IPacketProcessor
+public abstract class PacketBase implements IMessage, IPackable, IPacketProcessor
 {
 	public PacketBase()
 	{
 	}
 
-	public void header(IByteIO data)
-	{
-		data.writeByte(PacketHandler.PacketType.getIdOf(this));
-	}
-
 	public Packet getPacket()
 	{
-		Packet250CustomPayload packet = new Packet250CustomPayload();
+		return PacketHandler.channel.getPacketFrom(this);
+	}
 
-		IByteIO data = ByteIO.get();
+	@Override
+	public void fromBytes(ByteBuf buf)
+	{
+		unpack(ByteIO.get(buf));
+	}
 
-		try
-		{
-			header(data);
-			pack(data);
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
-
-		packet.channel = ModInfo.NETCHANNEL;
-		packet.data = data.bytes();
-		packet.length = data.writableSize();
-
-		return packet;
+	@Override
+	public void toBytes(ByteBuf buf)
+	{
+		pack(ByteIO.get(buf));
 	}
 }

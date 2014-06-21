@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -20,6 +21,7 @@ import squeek.spiceoflife.interfaces.IPacketProcessor;
 import squeek.spiceoflife.network.PacketBase;
 import squeek.spiceoflife.network.PacketConfigSync;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 public class ModConfig implements IPackable, IPacketProcessor
@@ -319,12 +321,12 @@ public class ModConfig implements IPackable, IPacketProcessor
 	public static void addItemToFoodGroup(FoodGroup foodGroup, String itemString, boolean isBaseItem)
 	{
 		String[] itemStringParts = itemString.split(":");
-		if (itemStringParts.length > 0)
+		if (itemStringParts.length > 1)
 		{
-			int itemId = Integer.parseInt(itemStringParts[0]);
-			boolean exactMetadata = itemStringParts.length > 1 && itemStringParts[1] != "*";
-			int metadata = itemStringParts.length > 1 && exactMetadata ? Integer.parseInt(itemStringParts[1]) : 0;
-			foodGroup.addFood(new ItemStack(itemId, 1, metadata), exactMetadata, isBaseItem);
+			Item item = GameRegistry.findItem(itemStringParts[0], itemStringParts[1]);
+			boolean exactMetadata = itemStringParts.length > 2 && itemStringParts[2] != "*";
+			int metadata = itemStringParts.length > 2 && exactMetadata ? Integer.parseInt(itemStringParts[2]) : 0;
+			foodGroup.addFood(new ItemStack(item, 1, metadata), exactMetadata, isBaseItem);
 		}
 	}
 
@@ -333,8 +335,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 		config.get(CATEGORY_FOODGROUPS, "example.enabled", false);
 		config.get(CATEGORY_FOODGROUPS, "example.name", "Example");
 		config.get(CATEGORY_FOODGROUPS, "example.priority", 0, "Food can only belong to one food group\nin the case of conflicting food groups, the food group with the highest priority will be selected\nExample: A food group with priority 3 will take precedence over a food group with priority 1");
-		config.get(CATEGORY_FOODGROUPS, "example.items", new String[]{"260", "322:0"}, "A list of item IDs in id:meta format\nThis example adds red apples (id 260 with any metadata) and golden apples (id 322 with metadata 0), thereby excluding enchanted golden apples (id 322 with metadata 1)");
-		//config.get(CATEGORY_FOODGROUPS, "example.item.recipe.bases", new String[]{"260", "322:0"}, "A list of item IDs in id:meta format\nEach item in this list will also include any item derived from it (meaning any item where the base item is used in some part of its crafting recipe)\nNote: To have an item work as either a direct match or a recipe base, it needs to be in both lists");
+		config.get(CATEGORY_FOODGROUPS, "example.items", new String[]{"minecraft:apple", "minecraft:golden_apple:0"}, "A list of items in mod:name:meta format\nThis example adds red apples and golden apples (metadata 0), thereby excluding enchanted golden apples (metadata 1)");
+		//config.get(CATEGORY_FOODGROUPS, "example.item.recipe.bases", new String[]{"minecraft:apple", "minecraft:golden_apple:0"}, "A list of items in mod:name:meta format\nEach item in this list will also include any item derived from it (meaning any item where the base item is used in some part of its crafting recipe)\nNote: To have an item work as either a direct match or a recipe base, it needs to be in both lists");
 		config.get(CATEGORY_FOODGROUPS, "example.oredicts", new String[]{"listAllfruit", "listAllberry"}, "A list of ore dictionary entries\nThis example adds two oredictionary entries created by Pam's HarvestCraft, including all fruit and all berries");
 		//config.get(CATEGORY_FOODGROUPS, "example.oredict.recipe.bases", new String[]{"listAllfruit", "listAllberry"}, "A list of ore dictionary entries\nEach entry in this list will also include any item derived from it (meaning any item where the base oredictionary entry is used in some part of its crafting recipe)\nNote: To have an entry work as either a direct match or a recipe base, it needs to be in both lists");
 	}
@@ -351,7 +353,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		}
 		if (FOOD_HUNGER_ROUNDING_MODE == null)
 		{
-			ModSpiceOfLife.Log.warning("Rounding mode '" + FOOD_HUNGER_ROUNDING_MODE_STRING + "' not recognized; defaulting to 'round'");
+			ModSpiceOfLife.Log.warn("Rounding mode '" + FOOD_HUNGER_ROUNDING_MODE_STRING + "' not recognized; defaulting to 'round'");
 			FOOD_HUNGER_ROUNDING_MODE_STRING = "round";
 			FOOD_HUNGER_ROUNDING_MODE = RoundingMode.ROUND;
 		}

@@ -1,19 +1,16 @@
 package squeek.spiceoflife.network;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.compat.ByteIO;
-import squeek.spiceoflife.compat.IByteIO;
-import squeek.spiceoflife.compat.PacketDispatcher;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
+import squeek.spiceoflife.network.simpleimpl.BetterSimpleNetworkWrapper;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketHandler implements IPacketHandler
+public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 {
+	public static final BetterSimpleNetworkWrapper channel = new BetterSimpleNetworkWrapper(ModInfo.NETCHANNEL);
+	
 	public static enum PacketType
 	{
 		ConfigSync(PacketConfigSync.class),
@@ -25,7 +22,13 @@ public class PacketHandler implements IPacketHandler
 
 		PacketType(Class<? extends PacketBase> clazz)
 		{
+			this(clazz, Side.CLIENT);
+		}
+		
+		PacketType(Class<? extends PacketBase> clazz, Side side)
+		{
 			packet = clazz;
+			channel.registerMessage(PacketHandler.class, clazz, ordinal(), side);
 		}
 
 		public static int getIdOf(PacketBase packet)
@@ -40,35 +43,9 @@ public class PacketHandler implements IPacketHandler
 	}
 
 	@Override
-	public void onPacketData(INetworkManager manager, Packet250CustomPayload rawPacket, Player player)
+	public PacketBase onMessage(PacketBase message, MessageContext ctx)
 	{
-		if (rawPacket.channel.equals(ModInfo.NETCHANNEL))
-		{
-			try
-			{
-				IByteIO data = ByteIO.get(rawPacket.data);
-				int id = data.readByte();
-
-				if (id >= 0 && id < PacketType.values().length)
-				{
-					Side side = player instanceof EntityPlayerMP ? Side.SERVER : Side.CLIENT;
-					PacketBase unpackedPacket = PacketType.values()[id].packet.newInstance();
-					unpackedPacket.unpack(data);
-					PacketBase reply = unpackedPacket.processAndReply(side, (EntityPlayer) player);
-					if (reply != null)
-					{
-						if (side == Side.SERVER)
-							PacketDispatcher.get().sendTo(reply, (EntityPlayerMP) player);
-						else
-							PacketDispatcher.get().sendToServer(reply);
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
+		return message.processAndReply(ctx.side, ctx.side == Side.SERVER ? ctx.getServerHandler().playerEntity : FMLClientHandler.instance().getClientPlayerEntity());
 	}
 
 }

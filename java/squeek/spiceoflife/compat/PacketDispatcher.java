@@ -4,7 +4,7 @@ public class PacketDispatcher
 {
 	public static IPacketDispatcher get()
 	{
-		return new PacketDispatcherFML();
+		return new PacketDispatcherNetty();
 	}
 
 	// based on FML's NetworkRegistry.TargetPoint

@@ -8,6 +8,8 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.gui.HUDOverlayHandler;
 import squeek.spiceoflife.gui.TooltipHandler;
 import squeek.spiceoflife.gui.TooltipOverlayHandler;
+import squeek.spiceoflife.network.PacketHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -15,8 +17,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "after:HungerOverhaul;after:TConstruct")
@@ -36,13 +36,19 @@ public class ModSpiceOfLife
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		MinecraftForge.EVENT_BUS.register(new FoodTracker());
+		FoodTracker foodTracker = new FoodTracker();
+		FMLCommonHandler.instance().bus().register(foodTracker);
+		MinecraftForge.EVENT_BUS.register(foodTracker);
+
 		if (event.getSide() == Side.CLIENT)
 		{
 			MinecraftForge.EVENT_BUS.register(new TooltipHandler());
 			MinecraftForge.EVENT_BUS.register(new HUDOverlayHandler());
-			MinecraftForge.EVENT_BUS.register(new TooltipOverlayHandler());
+			FMLCommonHandler.instance().bus().register(new TooltipOverlayHandler());
 		}
+
+		// need to make sure that the packet types get registered before packets are received
+		PacketHandler.PacketType.values();
 	}
 
 	@EventHandler
