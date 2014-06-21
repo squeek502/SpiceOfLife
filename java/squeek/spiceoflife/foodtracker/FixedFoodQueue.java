@@ -1,10 +1,8 @@
 package squeek.spiceoflife.foodtracker;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import squeek.spiceoflife.compat.IByteIO;
 import net.minecraftforge.common.util.Constants;
 
 public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
@@ -18,7 +16,7 @@ public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tag)
+	public void writeToNBTData(NBTTagCompound data)
 	{
 		NBTTagList nbtHistory = new NBTTagList();
 		for (FoodEaten foodEaten : this)
@@ -27,13 +25,13 @@ public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
 			foodEaten.writeToNBTData(nbtFood);
 			nbtHistory.appendTag(nbtFood);
 		}
-		tag.setTag("Foods", nbtHistory);
+		data.setTag("Foods", nbtHistory);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound tag)
+	public void readFromNBTData(NBTTagCompound data)
 	{
-		NBTTagList nbtHistory = tag.getTagList("Foods", Constants.NBT.TAG_COMPOUND);
+		NBTTagList nbtHistory = data.getTagList("Foods", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < nbtHistory.tagCount(); i++)
 		{
 			NBTTagCompound nbtFood = (NBTTagCompound) nbtHistory.getCompoundTagAt(i);
@@ -42,14 +40,14 @@ public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
 	}
 
 	@Override
-	public void pack(DataOutputStream data) throws IOException
+	public void pack(IByteIO data)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void unpack(DataInputStream data) throws IOException
+	public void unpack(IByteIO data)
 	{
 		// TODO Auto-generated method stub
 		

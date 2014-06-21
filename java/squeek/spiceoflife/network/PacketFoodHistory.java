@@ -39,12 +39,7 @@ public class PacketFoodHistory extends PacketBase
 			return;
 
 		data.writeBoolean(shouldOverwrite);
-		data.writeShort(foodHistory.getHistory().size());
-
-		for (FoodEaten foodEaten : foodHistory.getHistory())
-		{
-			foodEaten.pack(data);
-		}
+		foodHistory.pack(data);
 	}
 
 	@Override
@@ -52,15 +47,7 @@ public class PacketFoodHistory extends PacketBase
 	{
 		this.foodHistory = new FoodHistory();
 		shouldOverwrite = data.readBoolean();
-		
-		short historySize = data.readShort();
-
-		for (int i = 0; i < historySize; i++)
-		{
-			FoodEaten foodEaten = new FoodEaten();
-			foodEaten.unpack(data);
-			foodHistory.addFood(foodEaten);
-		}
+		foodHistory.unpack(data);
 	}
 
 	@Override

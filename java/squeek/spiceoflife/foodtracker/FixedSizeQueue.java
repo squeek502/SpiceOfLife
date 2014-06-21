@@ -1,12 +1,10 @@
 package squeek.spiceoflife.foodtracker;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.LinkedList;
-import net.minecraft.nbt.NBTTagCompound;
+import squeek.spiceoflife.interfaces.IPackable;
+import squeek.spiceoflife.interfaces.ISaveable;
 
-public abstract class FixedSizeQueue<E> extends LinkedList<E>
+public abstract class FixedSizeQueue<E> extends LinkedList<E> implements IPackable, ISaveable
 {
 
 	private static final long serialVersionUID = 2666900280639735575L;
@@ -44,10 +42,5 @@ public abstract class FixedSizeQueue<E> extends LinkedList<E>
 			super.remove();
 		}
 	}
-	
-	public abstract void writeToNBT(NBTTagCompound tag);
-	public abstract void readFromNBT(NBTTagCompound tag);
-	public abstract void pack(DataOutputStream data) throws IOException;
-	public abstract void unpack(DataInputStream data) throws IOException;
 
 }

@@ -1,10 +1,5 @@
 package squeek.spiceoflife.foodtracker;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import net.minecraft.nbt.NBTTagCompound;
-
 public class FixedHungerQueue extends FixedFoodQueue
 {
 	private static final long serialVersionUID = -1347372098150405272L;
@@ -53,29 +48,5 @@ public class FixedHungerQueue extends FixedFoodQueue
 				hungerOverflow -= removeFirst().hungerRestored;
 			}
 		}
-	}
-	
-	@Override
-	public void writeToNBT(NBTTagCompound tag)
-	{
-		super.writeToNBT(tag);
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound tag)
-	{
-		super.readFromNBT(tag);
-	}
-
-	@Override
-	public void pack(DataOutputStream data) throws IOException
-	{
-		super.pack(data);
-	}
-
-	@Override
-	public void unpack(DataInputStream data) throws IOException
-	{
-		super.unpack(data);
 	}
 }
