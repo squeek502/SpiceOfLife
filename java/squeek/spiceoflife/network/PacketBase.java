@@ -1,59 +1,34 @@
 package squeek.spiceoflife.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import squeek.spiceoflife.ModInfo;
+import squeek.spiceoflife.compat.ByteIO;
+import squeek.spiceoflife.compat.IByteIO;
+import squeek.spiceoflife.interfaces.IPackable;
+import squeek.spiceoflife.interfaces.IPacketProcessor;
 
-public abstract class PacketBase
+public abstract class PacketBase implements IPackable, IPacketProcessor
 {
 	public PacketBase()
 	{
 	}
 
-	public PacketBase(byte[] data)
-	{
-		this(new DataInputStream(new ByteArrayInputStream(data)), null, null);
-	}
-
-	public PacketBase(DataInputStream data, INetworkManager manager, EntityPlayer player)
-	{
-		try
-		{
-			unpack(data, manager, player);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void header(DataOutputStream data) throws IOException
+	public void header(IByteIO data)
 	{
 		data.writeByte(PacketHandler.PacketType.getIdOf(this));
 	}
-
-	public abstract void pack(DataOutputStream data) throws IOException;
-
-	public abstract void unpack(DataInputStream data, INetworkManager manager, EntityPlayer player) throws IOException;
 
 	public Packet getPacket()
 	{
 		Packet250CustomPayload packet = new Packet250CustomPayload();
 
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DataOutputStream outputStream = new DataOutputStream(bos);
+		IByteIO data = ByteIO.get();
 
 		try
 		{
-			header(outputStream);
-			pack(outputStream);
+			header(data);
+			pack(data);
 		}
 		catch (Exception ex)
 		{
@@ -61,8 +36,8 @@ public abstract class PacketBase
 		}
 
 		packet.channel = ModInfo.NETCHANNEL;
-		packet.data = bos.toByteArray();
-		packet.length = bos.size();
+		packet.data = data.bytes();
+		packet.length = data.writableSize();
 
 		return packet;
 	}
