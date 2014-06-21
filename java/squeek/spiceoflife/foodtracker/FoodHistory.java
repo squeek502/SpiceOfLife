@@ -8,10 +8,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
+import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.interfaces.IPackable;
+import squeek.spiceoflife.interfaces.ISaveable;
 
-public class FoodHistory implements IExtendedEntityProperties
+public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPackable
 {
 	public static final String TAG_KEY = ModInfo.MODID + "History";
 	public final EntityPlayer player;
@@ -100,8 +103,32 @@ public class FoodHistory implements IExtendedEntityProperties
 	}
 
 	@Override
+	public void pack(IByteIO data)
+	{
+		data.writeShort(getHistory().size());
+
+		for (FoodEaten foodEaten : getHistory())
+		{
+			foodEaten.pack(data);
+		}
+	}
+
+	@Override
+	public void unpack(IByteIO data)
+	{
+		short historySize = data.readShort();
+
+		for (int i = 0; i < historySize; i++)
+		{
+			FoodEaten foodEaten = new FoodEaten();
+			foodEaten.unpack(data);
+			addFood(foodEaten);
+		}
+	}
+
+	@Override
 	// null compound parameter means save persistent data only
-	public void saveNBTData(NBTTagCompound compound)
+	public void writeToNBTData(NBTTagCompound data)
 	{
 		NBTTagCompound rootPersistentCompound = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 		NBTTagCompound nonPersistentCompound = new NBTTagCompound();
@@ -109,11 +136,11 @@ public class FoodHistory implements IExtendedEntityProperties
 
 		if (history.size() > 0)
 		{
-			if (compound != null || ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH)
+			if (data != null || ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH)
 			{
 				NBTTagCompound nbtHistory = new NBTTagCompound();
 
-				history.writeToNBT(nbtHistory);
+				history.writeToNBTData(nbtHistory);
 
 				if (ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH)
 					persistentCompound.setTag("History", nbtHistory);
@@ -126,8 +153,8 @@ public class FoodHistory implements IExtendedEntityProperties
 			persistentCompound.setInteger("Total", totalFoodsEatenAllTime);
 		}
 
-		if (compound != null && !nonPersistentCompound.hasNoTags())
-			compound.setCompoundTag(TAG_KEY, nonPersistentCompound);
+		if (data != null && !nonPersistentCompound.hasNoTags())
+			data.setCompoundTag(TAG_KEY, nonPersistentCompound);
 
 		if (!persistentCompound.hasNoTags())
 			rootPersistentCompound.setCompoundTag(TAG_KEY, persistentCompound);
@@ -138,21 +165,33 @@ public class FoodHistory implements IExtendedEntityProperties
 
 	@Override
 	// null compound parameter means load persistent data only
-	public void loadNBTData(NBTTagCompound compound)
+	public void readFromNBTData(NBTTagCompound data)
 	{
 		NBTTagCompound rootPersistentCompound = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 
-		if ((compound != null && compound.hasKey(TAG_KEY)) || rootPersistentCompound.hasKey(TAG_KEY))
+		if ((data != null && data.hasKey(TAG_KEY)) || rootPersistentCompound.hasKey(TAG_KEY))
 		{
-			NBTTagCompound nonPersistentCompound = compound != null ? compound.getCompoundTag(TAG_KEY) : new NBTTagCompound();
+			NBTTagCompound nonPersistentCompound = data != null ? data.getCompoundTag(TAG_KEY) : new NBTTagCompound();
 			NBTTagCompound persistentCompound = rootPersistentCompound.getCompoundTag(TAG_KEY);
 
 			NBTTagCompound nbtHistory = ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH ? persistentCompound.getCompoundTag("History") : nonPersistentCompound.getCompoundTag("History");
 
-			history.readFromNBT(nbtHistory);
+			history.readFromNBTData(nbtHistory);
 
 			totalFoodsEatenAllTime = persistentCompound.getInteger("Total");
 		}
+	}
+	
+	@Override
+	public void saveNBTData(NBTTagCompound compound)
+	{
+		writeToNBTData(compound);
+	}
+
+	@Override
+	public void loadNBTData(NBTTagCompound compound)
+	{
+		readFromNBTData(compound);
 	}
 
 	@Override
