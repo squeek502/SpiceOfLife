@@ -17,6 +17,8 @@ import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 public class HUDOverlayHandler
 {
@@ -76,18 +78,6 @@ public class HUDOverlayHandler
 		int newFoodValue = stats.getFoodLevel() + foodValues.hunger;
 		float newSaturationValue = stats.getSaturationLevel() + foodValues.getSaturationIncrement();
 		drawSaturationOverlay(newSaturationValue > newFoodValue ? newFoodValue - stats.getSaturationLevel() : foodValues.getSaturationIncrement(), stats.getSaturationLevel(), mc, left, top, flashAlpha);
-
-		flashAlpha += alphaDir * 0.025f;
-		if (flashAlpha >= 1.5f)
-		{
-			flashAlpha = 1f;
-			alphaDir = -1;
-		}
-		else if (flashAlpha <= -0.5f)
-		{
-			flashAlpha = 0f;
-			alphaDir = 1;
-		}
 	}
 
 	public static void drawSaturationOverlay(float saturationGained, float saturationLevel, Minecraft mc, int left, int top, float alpha)
@@ -171,5 +161,24 @@ public class HUDOverlayHandler
 
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glColor4f(1f, 1f, 1f, 1f);
+	}
+
+	@SubscribeEvent
+	public void onClientTick(ClientTickEvent event)
+	{
+		if (event.phase != TickEvent.Phase.END)
+			return;
+
+		flashAlpha += alphaDir * 0.125f;
+		if (flashAlpha >= 1.5f)
+		{
+			flashAlpha = 1f;
+			alphaDir = -1;
+		}
+		else if (flashAlpha <= -0.5f)
+		{
+			flashAlpha = 0f;
+			alphaDir = 1;
+		}
 	}
 }
