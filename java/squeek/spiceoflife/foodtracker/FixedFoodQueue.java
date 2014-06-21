@@ -33,7 +33,7 @@ public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
 	@Override
 	public void readFromNBT(NBTTagCompound tag)
 	{
-		NBTTagList nbtHistory = tag.getTagList("Foods", Constants.NBT.TAG_LIST);
+		NBTTagList nbtHistory = tag.getTagList("Foods", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < nbtHistory.tagCount(); i++)
 		{
 			NBTTagCompound nbtFood = (NBTTagCompound) nbtHistory.getCompoundTagAt(i);
