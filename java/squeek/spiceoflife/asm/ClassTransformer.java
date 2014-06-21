@@ -109,7 +109,7 @@ public class ClassTransformer implements IClassTransformer
 
 			if (methodNode != null)
 			{
-				addDrawHoveringTextHook(methodNode, Hooks.class, "onDrawHoveringText", "(IIII)V", false);
+				addTinkersDrawHoveringTextHook(methodNode, Hooks.class, "onDrawHoveringText", "(IIII)V", false);
 				return writeClassToBytes(classNode);
 			}
 			else
@@ -259,6 +259,60 @@ public class ClassTransformer implements IClassTransformer
 	}
 
 	public void addDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc, boolean isObfuscated)
+	{
+		AbstractInsnNode targetNode = null;
+
+		// get last drawGradientRect call
+		for (AbstractInsnNode instruction : method.instructions.toArray())
+		{
+			if (instruction.getOpcode() == INVOKEVIRTUAL)
+			{
+				MethodInsnNode methodInsn = (MethodInsnNode) instruction;
+				
+				if (methodInsn.desc.equals("(IIIIII)V"))
+					targetNode = instruction;
+			}
+		}
+		if (targetNode != null)
+		{
+			ModSpiceOfLife.Log.info(" Found target node");
+		}
+		else
+		{
+			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; target node not found");
+			return;
+		}
+		
+		LocalVariableNode x = findLocalVariableOfMethod(method, "j2", "I");
+		LocalVariableNode y = findLocalVariableOfMethod(method, "k2", "I");
+		LocalVariableNode w = findLocalVariableOfMethod(method, "k", "I");
+		LocalVariableNode h = findLocalVariableOfMethod(method, "i1", "I");
+		
+		if (x == null || y == null || w == null || h == null)
+		{
+			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; local variables not found");
+			return;
+		}
+
+		InsnList toInject = new InsnList();
+
+		/*
+		// equivalent to:
+		Hooks.onDrawHoveringText(0, 0, 0, 0);
+		*/
+		
+		toInject.add(new VarInsnNode(ILOAD, x.index));
+		toInject.add(new VarInsnNode(ILOAD, y.index));
+		toInject.add(new VarInsnNode(ILOAD, w.index));	
+		toInject.add(new VarInsnNode(ILOAD, h.index));
+		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
+		
+		method.instructions.insert(targetNode, toInject);
+
+		ModSpiceOfLife.Log.info(" Patched " + method.name);
+	}
+
+	public void addTinkersDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc, boolean isObfuscated)
 	{
 		AbstractInsnNode targetNode = null;
 
