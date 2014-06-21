@@ -13,7 +13,6 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import squeek.spiceoflife.ModConfig;
-import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
