@@ -1,12 +1,10 @@
 package squeek.spiceoflife.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
+import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class PacketFoodGroup extends PacketBase
 {
@@ -22,7 +20,7 @@ public class PacketFoodGroup extends PacketBase
 	}
 
 	@Override
-	public void pack(DataOutputStream data) throws IOException
+	public void pack(IByteIO data)
 	{
 		if (foodGroup == null)
 			return;
@@ -31,10 +29,16 @@ public class PacketFoodGroup extends PacketBase
 	}
 
 	@Override
-	public void unpack(DataInputStream data, INetworkManager manager, EntityPlayer player) throws IOException
+	public void unpack(IByteIO data)
 	{
-		FoodGroup foodGroup = new FoodGroup();
-		foodGroup.unpack(data, player);
+		foodGroup = new FoodGroup();
+		foodGroup.unpack(data);
+	}
+
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
 		FoodGroupRegistry.addFoodGroup(foodGroup);
+		return null;
 	}
 }

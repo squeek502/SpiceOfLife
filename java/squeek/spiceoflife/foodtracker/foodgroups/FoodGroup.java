@@ -1,15 +1,13 @@
 package squeek.spiceoflife.foodtracker.foodgroups;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
+import squeek.spiceoflife.compat.IByteIO;
+import squeek.spiceoflife.interfaces.IPackable;
 
-public class FoodGroup
+public class FoodGroup implements IPackable
 {
 	public String identifier;
 	public String name;
@@ -82,7 +80,8 @@ public class FoodGroup
 		foods.add(foodMember);
 	}
 
-	public void pack(DataOutputStream data) throws IOException
+	@Override
+	public void pack(IByteIO data)
 	{
 		data.writeUTF(identifier);
 		data.writeUTF(name);
@@ -95,7 +94,8 @@ public class FoodGroup
 		}
 	}
 
-	public void unpack(DataInputStream data, EntityPlayer player) throws IOException
+	@Override
+	public void unpack(IByteIO data)
 	{
 		identifier = data.readUTF();
 		name = data.readUTF();
@@ -105,7 +105,7 @@ public class FoodGroup
 		for (int i=0; i<size; i++)
 		{
 			FoodGroupMember foodMember = new FoodGroupMember();
-			foodMember.unpack(data, player);
+			foodMember.unpack(data);
 			addFood(foodMember);
 		}
 	}

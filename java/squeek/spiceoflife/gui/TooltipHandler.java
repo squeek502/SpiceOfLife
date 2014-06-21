@@ -47,7 +47,7 @@ public class TooltipHandler
 				int count = FoodTracker.getFoodHistoryCountOf(event.itemStack, event.entityPlayer);
 				FoodValues defaultFoodValues = FoodValues.get(event.itemStack);
 				foodModifier = FoodModifier.getFoodModifier(event.entityPlayer, event.itemStack, event.entityPlayer.getFoodStats(), defaultFoodValues.hunger, defaultFoodValues.saturationModifier);
-				FoodValues foodValues = defaultFoodValues.getModified(foodModifier);
+				FoodValues foodValues = foodModifier != 1 ? defaultFoodValues.getModified(foodModifier) : defaultFoodValues;
 
 				if (count > 0 || foodModifier != 1)
 					toolTipStringsToAdd.add(0, EnumChatFormatting.GRAY + StatCollector.translateToLocal("spiceoflife.tooltip.nutritional.value") + ColorHelper.getRelativeColor(foodModifier, 0D, 1D) + df.format(foodModifier * 100f) + "%" + (foodValues.hunger == 0 && foodModifier != 0f ? EnumChatFormatting.DARK_RED + " (" + foodValues.hunger + " " + StatCollector.translateToLocal("spiceoflife.tooltip.hunger") + ")" : ""));

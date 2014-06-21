@@ -1,23 +1,20 @@
 package squeek.spiceoflife.foodtracker.foodgroups;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.network.packet.Packet;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import squeek.spiceoflife.compat.IByteIO;
+import squeek.spiceoflife.interfaces.IPackable;
 
-public class FoodGroupMember
+public class FoodGroupMember implements IPackable
 {
 	boolean exactMetadata = false;
 	boolean baseItemForRecipes = false;
@@ -180,29 +177,9 @@ public class FoodGroupMember
 		this.baseItemForRecipes = baseItemForRecipes;
 	}
 
-	public FoodGroupMember(int id)
-	{
-		this(id, false);
-	}
-
-	public FoodGroupMember(int id, int meta)
-	{
-		this(id, meta, false);
-	}
-
 	public FoodGroupMember(ItemStack itemStack, boolean exactMetadata)
 	{
 		this(itemStack, exactMetadata, false);
-	}
-
-	public FoodGroupMember(int id, boolean baseItemForRecipes)
-	{
-		this(new ItemStack(id, 1, 0), false, baseItemForRecipes);
-	}
-
-	public FoodGroupMember(int id, int meta, boolean baseItemForRecipes)
-	{
-		this(new ItemStack(id, 1, meta), true, baseItemForRecipes);
 	}
 
 	public FoodGroupMember(ItemStack itemStack, boolean exactMetadata, boolean baseItemForRecipes)
@@ -216,17 +193,17 @@ public class FoodGroupMember
 	/*
 	 * Packet handling
 	 */
-	public void pack(DataOutputStream data) throws IOException
+	public void pack(IByteIO data)
 	{
-		Packet.writeItemStack(itemStack, data);
+		data.writeItemStack(itemStack);
 		data.writeUTF(oredictName != null ? oredictName : "");
 		data.writeBoolean(exactMetadata);
 		data.writeBoolean(baseItemForRecipes);
 	}
 
-	public void unpack(DataInputStream data, EntityPlayer player) throws IOException
+	public void unpack(IByteIO data)
 	{
-		itemStack = Packet.readItemStack(data);
+		itemStack = data.readItemStack();
 		oredictName = data.readUTF();
 		oredictName = oredictName != "" ? oredictName : null;
 		exactMetadata = data.readBoolean();
