@@ -15,6 +15,10 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 
+/**
+ * Exact copy of FML's SimpleChannelHandlerWrapper implementation with added support for message handlers handling multiple message types
+ * See FML's SimpleChannelHandlerWrapper for general documentation
+ */
 public class BetterSimpleChannelHandlerWrapper<REQ extends IMessage, REPLY extends IMessage> extends SimpleChannelInboundHandler<REQ> {
     private IMessageHandler<REQ, REPLY> messageHandler;
     private Side side;

@@ -14,13 +14,13 @@ public class ClassTransformer implements IClassTransformer
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes)
 	{
-		if (name.equals("net.minecraft.item.ItemStack") || name.equals("ye"))
+		if (name.equals("net.minecraft.item.ItemStack") || name.equals("abp"))
 		{
-			boolean isObfuscated = name.equals("ye");
+			boolean isObfuscated = name.equals("abp");
 			ModSpiceOfLife.Log.info("Patching ItemStack...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
-			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "b" : "onFoodEaten", isObfuscated ? "(Labw;Luf;)Lye;" : "(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)Lnet/minecraft/item/ItemStack;");
+			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "b" : "onFoodEaten", isObfuscated ? "(Lafn;Lxl;)Labp;" : "(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)Lnet/minecraft/item/ItemStack;");
 			if (methodNode != null)
 			{
 				addOnEatenHook(methodNode, Hooks.class, "onFoodEaten", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)V");
@@ -28,9 +28,9 @@ public class ClassTransformer implements IClassTransformer
 			}
 		}
 
-		if (name.equals("net.minecraft.util.FoodStats") || name.equals("ux"))
+		if (name.equals("net.minecraft.util.FoodStats") || name.equals("yd"))
 		{
-			boolean isObfuscated = name.equals("ux");
+			boolean isObfuscated = name.equals("yd");
 			ModSpiceOfLife.Log.info("Patching FoodStats...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
@@ -63,13 +63,13 @@ public class ClassTransformer implements IClassTransformer
 			}
 		}
 		
-		if (name.equals("net.minecraft.client.gui.inventory.GuiContainer") || name.equals("awy"))
+		if (name.equals("net.minecraft.client.gui.GuiScreen") || name.equals("bcd"))
 		{
-			boolean isObfuscated = name.equals("awy");
-			ModSpiceOfLife.Log.info("Patching GuiContainer...");
+			boolean isObfuscated = name.equals("bcd");
+			ModSpiceOfLife.Log.info("Patching GuiScreen...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
-			MethodNode methodNode = findMethodNodeOfClass(classNode, "drawHoveringText", isObfuscated ? "(Ljava/util/List;IILavi;)V" : "(Ljava/util/List;IILnet/minecraft/client/gui/FontRenderer;)V");
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "drawHoveringText", isObfuscated ? "(Ljava/util/List;IILbag;)V" : "(Ljava/util/List;IILnet/minecraft/client/gui/FontRenderer;)V");
 
 			if (methodNode != null)
 			{
@@ -82,9 +82,9 @@ public class ClassTransformer implements IClassTransformer
 			}
 		}
 
-		if (name.equals("codechicken.core.gui.GuiDraw"))
+		if (name.equals("codechicken.lib.gui.GuiDraw"))
 		{
-			ModSpiceOfLife.Log.info("Patching CodeChickenCore's GuiDraw...");
+			ModSpiceOfLife.Log.info("Patching CodeChickenLib's GuiDraw...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
 			MethodNode methodNode = findMethodNodeOfClass(classNode, "drawTooltipBox", "(IIII)V");
