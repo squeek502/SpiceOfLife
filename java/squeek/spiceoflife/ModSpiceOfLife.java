@@ -47,7 +47,9 @@ public class ModSpiceOfLife
 		if (event.getSide() == Side.CLIENT)
 		{
 			MinecraftForge.EVENT_BUS.register(new TooltipHandler());
-			MinecraftForge.EVENT_BUS.register(new HUDOverlayHandler());
+			HUDOverlayHandler hudOverlayHandler = new HUDOverlayHandler();
+			MinecraftForge.EVENT_BUS.register(hudOverlayHandler);
+		    TickRegistry.registerTickHandler(hudOverlayHandler, Side.CLIENT);
 		    TickRegistry.registerTickHandler(new TooltipOverlayHandler(), Side.CLIENT);
 		}
 	}

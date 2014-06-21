@@ -1,6 +1,7 @@
 package squeek.spiceoflife.gui;
 
 import java.text.DecimalFormat;
+import java.util.EnumSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -17,8 +18,10 @@ import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
+import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.TickType;
 
-public class HUDOverlayHandler
+public class HUDOverlayHandler implements ITickHandler
 {
 	float flashAlpha = 0f;
 	byte alphaDir = 1;
@@ -76,18 +79,6 @@ public class HUDOverlayHandler
 		int newFoodValue = stats.getFoodLevel() + foodValues.hunger;
 		float newSaturationValue = stats.getSaturationLevel() + foodValues.getSaturationIncrement();
 		drawSaturationOverlay(newSaturationValue > newFoodValue ? newFoodValue - stats.getSaturationLevel() : foodValues.getSaturationIncrement(), stats.getSaturationLevel(), mc, left, top, flashAlpha);
-
-		flashAlpha += alphaDir * 0.025f;
-		if (flashAlpha >= 1.5f)
-		{
-			flashAlpha = 1f;
-			alphaDir = -1;
-		}
-		else if (flashAlpha <= -0.5f)
-		{
-			flashAlpha = 0f;
-			alphaDir = 1;
-		}
 	}
 
 	public static void drawSaturationOverlay(float saturationGained, float saturationLevel, Minecraft mc, int left, int top, float alpha)
@@ -171,5 +162,38 @@ public class HUDOverlayHandler
 
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glColor4f(1f, 1f, 1f, 1f);
+	}
+
+	@Override
+	public void tickStart(EnumSet<TickType> type, Object... tickData)
+	{
+	}
+
+	@Override
+	public void tickEnd(EnumSet<TickType> type, Object... tickData)
+	{
+		flashAlpha += alphaDir * 0.125f;
+		if (flashAlpha >= 1.5f)
+		{
+			flashAlpha = 1f;
+			alphaDir = -1;
+		}
+		else if (flashAlpha <= -0.5f)
+		{
+			flashAlpha = 0f;
+			alphaDir = 1;
+		}
+	}
+
+	@Override
+	public EnumSet<TickType> ticks()
+	{
+		return EnumSet.of(TickType.CLIENT);
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return ModInfo.MODID+"_HUD";
 	}
 }

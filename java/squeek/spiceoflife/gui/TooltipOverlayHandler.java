@@ -252,7 +252,7 @@ public class TooltipOverlayHandler implements ITickHandler
 	@Override
 	public EnumSet<TickType> ticks()
 	{
-		return EnumSet.of(TickType.RENDER, TickType.CLIENT);
+		return EnumSet.of(TickType.RENDER);
 	}
 
 	@Override
