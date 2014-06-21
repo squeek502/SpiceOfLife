@@ -21,7 +21,7 @@ public class FoodValues
 
 	public float getSaturationIncrement()
 	{
-		return hunger * saturationModifier * 2f;
+		return Math.min(20, hunger * saturationModifier * 2f);
 	}
 
 	public FoodValues modify(float modifier)
