@@ -1,22 +1,30 @@
 package squeek.spiceoflife.foodtracker;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet8UpdateHealth;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.NetLoginHandler;
+import net.minecraft.network.packet.NetHandler;
+import net.minecraft.network.packet.Packet1Login;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import squeek.spiceoflife.ModConfig;
+import squeek.spiceoflife.ModSpiceOfLife;
+import squeek.spiceoflife.compat.CompatHelper;
+import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
 import squeek.spiceoflife.network.PacketFoodHistory;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IPlayerTracker;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.Player;
 
-public class FoodTracker implements IPlayerTracker
+public class FoodTracker implements IPlayerTracker, IConnectionHandler
 {
 	/**
 	 * Add relevant extended entity data whenever an entity comes into existence
@@ -37,14 +45,11 @@ public class FoodTracker implements IPlayerTracker
 	@Override
 	public void onPlayerLogin(EntityPlayer player)
 	{
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient())
-			return;
-
 		// server needs to send config settings to the client
-		ModConfig.sync(player);
+		ModConfig.sync((EntityPlayerMP)player);
 
 		// server needs to send food groups to the client
-		FoodGroupRegistry.sync(player);
+		FoodGroupRegistry.sync((EntityPlayerMP) player);
 
 		// server needs to send any loaded data to the client
 		FoodHistory foodHistory = FoodHistory.get(player);
@@ -105,25 +110,25 @@ public class FoodTracker implements IPlayerTracker
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.entity instanceof EntityPlayer))
 			return;
 		
-		EntityPlayer player = (EntityPlayer) event.entity;
+		EntityPlayerMP player = (EntityPlayerMP) event.entity;
 		
-        if (this.lastSaturationLevel != player.getFoodStats().getSaturationLevel())
-        {
-            PacketDispatcher.sendPacketToPlayer(new Packet8UpdateHealth(player.getHealth(), player.getFoodStats().getFoodLevel(), player.getFoodStats().getSaturationLevel()), (Player) player);
-        }
+		if (this.lastSaturationLevel != player.getFoodStats().getSaturationLevel())
+		{
+			CompatHelper.sendPlayerHealthUpdatePacket(player);
+		}
 	}
 
 	public void syncFoodHistory(FoodHistory foodHistory)
 	{
-		PacketDispatcher.sendPacketToPlayer(new PacketFoodEatenAllTime(foodHistory.totalFoodsEatenAllTime).getPacket(), (Player) foodHistory.player);
-		PacketDispatcher.sendPacketToPlayer(new PacketFoodHistory(foodHistory, true).getPacket(), (Player) foodHistory.player);
+		PacketDispatcher.get().sendTo(new PacketFoodEatenAllTime(foodHistory.totalFoodsEatenAllTime), (EntityPlayerMP) foodHistory.player);
+		PacketDispatcher.get().sendTo(new PacketFoodHistory(foodHistory, true), (EntityPlayerMP) foodHistory.player);
 	}
 
 	public static boolean addFoodEatenByPlayer(FoodEaten foodEaten, EntityPlayer player)
 	{
 		// client needs to be told by the server otherwise the client can get out of sync easily
 		if (!player.worldObj.isRemote)
-			PacketDispatcher.sendPacketToPlayer(new PacketFoodHistory(foodEaten).getPacket(), (Player) player);
+			PacketDispatcher.get().sendTo(new PacketFoodHistory(foodEaten), (EntityPlayerMP) player);
 
 		return FoodHistory.get(player).addFood(foodEaten);
 	}
@@ -150,6 +155,39 @@ public class FoodTracker implements IPlayerTracker
 
 	@Override
 	public void onPlayerLogout(EntityPlayer player)
+	{
+	}
+
+	@Override
+	public void connectionOpened(NetHandler netClientHandler, String server, int port, INetworkManager manager)
+	{
+		ModConfig.assumeClientOnly();
+	}
+
+	@Override
+	public void connectionClosed(INetworkManager manager)
+	{
+		ModConfig.assumeClientOnly();
+	}
+
+	@Override
+	public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
+	{
+	}
+
+	@Override
+	public String connectionReceived(NetLoginHandler netHandler, INetworkManager manager)
+	{
+		return null;
+	}
+
+	@Override
+	public void connectionOpened(NetHandler netClientHandler, MinecraftServer server, INetworkManager manager)
+	{
+	}
+
+	@Override
+	public void clientLoggedIn(NetHandler clientHandler, INetworkManager manager, Packet1Login login)
 	{
 	}
 }
