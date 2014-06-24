@@ -61,11 +61,17 @@ public class ProxyHungerOverhaul
 			dummyFoodStats.setFoodLevel(0);
 			dummyFoodStats.setFoodSaturationLevel(0);
 			dummyFoodStats.addStats(itemFood);
-	
-			foodRegensHealth.setBoolean(null, wasRegenHealthEnabled);
 			
 			int hunger = dummyFoodStats.getFoodLevel();
+			
+			// redo in order to always get the true saturation value (for foods with a high saturation:hunger ratio)
+			dummyFoodStats.setFoodLevel(20);
+			dummyFoodStats.setFoodSaturationLevel(0);
+			dummyFoodStats.addStats(itemFood);
+			
 			float saturationModifier = FoodValues.getSaturationModifierFromIncrement(dummyFoodStats.getSaturationLevel(), hunger);
+	
+			foodRegensHealth.setBoolean(null, wasRegenHealthEnabled);
 
 			return new FoodValues(hunger, saturationModifier);
 		}
