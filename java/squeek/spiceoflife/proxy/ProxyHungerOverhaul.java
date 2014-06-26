@@ -41,7 +41,8 @@ public class ProxyHungerOverhaul
 		}
 		catch (Exception e)
 		{
-			ModSpiceOfLife.Log.warn("Unable to properly integrate with Hunger Overhaul (some food values may be incorrect): " + e.getMessage());
+			ModSpiceOfLife.Log.warn("Unable to properly integrate with Hunger Overhaul (some food values may be incorrect): ");
+			e.printStackTrace();
 		}
 	}
 

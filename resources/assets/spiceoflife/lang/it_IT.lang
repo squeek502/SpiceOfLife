@@ -1,0 +1,20 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=Valore nutrizionale: 
+spiceoflife.tooltip.eaten.recently=Mangiato %s sugli ultimi %d pasti
+spiceoflife.tooltip.eaten.recently.hunger=Mangiato %s su %s fame
+spiceoflife.tooltip.not.eaten.recently=Non mangiato recentemente
+spiceoflife.tooltip.food.until.enabled.1=Diminuzione in effetto inizia dopo 
+spiceoflife.tooltip.food.until.enabled.2=aver mangiato qualunque pasto %d %s
+spiceoflife.tooltip.times.singular=volta
+spiceoflife.tooltip.times.plural=volte
+spiceoflife.tooltip.hunger=fame
+spiceoflife.tooltip.food.group=Gruppo di Cibo: 
+
+# Advanced tooltip strings
+spiceoflife.tooltip.advanced.hunger.restored=Fame restaurata: %s (normale: %s)
+spiceoflife.tooltip.advanced.saturation.modifier=Modificatore per Saturazione: %s (normale: %s)
+
+# Quantity descriptors
+spiceoflife.quantity.one.time=una volta
+spiceoflife.quantity.two.times=due volte
+spiceoflife.quantity.x.times=%d volte

@@ -704,6 +704,20 @@ public class Expression {
 				return toRound.setScale(precision, mc.getRoundingMode());
 			}
 		});
+		addFunction(new Function("FLOOR", 1) {
+			@Override
+			public BigDecimal eval(List<BigDecimal> parameters) {
+				BigDecimal toRound = parameters.get(0);
+				return toRound.setScale(0, RoundingMode.FLOOR);
+			}
+		});
+		addFunction(new Function("CEILING", 1) {
+			@Override
+			public BigDecimal eval(List<BigDecimal> parameters) {
+				BigDecimal toRound = parameters.get(0);
+				return toRound.setScale(0, RoundingMode.CEILING);
+			}
+		});
 		addFunction(new Function("SQRT", 1) {
 			@Override
 			public BigDecimal eval(List<BigDecimal> parameters) {
