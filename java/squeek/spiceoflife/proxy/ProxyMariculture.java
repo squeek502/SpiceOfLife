@@ -130,10 +130,7 @@ public class ProxyMariculture
 					int quality = (Integer) getBaitQuality.invoke(fishingBait.get(null), itemStack);
 					int fill = nerfFood ? 1 : (int) (((double) quality / 100) * 4.0D);
 					fill = (fill >= 1) ? fill : 1;
-					float sat = 0;
-
-					if (Loader.instance().getIndexedModList().get("Mariculture").getVersion().compareToIgnoreCase("1.2.2f") <= 0)
-						sat = -100F;
+					float sat = -100F;
 
 					return new FoodValues(fill, sat);
 				}
