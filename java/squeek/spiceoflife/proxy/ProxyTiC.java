@@ -27,7 +27,8 @@ public class ProxyTiC
 		}
 		catch (Exception e)
 		{
-			ModSpiceOfLife.Log.warning("Unable to properly integrate with Tinkers' Construct (TiC food values will be incorrect): " + e.getMessage());
+			ModSpiceOfLife.Log.warning("Unable to properly integrate with Tinkers' Construct (TiC food values will be incorrect): ");
+			e.printStackTrace();
 		}
 	}
 

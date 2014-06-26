@@ -2,6 +2,7 @@ package squeek.spiceoflife.gui;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.util.EnumSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -123,8 +124,12 @@ public class TooltipOverlayHandler implements ITickHandler
 
 					FoodValues modifiedFoodValues = FoodModifier.getModifiedFoodValues(defaultFoodValues, FoodModifier.getFoodModifier(player, hoveredStack, player.getFoodStats(), defaultFoodValues.hunger, defaultFoodValues.saturationModifier));
 
-					int barsNeeded = (int) Math.ceil(defaultFoodValues.hunger / 2f);
+					int barsNeeded = (int) Math.ceil(Math.abs(defaultFoodValues.hunger) / 2f);
 					int saturationBarsNeeded = (int) Math.max(1, Math.ceil(Math.abs(defaultFoodValues.getSaturationIncrement()) / 2f));
+					boolean saturationOverflow = saturationBarsNeeded > 10;
+					String saturationText = saturationOverflow ? ((defaultFoodValues.saturationModifier < 0 ? -1 : 1) * saturationBarsNeeded)+"x " : null;
+					if (saturationOverflow)
+						saturationBarsNeeded = 1;
 
 					boolean needsCoordinateShift = isTinkersContainerGui || (!isTinkersContainerGui && !neiLoaded);
 					//int toolTipTopY = Hooks.toolTipY;
@@ -135,7 +140,7 @@ public class TooltipOverlayHandler implements ITickHandler
 					boolean shouldDrawBelow = toolTipBottomY + 20 < scale.getScaledHeight() - 3;
 
 					int rightX = toolTipRightX - 3;
-					int leftX = rightX - (Math.max(barsNeeded * 9, saturationBarsNeeded * 6)) - 4;
+					int leftX = rightX - (Math.max(barsNeeded * 9, saturationBarsNeeded * 6 + (int) (mc.fontRenderer.getStringWidth(saturationText) * 0.75f))) - 4;
 					int topY = (shouldDrawBelow ? toolTipBottomY : Hooks.toolTipY - 20 + (needsCoordinateShift ? -4 : 0));
 					int bottomY = topY + (shouldDrawBelow ? 20 : 20);
 
@@ -192,7 +197,9 @@ public class TooltipOverlayHandler implements ITickHandler
 					{
 						x -= 9;
 
-						if (modifiedFoodValues.hunger > i + 1 || defaultFoodValues.hunger == modifiedFoodValues.hunger)
+						if (modifiedFoodValues.hunger < 0)
+							gui.drawTexturedModalRect(x, y, 34, 27, 9, 9);
+						else if (modifiedFoodValues.hunger > i + 1 || defaultFoodValues.hunger == modifiedFoodValues.hunger)
 							gui.drawTexturedModalRect(x, y, 16, 27, 9, 9);
 						else if (modifiedFoodValues.hunger == i + 1)
 							gui.drawTexturedModalRect(x, y, 124, 27, 9, 9);
@@ -237,6 +244,10 @@ public class TooltipOverlayHandler implements ITickHandler
 						
 						if (shouldBeFaded)
 							GL11.glDisable(GL11.GL_BLEND);
+					}
+					if (saturationText != null)
+					{
+						mc.fontRenderer.drawStringWithShadow(saturationText, (int) (x * 4 / 3) - mc.fontRenderer.getStringWidth(saturationText) + 2, (int) (y * 4 / 3) + 1, 0xFFFF0000);
 					}
 					GL11.glPopMatrix();
 

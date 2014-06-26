@@ -83,7 +83,10 @@ public class HUDOverlayHandler implements ITickHandler
 
 	public static void drawSaturationOverlay(float saturationGained, float saturationLevel, Minecraft mc, int left, int top, float alpha)
 	{
-		int startBar = saturationGained != 0 ? (int) saturationLevel / 2 : 0;
+		if (saturationLevel + saturationGained < 0)
+			return;
+		
+		int startBar = saturationGained != 0 ? Math.max(0, (int) saturationLevel / 2) : 0;
 		int endBar = (int) Math.ceil(Math.min(20, saturationLevel + saturationGained) / 2f);
 		int barsNeeded = endBar - startBar;
 		mc.getTextureManager().bindTexture(modIcons);
