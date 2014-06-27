@@ -51,7 +51,7 @@ public class Hooks
 			{
 			}
 		}
-		
+
 		if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && lastEatingPlayer != null && (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) <= 0 && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
 		{
 			float modifier = FoodModifier.getFoodModifier(lastEatingPlayer, lastFoodEaten, foodStats, hunger, saturationModifier);
@@ -67,9 +67,16 @@ public class Hooks
 			return modifiedFoodValues;
 		}
 		else
+		{
+			if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && FoodHelper.isFood(lastFoodEaten) && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
+			{
+				ModSpiceOfLife.Log.warning(lastFoodEaten.getDisplayName() + " didn't count toward food history (player=" + lastEatingPlayer + ", timedelta=" + (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) + ")");
+			}
+
 			return new FoodValues(hunger, saturationModifier);
+		}
 	}
-  
+
 	/**
 	 * Hooks into net.minecraft.item.ItemStack.onFoodEaten
 	 * @param itemStack The food being eaten
@@ -94,7 +101,7 @@ public class Hooks
 	}
 
 	public static void onDrawHoveringText(int x, int y, int w, int h)
-	{         
+	{
 		toolTipX = x;
 		toolTipY = y;
 		toolTipW = w;
