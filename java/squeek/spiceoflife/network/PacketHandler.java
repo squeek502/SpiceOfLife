@@ -2,8 +2,6 @@ package squeek.spiceoflife.network;
 
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.network.simpleimpl.BetterSimpleNetworkWrapper;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
@@ -29,8 +27,7 @@ public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 		PacketType(Class<? extends PacketBase> clazz, Side side)
 		{
 			packet = clazz;
-			if (FMLCommonHandler.instance().getEffectiveSide() == side)
-				channel.registerMessage(PacketHandler.class, clazz, ordinal(), side);
+			channel.registerMessage(PacketHandler.class, clazz, ordinal(), side);
 		}
 
 		public static int getIdOf(PacketBase packet)
@@ -47,7 +44,7 @@ public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 	@Override
 	public PacketBase onMessage(PacketBase message, MessageContext ctx)
 	{
-		return message.processAndReply(ctx.side, ctx.side == Side.SERVER ? ctx.getServerHandler().playerEntity : FMLClientHandler.instance().getClientPlayerEntity());
+		return message.processAndReply(ctx.side, Helper.getSidedPlayer(ctx));
 	}
 
 }
