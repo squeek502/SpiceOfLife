@@ -1,10 +1,13 @@
 package squeek.spiceoflife.asm;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
 import net.minecraft.world.World;
 import squeek.spiceoflife.ModConfig;
+import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodTracker;
@@ -29,6 +32,26 @@ public class Hooks
 	 */
 	public static FoodValues getModifiedFoodValues(FoodStats foodStats, int hunger, float saturationModifier)
 	{
+		if (ProxyHungerOverhaul.initialized && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
+		{
+			if (!ProxyHungerOverhaul.iguanaFoodStats.isInstance(foodStats))
+			{
+				ModSpiceOfLife.Log.warning("FoodStats is not an instance of IguanaFoodStats");
+			}
+			try
+			{
+				boolean shouldRegenHealth = ProxyHungerOverhaul.initialFoodRegensHealthValue;
+				boolean currentRegenHealthSetting = ProxyHungerOverhaul.foodRegensHealth.getBoolean(null);
+				if (shouldRegenHealth && !currentRegenHealthSetting && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
+				{
+					ModSpiceOfLife.Log.warning("Hunger Overhaul's regen health config option is set to false (it was initially true)");
+				}
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		
 		if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && lastEatingPlayer != null && (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) <= 0 && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
 		{
 			float modifier = FoodModifier.getFoodModifier(lastEatingPlayer, lastFoodEaten, foodStats, hunger, saturationModifier);
