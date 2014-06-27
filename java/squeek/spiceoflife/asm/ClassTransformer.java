@@ -55,6 +55,7 @@ public class ClassTransformer implements IClassTransformer
 			if (methodNode != null)
 			{
 				addFoodStatsHook(methodNode, Hooks.class, "getModifiedFoodValues", "(Lnet/minecraft/util/FoodStats;IF)Lsqueek/spiceoflife/foodtracker/FoodValues;");
+				patchIguanaFoodStats(methodNode);
 				return writeClassToBytes(classNode);
 			}
 			else
@@ -62,7 +63,7 @@ public class ClassTransformer implements IClassTransformer
 				ModSpiceOfLife.Log.warning("addStats method in IguanaFoodStats not found");
 			}
 		}
-		
+
 		if (name.equals("net.minecraft.client.gui.inventory.GuiContainer") || name.equals("awy"))
 		{
 			boolean isObfuscated = name.equals("awy");
@@ -99,7 +100,7 @@ public class ClassTransformer implements IClassTransformer
 				ModSpiceOfLife.Log.warning("drawTooltipBox method in GuiDraw not found");
 			}
 		}
-		
+
 		if (name.equals("tconstruct.client.gui.NewContainerGui"))
 		{
 			ModSpiceOfLife.Log.info("Patching TConstruct's NewContainerGui...");
@@ -169,6 +170,22 @@ public class ClassTransformer implements IClassTransformer
 		return null;
 	}
 
+	private AbstractInsnNode findNextInstructionOfType(AbstractInsnNode startInstruction, int bytecode)
+	{
+		if (startInstruction != null)
+		{
+			AbstractInsnNode instruction = startInstruction.getNext();
+			while (instruction != null)
+			{
+				if (instruction.getOpcode() == bytecode)
+					return instruction;
+
+				instruction = instruction.getNext();
+			}
+		}
+		return null;
+	}
+
 	private LabelNode findEndLabel(MethodNode method)
 	{
 		LabelNode lastLabel = null;
@@ -179,7 +196,7 @@ public class ClassTransformer implements IClassTransformer
 		}
 		return lastLabel;
 	}
-	
+
 	private LocalVariableNode findLocalVariableOfMethod(MethodNode method, String varName, String varDesc)
 	{
 		for (LocalVariableNode localVar : method.localVariables)
@@ -255,6 +272,46 @@ public class ClassTransformer implements IClassTransformer
 
 		method.instructions.insertBefore(targetNode, toInject);
 
+		ModSpiceOfLife.Log.info(" Added " + hookMethod + " hook to " + method.name);
+	}
+
+	public boolean isFoodRegensHealthNode(FieldInsnNode node)
+	{
+		boolean isOwnerCorrect = node.owner.equals("iguanaman/hungeroverhaul/IguanaConfig");
+		boolean isNameCorrect = node.name.equals("foodRegensHealth");
+		boolean isDescCorrect = node.desc.equals("Z");
+		return isOwnerCorrect && isNameCorrect && isDescCorrect;
+	}
+
+	public void patchIguanaFoodStats(MethodNode method)
+	{
+		AbstractInsnNode targetNode = findFirstInstructionOfType(method, GETSTATIC);
+		while (targetNode != null && !isFoodRegensHealthNode((FieldInsnNode) targetNode))
+		{
+			targetNode = findNextInstructionOfType(targetNode, GETSTATIC);
+		}
+
+		if (targetNode == null || targetNode.getNext().getOpcode() != IFEQ)
+		{
+			ModSpiceOfLife.Log.severe("Unable to patch " + method.name + "; this will likely cause a crash");
+			return;
+		}
+
+		LabelNode ifLabel = ((JumpInsnNode) targetNode.getNext()).label;
+
+		InsnList toInject = new InsnList();
+		/*
+		// changes:
+			if (IguanaConfig.foodRegensHealth)
+		// to:
+			if (IguanaConfig.foodRegensHealth && entityplayer != null)
+		*/
+
+		toInject.add(new VarInsnNode(ALOAD, 0)); // this
+		// GETFIELD iguanaman/hungeroverhaul/IguanaFoodStats.entityplayer : Ljava/lang/ref/WeakReference;
+		toInject.add(new FieldInsnNode(GETFIELD, "iguanaman/hungeroverhaul/IguanaFoodStats", "entityplayer", "Ljava/lang/ref/WeakReference;"));
+		toInject.add(new JumpInsnNode(IFNULL, ifLabel));
+
 		ModSpiceOfLife.Log.info(" Patched " + method.name);
 	}
 
@@ -268,7 +325,7 @@ public class ClassTransformer implements IClassTransformer
 			if (instruction.getOpcode() == INVOKEVIRTUAL)
 			{
 				MethodInsnNode methodInsn = (MethodInsnNode) instruction;
-				
+
 				if (methodInsn.desc.equals("(IIIIII)V"))
 					targetNode = instruction;
 			}
@@ -282,12 +339,12 @@ public class ClassTransformer implements IClassTransformer
 			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; target node not found");
 			return;
 		}
-		
+
 		LocalVariableNode x = findLocalVariableOfMethod(method, "i1", "I");
 		LocalVariableNode y = findLocalVariableOfMethod(method, "j1", "I");
 		LocalVariableNode w = findLocalVariableOfMethod(method, "k", "I");
 		LocalVariableNode h = findLocalVariableOfMethod(method, "k1", "I");
-		
+
 		if (x == null || y == null || w == null || h == null)
 		{
 			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; local variables not found");
@@ -300,13 +357,13 @@ public class ClassTransformer implements IClassTransformer
 		// equivalent to:
 		Hooks.onDrawHoveringText(0, 0, 0, 0);
 		*/
-		
+
 		toInject.add(new VarInsnNode(ILOAD, x.index));
 		toInject.add(new VarInsnNode(ILOAD, y.index));
-		toInject.add(new VarInsnNode(ILOAD, w.index));	
+		toInject.add(new VarInsnNode(ILOAD, w.index));
 		toInject.add(new VarInsnNode(ILOAD, h.index));
 		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
-		
+
 		method.instructions.insert(targetNode, toInject);
 
 		ModSpiceOfLife.Log.info(" Patched " + method.name);
@@ -315,7 +372,7 @@ public class ClassTransformer implements IClassTransformer
 	public void addCodeChickenDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
 	{
 		AbstractInsnNode targetNode = findFirstInstruction(method);
-		
+
 		if (targetNode == null)
 		{
 			ModSpiceOfLife.Log.warning("Could not patch " + method.name + "; not able to find a suitable injection point");
@@ -328,13 +385,13 @@ public class ClassTransformer implements IClassTransformer
 		// equivalent to:
 		Hooks.onDrawHoveringText(0, 0, 0, 0);
 		*/
-		
+
 		toInject.add(new VarInsnNode(ILOAD, 0));	// x
 		toInject.add(new VarInsnNode(ILOAD, 1));	// y
 		toInject.add(new VarInsnNode(ILOAD, 2));	// w
 		toInject.add(new VarInsnNode(ILOAD, 3));	// h
 		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
-		
+
 		method.instructions.insertBefore(targetNode, toInject);
 
 		ModSpiceOfLife.Log.info(" Patched " + method.name);

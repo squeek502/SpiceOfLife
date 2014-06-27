@@ -55,10 +55,7 @@ public class ProxyHungerOverhaul
 	{
 		try
 		{
-			// need to temporarily set this to false to avoid a NPE
-			boolean wasRegenHealthEnabled = foodRegensHealth.getBoolean(null);
-			foodRegensHealth.setBoolean(null, false);
-	
+			// this would cause a NPE from the player being null, but addStats was patched using ASM (see asm/ClassTransformer.java) to avoid it
 			dummyFoodStats.setFoodLevel(0);
 			dummyFoodStats.setFoodSaturationLevel(0);
 			dummyFoodStats.addStats(itemFood);
@@ -71,8 +68,6 @@ public class ProxyHungerOverhaul
 			dummyFoodStats.addStats(itemFood);
 			
 			float saturationModifier = FoodValues.getSaturationModifierFromIncrement(dummyFoodStats.getSaturationLevel(), hunger);
-	
-			foodRegensHealth.setBoolean(null, wasRegenHealthEnabled);
 
 			return new FoodValues(hunger, saturationModifier);
 		}
