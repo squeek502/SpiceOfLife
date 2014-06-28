@@ -44,7 +44,7 @@ public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 	@Override
 	public PacketBase onMessage(PacketBase message, MessageContext ctx)
 	{
-		return message.processAndReply(ctx.side, Helper.getSidedPlayer(ctx));
+		return message.processAndReply(ctx.side, NetworkHelper.getSidedPlayer(ctx));
 	}
 
 }
