@@ -232,7 +232,7 @@ public class ClassTransformer implements IClassTransformer
 
 	public void addFoodStatsHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
 	{
-		AbstractInsnNode targetNode = findFirstInstructionOfType(method, ALOAD);
+		AbstractInsnNode targetNode = findFirstInstruction(method);
 
 		InsnList toInject = new InsnList();
 
