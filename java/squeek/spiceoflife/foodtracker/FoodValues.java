@@ -28,7 +28,7 @@ public class FoodValues
 
 	public FoodValues modify(float modifier)
 	{
-		hunger = (int) ModConfig.FOOD_HUNGER_ROUNDING_MODE.round((float) hunger * modifier);
+		hunger = (int) ModConfig.FOOD_HUNGER_ROUNDING_MODE.round(hunger * modifier);
 
 		if (ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS)
 		{

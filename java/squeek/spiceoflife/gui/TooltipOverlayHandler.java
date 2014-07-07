@@ -89,9 +89,9 @@ public class TooltipOverlayHandler implements ITickHandler
 			boolean isValidContainerGui = curScreen instanceof GuiContainer || isTinkersContainerGui;
 			if (isValidContainerGui && KeyHelper.isShiftKeyDown())
 			{
-				Gui gui = (Gui) curScreen;
-				int mouseX = (int) (Mouse.getX() * scale.getScaledWidth() / mc.displayWidth);
-				int mouseY = (int) (scale.getScaledHeight() - Mouse.getY() * scale.getScaledHeight() / mc.displayHeight);
+				Gui gui = curScreen;
+				int mouseX = Mouse.getX() * scale.getScaledWidth() / mc.displayWidth;
+				int mouseY = scale.getScaledHeight() - Mouse.getY() * scale.getScaledHeight() / mc.displayHeight;
 				ItemStack hoveredStack = null;
 
 				// get the hovered stack from the active container
@@ -236,17 +236,17 @@ public class TooltipOverlayHandler implements ITickHandler
 						}
 						
 						mc.getTextureManager().bindTexture(Gui.icons);
-						gui.drawTexturedModalRect((int) (x * 4 / 3), (int) (y * 4 / 3), 16, 27, 9, 9);
+						gui.drawTexturedModalRect(x * 4 / 3, y * 4 / 3, 16, 27, 9, 9);
 
 						mc.getTextureManager().bindTexture(new ResourceLocation(ModInfo.MODID.toLowerCase(), "textures/icons.png"));
-						gui.drawTexturedModalRect((int) (x * 4 / 3), (int) (y * 4 / 3), effectiveSaturationOfBar >= 1 ? 27 : effectiveSaturationOfBar > 0.5 ? 18 : effectiveSaturationOfBar > 0.25 ? 9 : effectiveSaturationOfBar > 0 ? 0 : 36, modifiedSaturationIncrement >= 0 ? 0 : 9, 9, 9);
+						gui.drawTexturedModalRect(x * 4 / 3, y * 4 / 3, effectiveSaturationOfBar >= 1 ? 27 : effectiveSaturationOfBar > 0.5 ? 18 : effectiveSaturationOfBar > 0.25 ? 9 : effectiveSaturationOfBar > 0 ? 0 : 36, modifiedSaturationIncrement >= 0 ? 0 : 9, 9, 9);
 						
 						if (shouldBeFaded)
 							GL11.glDisable(GL11.GL_BLEND);
 					}
 					if (saturationText != null)
 					{
-						mc.fontRenderer.drawStringWithShadow(saturationText, (int) (x * 4 / 3) - mc.fontRenderer.getStringWidth(saturationText) + 2, (int) (y * 4 / 3) + 1, 0xFFFF0000);
+						mc.fontRenderer.drawStringWithShadow(saturationText, x * 4 / 3 - mc.fontRenderer.getStringWidth(saturationText) + 2, y * 4 / 3 + 1, 0xFFFF0000);
 					}
 					GL11.glPopMatrix();
 
