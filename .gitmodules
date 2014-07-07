@@ -1,0 +1,3 @@
+[submodule "EvalEx"]
+	path = EvalEx
+	url = https://github.com/uklimaschewski/EvalEx
