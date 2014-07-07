@@ -26,7 +26,7 @@ archivesBaseName = project.projectDir.name + "-mc" + project.minecraft.version
 
 sourceSets.main{
     java {
-		srcDirs 'java', 'apis' //set the source folder as the /src subfolder
+		srcDirs 'java', 'apis', 'EvalEx/src' //set the source folder as the /src subfolder
 	}
     resources {
 		srcDirs 'resources' //set the resources folder as the /resources subfolder
@@ -48,12 +48,21 @@ task processSourcesCustom(type:Copy){
 	into project.buildDir.getPath()+"/sources/java"
 }
 
+task copyEvalExLicense(type:Copy){
+	from('EvalEx')
+	{
+		include 'LICENSE'
+	}
+	into sourceSets.main.output.resourcesDir.getPath()+"/com/udojava/evalex"
+}
+
 // delete mcmod.info so that it gets a fresh version copied in every time
 task cleanModInfo(type: Delete) {
 	delete file(sourceSets.main.output.resourcesDir.getPath()+"/mcmod.info")
 }
 
 // correct task ordering
+processResources.dependsOn copyEvalExLicense
 processResources.dependsOn cleanModInfo
 compileJava.dependsOn processSourcesCustom
 afterEvaluate { project ->

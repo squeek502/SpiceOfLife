@@ -23,6 +23,7 @@ public class FoodEaten implements IPackable, ISaveable
 		this.itemStack = food;
 	}
 
+	@Override
 	public void writeToNBTData(NBTTagCompound nbtFood)
 	{
 		itemStack.writeToNBT(nbtFood);
@@ -30,6 +31,7 @@ public class FoodEaten implements IPackable, ISaveable
 			nbtFood.setShort("Hunger", (short) hungerRestored);
 	}
 	
+	@Override
 	public void readFromNBTData(NBTTagCompound nbtFood)
 	{
 		itemStack = ItemStack.loadItemStackFromNBT(nbtFood);

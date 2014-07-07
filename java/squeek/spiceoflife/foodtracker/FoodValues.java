@@ -7,6 +7,7 @@ import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.proxy.ProxyAgriculture;
 import squeek.spiceoflife.proxy.ProxyHungerOverhaul;
 import squeek.spiceoflife.proxy.ProxyMariculture;
+import squeek.spiceoflife.proxy.ProxyNatura;
 import squeek.spiceoflife.proxy.ProxyTiC;
 
 public class FoodValues
@@ -53,6 +54,8 @@ public class FoodValues
 
 			if (ProxyTiC.isSpecialFood(itemFood))
 				return ProxyTiC.getSpecialFoodValues(food);
+			else if (ProxyNatura.isSpecialFood(itemFood))
+				return ProxyNatura.getSpecialFoodValues(food);
 			else if (ProxyHungerOverhaul.foodValuesWillBeModified(food))
 				return ProxyHungerOverhaul.getModifiedFoodValues(food);
 			else
