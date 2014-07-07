@@ -44,6 +44,7 @@ public class ModSpiceOfLife
 		MinecraftForge.EVENT_BUS.register(foodTracker);
 		GameRegistry.registerPlayerTracker(foodTracker);
 		NetworkRegistry.instance().registerConnectionHandler(foodTracker);
+		TickRegistry.registerTickHandler(foodTracker, Side.SERVER);
 		if (event.getSide() == Side.CLIENT)
 		{
 			MinecraftForge.EVENT_BUS.register(new TooltipHandler());

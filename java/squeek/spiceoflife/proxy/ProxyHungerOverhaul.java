@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
+import net.minecraft.world.World;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import cpw.mods.fml.common.Loader;
@@ -18,6 +19,9 @@ public class ProxyHungerOverhaul
 	protected static Field foodStatsPlayer = null;
 	protected static boolean modifyFoodValues = false;
 	protected static Field foodRegensHealth = null;
+	protected static Field difficultyScaling = null;
+	protected static Field difficultyScalingHunger = null;
+	protected static Field hungerLossRatePercentage = null;
 	protected static int modFoodValueDivider = 1;
 	static
 	{
@@ -35,6 +39,10 @@ public class ProxyHungerOverhaul
 				modifyFoodValues = iguanaConfig.getDeclaredField("modifyFoodValues").getBoolean(null) && Loader.isModLoaded("pamharvestcraft");
 				modFoodValueDivider = iguanaConfig.getDeclaredField("modFoodValueDivider").getInt(null);
 				foodRegensHealth = iguanaConfig.getDeclaredField("foodRegensHealth");
+
+				difficultyScaling = iguanaConfig.getDeclaredField("difficultyScaling");
+				difficultyScalingHunger = iguanaConfig.getDeclaredField("difficultyScalingHunger");
+				hungerLossRatePercentage = iguanaConfig.getDeclaredField("hungerLossRatePercentage");
 
 				initialized = true;
 			}
@@ -59,19 +67,19 @@ public class ProxyHungerOverhaul
 			dummyFoodStats.setFoodLevel(0);
 			dummyFoodStats.setFoodSaturationLevel(0);
 			dummyFoodStats.addStats(itemFood);
-			
+
 			int hunger = dummyFoodStats.getFoodLevel();
-			
+
 			// redo in order to always get the true saturation value (for foods with a high saturation:hunger ratio)
 			dummyFoodStats.setFoodLevel(20);
 			dummyFoodStats.setFoodSaturationLevel(0);
 			dummyFoodStats.addStats(itemFood);
-			
+
 			float saturationModifier = FoodValues.getSaturationModifierFromIncrement(dummyFoodStats.getSaturationLevel(), hunger);
 
 			return new FoodValues(hunger, saturationModifier);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return new FoodValues(0, 0);
 		}
@@ -86,6 +94,35 @@ public class ProxyHungerOverhaul
 		catch (Exception e)
 		{
 			return false;
+		}
+	}
+
+	public static float getMaxExhaustionLevel(World world)
+	{
+		try
+		{
+			int difficultySetting = world.difficultySetting;
+			float hungerLossRate = 3f;
+			if (difficultyScaling.getBoolean(null) && difficultyScalingHunger.getBoolean(null))
+			{
+				switch (difficultySetting)
+				{
+					case 0:
+						hungerLossRate = 5f;
+						break;
+					case 1:
+						hungerLossRate = 4f;
+						break;
+					default:
+						break;
+				}
+			}
+
+			return hungerLossRate / (hungerLossRatePercentage.getInt(null) / 100F);
+		}
+		catch (Exception e)
+		{
+			return 0;
 		}
 	}
 }

@@ -193,6 +193,7 @@ public class FoodGroupMember implements IPackable
 	/*
 	 * Packet handling
 	 */
+	@Override
 	public void pack(IByteIO data)
 	{
 		data.writeItemStack(itemStack);
@@ -201,6 +202,7 @@ public class FoodGroupMember implements IPackable
 		data.writeBoolean(baseItemForRecipes);
 	}
 
+	@Override
 	public void unpack(IByteIO data)
 	{
 		itemStack = data.readItemStack();

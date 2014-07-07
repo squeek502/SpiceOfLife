@@ -196,6 +196,14 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final String SHOW_FOOD_VALUES_OVERLAY_COMMENT =
 			"If true, shows the hunger (and saturation if " + SHOW_SATURATION_OVERLAY_NAME + " is true) that would be restored by food you are currently holding";
 
+	// whether or not food exhaustion is actually enabled (we either are the server or know the server has the mod)
+	public static boolean SHOW_FOOD_EXHAUSTION_OVERLAY = false;
+	// the value written in the config file
+	public static boolean SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL = ModConfig.FOOD_MODIFIER_ENABLED_DEFAULT;
+	private static final String SHOW_FOOD_EXHAUSTION_OVERLAY_NAME = "show.food.exhaustion.hud.overlay";
+	private static final String SHOW_FOOD_EXHAUSTION_OVERLAY_COMMENT =
+			"If true, shows your food exhaustion as a progress bar behind the hunger bars";
+
 	/*
 	 * FOOD GROUPS
 	 */
@@ -253,6 +261,11 @@ public class ModConfig implements IPackable, IPacketProcessor
 		SHOW_FOOD_VALUES_IN_TOOLTIP = config.get(CATEGORY_CLIENT, SHOW_FOOD_VALUES_IN_TOOLTIP_NAME, true, SHOW_FOOD_VALUES_IN_TOOLTIP_COMMENT).getBoolean(true);
 		SHOW_SATURATION_OVERLAY = config.get(CATEGORY_CLIENT, SHOW_SATURATION_OVERLAY_NAME, true, SHOW_SATURATION_OVERLAY_COMMENT).getBoolean(true);
 		SHOW_FOOD_VALUES_OVERLAY = config.get(CATEGORY_CLIENT, SHOW_FOOD_VALUES_OVERLAY_NAME, true, SHOW_FOOD_VALUES_OVERLAY_COMMENT).getBoolean(true);
+		SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL = config.get(CATEGORY_CLIENT, SHOW_FOOD_EXHAUSTION_OVERLAY_NAME, true, SHOW_FOOD_EXHAUSTION_OVERLAY_COMMENT).getBoolean(true);
+
+		// only use the config value immediately when server-side; the client assumes false until the server syncs the config
+		if (FMLCommonHandler.instance().getSide() == Side.SERVER)
+			FOOD_MODIFIER_ENABLED = FOOD_MODIFIER_ENABLED_CONFIG_VAL;
 
 		/*
 		 * FOOD GROUPS
@@ -415,6 +428,9 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FoodHistory.get(player).onHistoryTypeChanged();
 			FoodGroupRegistry.clear();
 		}
+
+		SHOW_FOOD_EXHAUSTION_OVERLAY = SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL;
+
 		return null;
 	}
 
@@ -427,5 +443,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 	{
 		// assume false until the server syncs
 		FOOD_MODIFIER_ENABLED = false;
+		SHOW_FOOD_EXHAUSTION_OVERLAY = false;
 	}
 }

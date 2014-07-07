@@ -39,8 +39,29 @@ public class HUDOverlayHandler implements ITickHandler
 		if (mc.gameSettings.showDebugInfo)
 		{
 			FoodStats stats = mc.thePlayer.getFoodStats();
-			textEvent.left.add("hunger: " + stats.getFoodLevel() + ", saturation: " + df.format(stats.getSaturationLevel()));
+			textEvent.left.add("hunger: " + stats.getFoodLevel() + ", saturation: " + df.format(stats.getSaturationLevel()) + (ModConfig.SHOW_FOOD_EXHAUSTION_OVERLAY ? ", exhaustion: " + df.format(FoodHelper.getExhaustionLevel(stats)) : ""));
 		}
+	}
+
+	@ForgeSubscribe
+	public void onPreRender(RenderGameOverlayEvent.Pre event)
+	{
+		if (event.type != RenderGameOverlayEvent.ElementType.FOOD)
+			return;
+		
+		if (!ModConfig.SHOW_FOOD_EXHAUSTION_OVERLAY)
+			return;
+
+		Minecraft mc = Minecraft.getMinecraft();
+		EntityPlayer player = mc.thePlayer;
+		FoodStats stats = player.getFoodStats();
+
+		ScaledResolution scale = event.resolution;
+
+		int left = scale.getScaledWidth() / 2 + 91;
+		int top = scale.getScaledHeight() - GuiIngameForge.right_height;
+
+		drawExhaustionOverlay(FoodHelper.getExhaustionLevel(stats), mc, left, top, 1f);
 	}
 
 	@ForgeSubscribe
@@ -85,7 +106,7 @@ public class HUDOverlayHandler implements ITickHandler
 	{
 		if (saturationLevel + saturationGained < 0)
 			return;
-		
+
 		int startBar = saturationGained != 0 ? Math.max(0, (int) saturationLevel / 2) : 0;
 		int endBar = (int) Math.ceil(Math.min(20, saturationLevel + saturationGained) / 2f);
 		int barsNeeded = endBar - startBar;
@@ -148,6 +169,23 @@ public class HUDOverlayHandler implements ITickHandler
 		disableAlpha(alpha);
 	}
 
+	public static void drawExhaustionOverlay(float exhaustion, Minecraft mc, int left, int top, float alpha)
+	{
+		mc.getTextureManager().bindTexture(modIcons);
+
+		float maxExhaustion = FoodHelper.getMaxExhaustionLevel(mc.thePlayer.worldObj);
+		float ratio = exhaustion / maxExhaustion;
+		int width = (int) (ratio * 81);
+		int height = 9;
+
+		enableAlpha(.75f);
+		mc.ingameGUI.drawTexturedModalRect(left - width, top, 81 - width, 18, width, height);
+		disableAlpha(.75f);
+
+		// rebind default icons
+		mc.getTextureManager().bindTexture(Gui.icons);
+	}
+
 	public static void enableAlpha(float alpha)
 	{
 		if (alpha == 1f)
@@ -197,6 +235,6 @@ public class HUDOverlayHandler implements ITickHandler
 	@Override
 	public String getLabel()
 	{
-		return ModInfo.MODID+"_HUD";
+		return ModInfo.MODID + "_HUD";
 	}
 }

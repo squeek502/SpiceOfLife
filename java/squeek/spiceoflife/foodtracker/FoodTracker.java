@@ -1,5 +1,6 @@
 package squeek.spiceoflife.foodtracker;
 
+import java.util.EnumSet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -8,22 +9,30 @@ import net.minecraft.network.NetLoginHandler;
 import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import squeek.spiceoflife.ModConfig;
+import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.helpers.FoodHelper;
+import squeek.spiceoflife.network.PacketDifficultySetting;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
+import squeek.spiceoflife.network.PacketFoodExhaustion;
 import squeek.spiceoflife.network.PacketFoodHistory;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IPlayerTracker;
+import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.Player;
 
-public class FoodTracker implements IPlayerTracker, IConnectionHandler
+public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHandler
 {
 	/**
 	 * Add relevant extended entity data whenever an entity comes into existence
@@ -45,7 +54,7 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler
 	public void onPlayerLogin(EntityPlayer player)
 	{
 		// server needs to send config settings to the client
-		ModConfig.sync((EntityPlayerMP)player);
+		ModConfig.sync((EntityPlayerMP) player);
 
 		// server needs to send food groups to the client
 		FoodGroupRegistry.sync((EntityPlayerMP) player);
@@ -97,23 +106,31 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler
 		syncFoodHistory(foodHistory);
 	}
 
-	
 	/**
 	 * Sync saturation whenever it changes (vanilla MC only syncs when it hits 0)
 	 */
 	private float lastSaturationLevel = 0;
-	
+	private float lastExhaustionLevel = 0;
+
 	@ForgeSubscribe
 	public void onLivingUpdateEvent(LivingUpdateEvent event)
 	{
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.entity instanceof EntityPlayer))
 			return;
-		
+
 		EntityPlayerMP player = (EntityPlayerMP) event.entity;
-		
+
 		if (this.lastSaturationLevel != player.getFoodStats().getSaturationLevel())
 		{
 			CompatHelper.sendPlayerHealthUpdatePacket(player);
+			this.lastSaturationLevel = player.getFoodStats().getSaturationLevel();
+		}
+
+		float exhaustionLevel = FoodHelper.getExhaustionLevel(player.getFoodStats());
+		if (Math.abs(this.lastExhaustionLevel - exhaustionLevel) >= 0.01f)
+		{
+			PacketDispatcher.get().sendTo(new PacketFoodExhaustion(exhaustionLevel), player);
+			this.lastExhaustionLevel = exhaustionLevel;
 		}
 	}
 
@@ -188,5 +205,39 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler
 	@Override
 	public void clientLoggedIn(NetHandler clientHandler, INetworkManager manager, Packet1Login login)
 	{
+	}
+
+	private int lastDifficultySetting = 0;
+
+	@Override
+	public void tickStart(EnumSet<TickType> type, Object... tickData)
+	{
+		World world = (World) tickData[0];
+
+		if (world instanceof WorldServer)
+		{
+			if (this.lastDifficultySetting != world.difficultySetting)
+			{
+				PacketDispatcher.get().sendToAll(new PacketDifficultySetting(world.difficultySetting));
+				this.lastDifficultySetting = world.difficultySetting;
+			}
+		}
+	}
+
+	@Override
+	public void tickEnd(EnumSet<TickType> type, Object... tickData)
+	{
+	}
+
+	@Override
+	public EnumSet<TickType> ticks()
+	{
+		return EnumSet.of(TickType.WORLD);
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return ModInfo.MODID + "_World";
 	}
 }
