@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ConfigCategory;
 import net.minecraftforge.common.Configuration;
@@ -25,7 +26,7 @@ import cpw.mods.fml.relauncher.Side;
 public class ModConfig implements IPackable, IPacketProcessor
 {
 	public static final ModConfig instance = new ModConfig();
-	
+
 	protected ModConfig()
 	{
 	}
@@ -174,6 +175,19 @@ public class ModConfig implements IPackable, IPacketProcessor
 					+ "\tcur_saturation : The current saturation value of the player\n"
 					+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n";
 
+	public static boolean GIVE_FOOD_JOURNAL_ON_START = ModConfig.GIVE_FOOD_JOURNAL_ON_START_DEFAULT;
+	private static final String GIVE_FOOD_JOURNAL_ON_START_NAME = "give.food.journal.as.starting.item";
+	private static final boolean GIVE_FOOD_JOURNAL_ON_START_DEFAULT = false;
+	private static final String GIVE_FOOD_JOURNAL_ON_START_COMMENT =
+			"If true, a food journal will be given to each player as a starting item";
+
+	public static boolean GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS = ModConfig.GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT;
+	private static final String GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_NAME = "give.food.journal.on.dimishing.returns.start";
+	private static final boolean GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT = false;
+	private static final String GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_COMMENT =
+			"If true, a food journal will be given to each player once diminishing returns start for them\n"
+					+ "Not given if a player was given a food journal by " + ModConfig.GIVE_FOOD_JOURNAL_ON_START_NAME;
+
 	/*
 	 * CLIENT
 	 */
@@ -203,6 +217,14 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final String SHOW_FOOD_EXHAUSTION_OVERLAY_NAME = "show.food.exhaustion.hud.overlay";
 	private static final String SHOW_FOOD_EXHAUSTION_OVERLAY_COMMENT =
 			"If true, shows your food exhaustion as a progress bar behind the hunger bars";
+
+	/*
+	 * ITEMS
+	 */
+
+	public static int ITEM_FOOD_JOURNAL_ID = ModConfig.ITEM_FOOD_JOURNAL_ID_DEFAULT;
+	public static final String ITEM_FOOD_JOURNAL_NAME = "bookfoodjournal";
+	public static final int ITEM_FOOD_JOURNAL_ID_DEFAULT = 6850;
 
 	/*
 	 * FOOD GROUPS
@@ -249,6 +271,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 		AFFECT_FOOD_SATURATION_MODIFIERS = config.get(CATEGORY_SERVER, AFFECT_FOOD_SATURATION_MODIFIERS_NAME, AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT, AFFECT_FOOD_SATURATION_MODIFIERS_COMMENT).getBoolean(AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT);
 		AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = config.get(CATEGORY_SERVER, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_NAME, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_COMMENT).getBoolean(AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT);
 		USE_HUNGER_QUEUE = config.get(CATEGORY_SERVER, USE_HUNGER_QUEUE_NAME, USE_HUNGER_QUEUE_DEFAULT, USE_HUNGER_QUEUE_COMMENT).getBoolean(USE_HUNGER_QUEUE_DEFAULT);
+		GIVE_FOOD_JOURNAL_ON_START = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_START_NAME, GIVE_FOOD_JOURNAL_ON_START_DEFAULT, GIVE_FOOD_JOURNAL_ON_START_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_START_DEFAULT);
+		GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_NAME, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT);
 
 		FOOD_HUNGER_ROUNDING_MODE_STRING = config.get(CATEGORY_SERVER, FOOD_HUNGER_ROUNDING_MODE_NAME, FOOD_HUNGER_ROUNDING_MODE_DEFAULT, FOOD_HUNGER_ROUNDING_MODE_COMMENT).getString();
 		setRoundingMode();
@@ -266,6 +290,12 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// only use the config value immediately when server-side; the client assumes false until the server syncs the config
 		if (FMLCommonHandler.instance().getSide() == Side.SERVER)
 			FOOD_MODIFIER_ENABLED = FOOD_MODIFIER_ENABLED_CONFIG_VAL;
+
+		/*
+		 * ITEMS
+		 */
+
+		ITEM_FOOD_JOURNAL_ID = config.getItem(ITEM_FOOD_JOURNAL_NAME, ITEM_FOOD_JOURNAL_ID_DEFAULT).getInt(ITEM_FOOD_JOURNAL_ID_DEFAULT);
 
 		/*
 		 * FOOD GROUPS
@@ -379,7 +409,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	{
 		config.load();
 	}
-	
+
 	@Override
 	public void pack(IByteIO data)
 	{
@@ -430,6 +460,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		}
 
 		SHOW_FOOD_EXHAUSTION_OVERLAY = SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL;
+		Item.itemsList[ModContent.foodJournal.itemID] = ModContent.foodJournal;
 
 		return null;
 	}
@@ -444,5 +475,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// assume false until the server syncs
 		FOOD_MODIFIER_ENABLED = false;
 		SHOW_FOOD_EXHAUSTION_OVERLAY = false;
+		Item.itemsList[ModContent.foodJournal.itemID] = null;
 	}
 }

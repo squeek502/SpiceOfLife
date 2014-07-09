@@ -18,3 +18,11 @@ spiceoflife.tooltip.advanced.saturation.modifier=Saturation modifier: %s (defaul
 spiceoflife.quantity.one.time=once
 spiceoflife.quantity.two.times=twice
 spiceoflife.quantity.x.times=%d times
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=All-time food eaten
+spiceoflife.gui.no.food.history.yet=Food history not logged until diminishing returns start
+spiceoflife.gui.no.recent.food.eaten=No food eaten recently
+
+# Items
+item.spiceoflife.bookfoodjournal.name=Food Journal

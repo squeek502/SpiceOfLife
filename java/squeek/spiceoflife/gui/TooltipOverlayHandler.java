@@ -32,7 +32,7 @@ public class TooltipOverlayHandler implements ITickHandler
 {
 	//private static final Field guiLeft = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiLeft", "field_74198_m", "p"));
 	//private static final Field guiTop = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiTop", "field_74197_n", "q"));
-	private static final Field theSlot = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "theSlot", "field_82320_o", "t"));
+	public static final Field theSlot = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "theSlot", "field_82320_o", "t"));
 	private static Class<?> tinkersContainerGui = null;
 	private static Field mainSlot = null;
 	private static Method getStackMouseOver = null;
@@ -40,7 +40,7 @@ public class TooltipOverlayHandler implements ITickHandler
 	private static boolean neiLoaded = false;
 	static
 	{
-		try 
+		try
 		{
 			neiLoaded = Loader.isModLoaded("NotEnoughItems");
 			if (neiLoaded)
@@ -50,12 +50,12 @@ public class TooltipOverlayHandler implements ITickHandler
 				getStackMouseOver = Class.forName("codechicken.nei.ItemPanel").getDeclaredMethod("getStackMouseOver", int.class, int.class);
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			ModSpiceOfLife.Log.warning("Unable to integrate the food values tooltip overlay with NEI: ");
 			e.printStackTrace();
 		}
-		
+
 		try
 		{
 			if (Loader.isModLoaded("TConstruct"))
@@ -64,7 +64,7 @@ public class TooltipOverlayHandler implements ITickHandler
 				mainSlot = ReflectionHelper.findField(tinkersContainerGui, "mainSlot");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			ModSpiceOfLife.Log.warning("Unable to integrate the food values tooltip overlay with Tinkers Construct: ");
 			e.printStackTrace();
@@ -99,14 +99,18 @@ public class TooltipOverlayHandler implements ITickHandler
 				{
 					// try regular container
 					Slot hoveredSlot = !isTinkersContainerGui ? (Slot) TooltipOverlayHandler.theSlot.get(gui) : (Slot) TooltipOverlayHandler.mainSlot.get(gui);
-					
+
 					// get the stack
 					if (hoveredSlot != null)
 						hoveredStack = hoveredSlot.getStack();
-					
+
 					// try NEI
 					if (hoveredStack == null && getStackMouseOver != null)
 						hoveredStack = (ItemStack) (getStackMouseOver.invoke(itemPanel.get(null), mouseX, mouseY));
+
+					// try FoodJournal
+					if (hoveredStack == null && gui instanceof GuiScreenFoodJournal)
+						hoveredStack = ((GuiScreenFoodJournal) gui).hoveredStack;
 				}
 				catch (Exception e)
 				{
@@ -126,11 +130,11 @@ public class TooltipOverlayHandler implements ITickHandler
 					int barsNeeded = (int) Math.ceil(Math.abs(defaultFoodValues.hunger) / 2f);
 					int saturationBarsNeeded = (int) Math.max(1, Math.ceil(Math.abs(defaultFoodValues.getSaturationIncrement()) / 2f));
 					boolean saturationOverflow = saturationBarsNeeded > 10;
-					String saturationText = saturationOverflow ? ((defaultFoodValues.saturationModifier < 0 ? -1 : 1) * saturationBarsNeeded)+"x " : null;
+					String saturationText = saturationOverflow ? ((defaultFoodValues.saturationModifier < 0 ? -1 : 1) * saturationBarsNeeded) + "x " : null;
 					if (saturationOverflow)
 						saturationBarsNeeded = 1;
 
-					boolean needsCoordinateShift = isTinkersContainerGui || (!isTinkersContainerGui && !neiLoaded);
+					boolean needsCoordinateShift = isTinkersContainerGui || (!isTinkersContainerGui && !neiLoaded) || gui instanceof GuiScreenFoodJournal;
 					//int toolTipTopY = Hooks.toolTipY;
 					//int toolTipLeftX = Hooks.toolTipX;
 					int toolTipBottomY = Hooks.toolTipY + Hooks.toolTipH + 1 + (needsCoordinateShift ? 3 : 0);
@@ -156,7 +160,7 @@ public class TooltipOverlayHandler implements ITickHandler
 					int x = rightX - 2;
 					int startX = x;
 					int y = bottomY - 19;
-					
+
 					/*
 					// cur out of default saturation bar
 					float defaultToModifiedSaturationRatio = modifiedFoodValues.saturationModifier / defaultFoodValues.saturationModifier;
@@ -225,7 +229,7 @@ public class TooltipOverlayHandler implements ITickHandler
 					for (int i = 0; i < saturationBarsNeeded * 2; i += 2)
 					{
 						float effectiveSaturationOfBar = (absModifiedSaturationIncrement - i) / 2f;
-						
+
 						x -= 6;
 
 						boolean shouldBeFaded = absModifiedSaturationIncrement <= i;
@@ -234,13 +238,13 @@ public class TooltipOverlayHandler implements ITickHandler
 							GL11.glEnable(GL11.GL_BLEND);
 							GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 						}
-						
+
 						mc.getTextureManager().bindTexture(Gui.icons);
 						gui.drawTexturedModalRect(x * 4 / 3, y * 4 / 3, 16, 27, 9, 9);
 
 						mc.getTextureManager().bindTexture(new ResourceLocation(ModInfo.MODID.toLowerCase(), "textures/icons.png"));
 						gui.drawTexturedModalRect(x * 4 / 3, y * 4 / 3, effectiveSaturationOfBar >= 1 ? 27 : effectiveSaturationOfBar > 0.5 ? 18 : effectiveSaturationOfBar > 0.25 ? 9 : effectiveSaturationOfBar > 0 ? 0 : 36, modifiedSaturationIncrement >= 0 ? 0 : 9, 9, 9);
-						
+
 						if (shouldBeFaded)
 							GL11.glDisable(GL11.GL_BLEND);
 					}

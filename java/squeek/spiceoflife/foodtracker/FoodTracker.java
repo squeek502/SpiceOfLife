@@ -21,6 +21,7 @@ import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.FoodHelper;
+import squeek.spiceoflife.items.ItemFoodJournal;
 import squeek.spiceoflife.network.PacketDifficultySetting;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
 import squeek.spiceoflife.network.PacketFoodExhaustion;
@@ -40,10 +41,9 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHan
 	@ForgeSubscribe
 	public void onEntityConstructing(EntityConstructing event)
 	{
-		if (event.entity instanceof EntityPlayer && FoodHistory.get((EntityPlayer) event.entity) == null)
+		if (event.entity instanceof EntityPlayer)
 		{
-			EntityPlayer player = (EntityPlayer) event.entity;
-			new FoodHistory(player);
+			FoodHistory.get((EntityPlayer) event.entity);
 		}
 	}
 
@@ -62,6 +62,13 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHan
 		// server needs to send any loaded data to the client
 		FoodHistory foodHistory = FoodHistory.get(player);
 		syncFoodHistory(foodHistory);
+
+		// give food journal
+		if (!foodHistory.wasGivenFoodJournal && (ModConfig.GIVE_FOOD_JOURNAL_ON_START || (ModConfig.GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS && ModConfig.FOOD_EATEN_THRESHOLD == 0)))
+		{
+			ItemFoodJournal.giveToPlayer(player);
+			foodHistory.wasGivenFoodJournal = true;
+		}
 	}
 
 	/**

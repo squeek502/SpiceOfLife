@@ -13,6 +13,7 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
+import squeek.spiceoflife.items.ItemFoodJournal;
 
 public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPackable
 {
@@ -20,6 +21,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	public final EntityPlayer player;
 	protected FixedSizeQueue<FoodEaten> history = ModConfig.USE_HUNGER_QUEUE ? new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH) : new FixedFoodQueue(ModConfig.FOOD_HISTORY_LENGTH);
 	public int totalFoodsEatenAllTime = 0;
+	boolean wasGivenFoodJournal = false;
 
 	public FoodHistory()
 	{
@@ -50,7 +52,13 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		if (countsTowardsAllTime)
 			totalFoodsEatenAllTime++;
 
-		if (ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD && countsTowardsAllTime && totalFoodsEatenAllTime == ModConfig.FOOD_EATEN_THRESHOLD)
+		boolean isAtThreshold = countsTowardsAllTime && totalFoodsEatenAllTime == ModConfig.FOOD_EATEN_THRESHOLD;
+		if (player != null && !player.worldObj.isRemote && ModConfig.GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS && !wasGivenFoodJournal && isAtThreshold)
+		{
+			ItemFoodJournal.giveToPlayer(player);
+			wasGivenFoodJournal = true;
+		}
+		if (ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD && isAtThreshold)
 		{
 			history.clear();
 			return true;
@@ -63,7 +71,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	{
 		int count = 0;
 		FoodGroup foodGroup = null;
-		
+
 		if (ModConfig.USE_FOOD_GROUPS)
 			foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
 
@@ -83,7 +91,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	{
 		return history;
 	}
-	
+
 	public int getHistoryLengthInRelevantUnits()
 	{
 		return ModConfig.USE_HUNGER_QUEUE ? ((FixedHungerQueue) history).hunger() : history.size();
@@ -152,6 +160,10 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		{
 			persistentCompound.setInteger("Total", totalFoodsEatenAllTime);
 		}
+		if (wasGivenFoodJournal)
+		{
+			persistentCompound.setBoolean("FoodJournal", wasGivenFoodJournal);
+		}
 
 		if (data != null && !nonPersistentCompound.hasNoTags())
 			data.setCompoundTag(TAG_KEY, nonPersistentCompound);
@@ -179,9 +191,10 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 			history.readFromNBTData(nbtHistory);
 
 			totalFoodsEatenAllTime = persistentCompound.getInteger("Total");
+			wasGivenFoodJournal = persistentCompound.getBoolean("FoodJournal");
 		}
 	}
-	
+
 	@Override
 	public void saveNBTData(NBTTagCompound compound)
 	{
