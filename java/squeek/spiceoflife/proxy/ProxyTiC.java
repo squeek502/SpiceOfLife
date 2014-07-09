@@ -49,7 +49,6 @@ public class ProxyTiC
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 			}
 		}
 
