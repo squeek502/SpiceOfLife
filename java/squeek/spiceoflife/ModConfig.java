@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.FoodHistory;
@@ -461,7 +462,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		}
 
 		SHOW_FOOD_EXHAUSTION_OVERLAY = SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL;
-		Item.itemsList[ModContent.foodJournal.itemID] = ModContent.foodJournal;
+		CompatHelper.reregisterItem(ModContent.foodJournal, ModContent.foodJournal.itemID);
 
 		return null;
 	}
@@ -476,6 +477,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// assume false until the server syncs
 		FOOD_MODIFIER_ENABLED = false;
 		SHOW_FOOD_EXHAUSTION_OVERLAY = false;
-		Item.itemsList[ModContent.foodJournal.itemID] = null;
+		CompatHelper.deregisterItem(ModContent.foodJournal);
 	}
 }
