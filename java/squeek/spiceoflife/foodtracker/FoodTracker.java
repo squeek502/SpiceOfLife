@@ -32,6 +32,7 @@ import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
 
 public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHandler
 {
@@ -184,13 +185,15 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHan
 	@Override
 	public void connectionOpened(NetHandler netClientHandler, String server, int port, INetworkManager manager)
 	{
-		ModConfig.assumeClientOnly();
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			ModConfig.assumeClientOnly();
 	}
 
 	@Override
 	public void connectionClosed(INetworkManager manager)
 	{
-		ModConfig.assumeClientOnly();
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			ModConfig.assumeClientOnly();
 	}
 
 	@Override

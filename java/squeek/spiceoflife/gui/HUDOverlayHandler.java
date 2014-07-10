@@ -20,7 +20,10 @@ import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class HUDOverlayHandler implements ITickHandler
 {
 	float flashAlpha = 0f;
