@@ -14,13 +14,20 @@ public class ClassTransformer implements IClassTransformer
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes)
 	{
-		if (name.equals("net.minecraft.item.ItemStack") || name.equals("abp"))
+		if (transformedName.equals("net.minecraft.item.ItemStack"))
 		{
-			boolean isObfuscated = name.equals("abp");
+			boolean isObfuscated = !name.equals(transformedName);
 			ModSpiceOfLife.Log.info("Patching ItemStack...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
+
+			// 1.7.2 obfuscated names
 			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "b" : "onFoodEaten", isObfuscated ? "(Lafn;Lxl;)Labp;" : "(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)Lnet/minecraft/item/ItemStack;");
+
+			// try 1.7.10 obfuscated names
+			if (methodNode == null && isObfuscated)
+				methodNode = findMethodNodeOfClass(classNode, "b", "(Lahb;Lyz;)Ladd;");
+
 			if (methodNode != null)
 			{
 				addOnEatenHook(methodNode, Hooks.class, "onFoodEaten", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)V");
@@ -28,13 +35,16 @@ public class ClassTransformer implements IClassTransformer
 			}
 		}
 
-		if (name.equals("net.minecraft.util.FoodStats") || name.equals("yd"))
+		if (transformedName.equals("net.minecraft.util.FoodStats"))
 		{
-			boolean isObfuscated = name.equals("yd");
+			boolean isObfuscated = !name.equals(transformedName);
 			ModSpiceOfLife.Log.info("Patching FoodStats...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
+
+			// 1.7.2/1.7.10 have the same signatures
 			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "a" : "addStats", "(IF)V");
+
 			if (methodNode != null)
 			{
 				addFoodStatsHook(methodNode, Hooks.class, "getModifiedFoodValues", "(Lnet/minecraft/util/FoodStats;IF)Lsqueek/spiceoflife/foodtracker/FoodValues;");
@@ -64,13 +74,19 @@ public class ClassTransformer implements IClassTransformer
 			}
 		}
 
-		if (name.equals("net.minecraft.client.gui.GuiScreen") || name.equals("bcd"))
+		if (transformedName.equals("net.minecraft.client.gui.GuiScreen"))
 		{
-			boolean isObfuscated = name.equals("bcd");
+			boolean isObfuscated = !name.equals(transformedName);
 			ModSpiceOfLife.Log.info("Patching GuiScreen...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
+			
+			// 1.7.2 obfuscated names
 			MethodNode methodNode = findMethodNodeOfClass(classNode, "drawHoveringText", isObfuscated ? "(Ljava/util/List;IILbag;)V" : "(Ljava/util/List;IILnet/minecraft/client/gui/FontRenderer;)V");
+
+			// try 1.7.10 obfuscated names
+			if (methodNode == null && isObfuscated)
+				methodNode = findMethodNodeOfClass(classNode, "drawHoveringText", "(Ljava/util/List;IILbbu;)V");
 
 			if (methodNode != null)
 			{
@@ -344,7 +360,7 @@ public class ClassTransformer implements IClassTransformer
 		LocalVariableNode y = findLocalVariableOfMethod(method, "k2", "I");
 		LocalVariableNode w = findLocalVariableOfMethod(method, "k", "I");
 		LocalVariableNode h = findLocalVariableOfMethod(method, "i1", "I");
-		
+
 		if (x == null || y == null || w == null || h == null)
 		{
 			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; local variables not found");
@@ -357,13 +373,13 @@ public class ClassTransformer implements IClassTransformer
 		// equivalent to:
 		Hooks.onDrawHoveringText(0, 0, 0, 0);
 		*/
-		
+
 		toInject.add(new VarInsnNode(ILOAD, x.index));
 		toInject.add(new VarInsnNode(ILOAD, y.index));
-		toInject.add(new VarInsnNode(ILOAD, w.index));	
+		toInject.add(new VarInsnNode(ILOAD, w.index));
 		toInject.add(new VarInsnNode(ILOAD, h.index));
 		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
-		
+
 		method.instructions.insert(targetNode, toInject);
 
 		ModSpiceOfLife.Log.info(" Patched " + method.name);
@@ -379,7 +395,7 @@ public class ClassTransformer implements IClassTransformer
 			if (instruction.getOpcode() == INVOKEVIRTUAL)
 			{
 				MethodInsnNode methodInsn = (MethodInsnNode) instruction;
-				
+
 				if (methodInsn.desc.equals("(IIIIII)V"))
 					targetNode = instruction;
 			}
@@ -393,7 +409,7 @@ public class ClassTransformer implements IClassTransformer
 			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; target node not found");
 			return;
 		}
-		
+
 		LocalVariableNode x = findLocalVariableOfMethod(method, "i1", "I");
 		LocalVariableNode y = findLocalVariableOfMethod(method, "j1", "I");
 		LocalVariableNode w = findLocalVariableOfMethod(method, "k", "I");

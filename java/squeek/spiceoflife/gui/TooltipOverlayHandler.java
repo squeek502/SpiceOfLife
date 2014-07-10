@@ -1,5 +1,6 @@
 package squeek.spiceoflife.gui;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import net.minecraft.client.Minecraft;
@@ -38,6 +39,7 @@ public class TooltipOverlayHandler
 	private static Method getStackMouseOver = null;
 	private static Field itemPanel = null;
 	private static boolean neiLoaded = false;
+	private static Constructor<ScaledResolution> scaledResolution1710Constructor = null;
 	static
 	{
 		try 
@@ -69,6 +71,14 @@ public class TooltipOverlayHandler
 			ModSpiceOfLife.Log.error("Unable to integrate the food values tooltip overlay with Tinkers Construct: ");
 			e.printStackTrace();
 		}
+		
+		try
+		{
+			scaledResolution1710Constructor = ScaledResolution.class.getConstructor(Minecraft.class, int.class, int.class);
+		}
+		catch(Exception e)
+		{
+		}
 	}
 
 	@SubscribeEvent
@@ -82,7 +92,23 @@ public class TooltipOverlayHandler
 			Minecraft mc = Minecraft.getMinecraft();
 			EntityPlayer player = mc.thePlayer;
 			GuiScreen curScreen = mc.currentScreen;
-			ScaledResolution scale = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+			
+			// in 1.7.10, the ScaledResolution constructor changed; allow for either one
+			ScaledResolution scale;
+			if (scaledResolution1710Constructor != null)
+			{
+				try
+				{
+					scale = scaledResolution1710Constructor.newInstance(mc, mc.displayWidth, mc.displayHeight);
+				}
+				catch(Exception e)
+				{
+					return;
+				}
+			}
+			else
+				scale = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+			
 			boolean isTinkersContainerGui = (tinkersContainerGui != null && tinkersContainerGui.isInstance(curScreen));
 			boolean isValidContainerGui = curScreen instanceof GuiContainer || isTinkersContainerGui;
 			if (isValidContainerGui && KeyHelper.isShiftKeyDown())

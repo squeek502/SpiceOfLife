@@ -19,6 +19,22 @@ public class ProxyTiC
 			if (Loader.isModLoaded("TConstruct"))
 			{
 				specialFood = Class.forName("tconstruct.items.SpecialFood");
+			}
+		}
+		catch(ClassNotFoundException e)
+		{
+			try
+			{
+				specialFood = Class.forName("tconstruct.world.items.SpecialFood");
+			}
+			catch(ClassNotFoundException e2)
+			{
+			}
+		}
+		try
+		{
+			if (specialFood != null)
+			{
 				hunger = specialFood.getDeclaredField("hunger");
 				hunger.setAccessible(true);
 				saturation = specialFood.getDeclaredField("saturation");
