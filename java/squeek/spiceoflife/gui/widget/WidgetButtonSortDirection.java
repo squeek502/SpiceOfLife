@@ -4,8 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import squeek.spiceoflife.ModInfo;
 
+@SideOnly(Side.CLIENT)
 public class WidgetButtonSortDirection extends GuiButton
 {
 	private static final ResourceLocation modIcons = new ResourceLocation(ModInfo.MODID.toLowerCase(), "textures/icons.png");

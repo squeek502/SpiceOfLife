@@ -19,9 +19,11 @@ import squeek.spiceoflife.helpers.FoodHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class HUDOverlayHandler
-{
+@SideOnly(Side.CLIENT)
+public class HUDOverlayHandler{
 	float flashAlpha = 0f;
 	byte alphaDir = 1;
 

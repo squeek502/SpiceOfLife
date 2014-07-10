@@ -24,6 +24,7 @@ import squeek.spiceoflife.network.PacketConfigSync;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModConfig implements IPackable, IPacketProcessor
 {
@@ -465,6 +466,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		PacketDispatcher.get().sendTo(new PacketConfigSync(), player);
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static void assumeClientOnly()
 	{
 		// assume false until the server syncs

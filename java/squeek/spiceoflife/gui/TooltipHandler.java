@@ -3,6 +3,8 @@ package squeek.spiceoflife.gui;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -18,6 +20,7 @@ import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.StringHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
+@SideOnly(Side.CLIENT)
 public class TooltipHandler
 {
 	private static final DecimalFormat df = new DecimalFormat("##.##");

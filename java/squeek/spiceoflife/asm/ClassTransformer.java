@@ -7,6 +7,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.foodtracker.FoodValues;
+import static squeek.spiceoflife.asm.ASMException.*;
 
 public class ClassTransformer implements IClassTransformer
 {
@@ -17,7 +18,7 @@ public class ClassTransformer implements IClassTransformer
 		if (transformedName.equals("net.minecraft.item.ItemStack"))
 		{
 			boolean isObfuscated = !name.equals(transformedName);
-			ModSpiceOfLife.Log.info("Patching ItemStack...");
+			ModSpiceOfLife.Log.debug("Patching ItemStack...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
 
@@ -33,12 +34,16 @@ public class ClassTransformer implements IClassTransformer
 				addOnEatenHook(methodNode, Hooks.class, "onFoodEaten", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)V");
 				return writeClassToBytes(classNode);
 			}
+			else
+			{
+				throw new MethodNotFoundException("ItemStack.onFoodEaten");
+			}
 		}
 
 		if (transformedName.equals("net.minecraft.util.FoodStats"))
 		{
 			boolean isObfuscated = !name.equals(transformedName);
-			ModSpiceOfLife.Log.info("Patching FoodStats...");
+			ModSpiceOfLife.Log.debug("Patching FoodStats...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
 
@@ -50,11 +55,15 @@ public class ClassTransformer implements IClassTransformer
 				addFoodStatsHook(methodNode, Hooks.class, "getModifiedFoodValues", "(Lnet/minecraft/util/FoodStats;IF)Lsqueek/spiceoflife/foodtracker/FoodValues;");
 				return writeClassToBytes(classNode);
 			}
+			else
+			{
+				throw new MethodNotFoundException("FoodStats.addStats(IF)");
+			}
 		}
 
 		if (name.equals("iguanaman.hungeroverhaul.IguanaFoodStats"))
 		{
-			ModSpiceOfLife.Log.info("Patching IguanaFoodStats...");
+			ModSpiceOfLife.Log.debug("Patching IguanaFoodStats...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
 			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_75122_a", "(IF)V");
@@ -77,7 +86,7 @@ public class ClassTransformer implements IClassTransformer
 		if (transformedName.equals("net.minecraft.client.gui.GuiScreen"))
 		{
 			boolean isObfuscated = !name.equals(transformedName);
-			ModSpiceOfLife.Log.info("Patching GuiScreen...");
+			ModSpiceOfLife.Log.debug("Patching GuiScreen...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
 			
@@ -95,13 +104,13 @@ public class ClassTransformer implements IClassTransformer
 			}
 			else
 			{
-				ModSpiceOfLife.Log.warn("drawHoveringText method in GuiContainer not found");
+				throw new MethodNotFoundException("GuiScreen.drawHoveringText");
 			}
 		}
 
 		if (name.equals("codechicken.lib.gui.GuiDraw"))
 		{
-			ModSpiceOfLife.Log.info("Patching CodeChickenLib's GuiDraw...");
+			ModSpiceOfLife.Log.debug("Patching CodeChickenLib's GuiDraw...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
 			MethodNode methodNode = findMethodNodeOfClass(classNode, "drawTooltipBox", "(IIII)V");
@@ -119,7 +128,7 @@ public class ClassTransformer implements IClassTransformer
 
 		if (name.equals("tconstruct.client.gui.NewContainerGui"))
 		{
-			ModSpiceOfLife.Log.info("Patching TConstruct's NewContainerGui...");
+			ModSpiceOfLife.Log.debug("Patching TConstruct's NewContainerGui...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
 			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_102021_a", "(Ljava/util/List;II)V");
@@ -159,7 +168,6 @@ public class ClassTransformer implements IClassTransformer
 		{
 			if (method.name.equals(methodName) && method.desc.equals(methodDesc))
 			{
-				ModSpiceOfLife.Log.info(" Found target method: " + methodName);
 				return method;
 			}
 		}
@@ -227,7 +235,10 @@ public class ClassTransformer implements IClassTransformer
 
 	public void addOnEatenHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
 	{
-		AbstractInsnNode targetNode = findFirstInstructionOfType(method, ALOAD);
+		AbstractInsnNode targetNode = findFirstInstruction(method);
+
+		if (targetNode == null)
+			throw new InstructionNotFoundException(method.name + " -> " + hookMethod);
 
 		InsnList toInject = new InsnList();
 
@@ -243,12 +254,15 @@ public class ClassTransformer implements IClassTransformer
 
 		method.instructions.insertBefore(targetNode, toInject);
 
-		ModSpiceOfLife.Log.info(" Patched " + method.name);
+		ModSpiceOfLife.Log.debug(" Patched " + method.name);
 	}
 
 	public void addFoodStatsHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
 	{
 		AbstractInsnNode targetNode = findFirstInstruction(method);
+
+		if (targetNode == null)
+			throw new InstructionNotFoundException(method.name + " -> " + hookMethod);
 
 		InsnList toInject = new InsnList();
 
@@ -288,7 +302,7 @@ public class ClassTransformer implements IClassTransformer
 
 		method.instructions.insertBefore(targetNode, toInject);
 
-		ModSpiceOfLife.Log.info(" Added " + hookMethod + " hook to " + method.name);
+		ModSpiceOfLife.Log.debug(" Added " + hookMethod + " hook to " + method.name);
 	}
 
 	public boolean isFoodRegensHealthNode(FieldInsnNode node)
@@ -309,8 +323,7 @@ public class ClassTransformer implements IClassTransformer
 
 		if (targetNode == null || targetNode.getNext().getOpcode() != IFEQ)
 		{
-			ModSpiceOfLife.Log.fatal("Unable to patch " + method.name + "; this will likely cause a crash");
-			return;
+			throw new PatternNotFoundException(method.name);
 		}
 
 		LabelNode ifLabel = ((JumpInsnNode) targetNode.getNext()).label;
@@ -328,7 +341,7 @@ public class ClassTransformer implements IClassTransformer
 		toInject.add(new FieldInsnNode(GETFIELD, "iguanaman/hungeroverhaul/IguanaFoodStats", "entityplayer", "Ljava/lang/ref/WeakReference;"));
 		toInject.add(new JumpInsnNode(IFNULL, ifLabel));
 
-		ModSpiceOfLife.Log.info(" Patched " + method.name);
+		ModSpiceOfLife.Log.debug(" Patched " + method.name + " to remove possible NPE");
 	}
 
 	public void addDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc, boolean isObfuscated)
@@ -346,14 +359,9 @@ public class ClassTransformer implements IClassTransformer
 					targetNode = instruction;
 			}
 		}
-		if (targetNode != null)
+		if (targetNode == null)
 		{
-			ModSpiceOfLife.Log.info(" Found target node");
-		}
-		else
-		{
-			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; target node not found");
-			return;
+			throw new PatternNotFoundException(method.name);
 		}
 
 		LocalVariableNode x = findLocalVariableOfMethod(method, "j2", "I");
@@ -382,7 +390,7 @@ public class ClassTransformer implements IClassTransformer
 
 		method.instructions.insert(targetNode, toInject);
 
-		ModSpiceOfLife.Log.info(" Patched " + method.name);
+		ModSpiceOfLife.Log.debug(" Patched " + method.name);
 	}
 
 	public void addTinkersDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc, boolean isObfuscated)
@@ -400,11 +408,7 @@ public class ClassTransformer implements IClassTransformer
 					targetNode = instruction;
 			}
 		}
-		if (targetNode != null)
-		{
-			ModSpiceOfLife.Log.info(" Found target node");
-		}
-		else
+		if (targetNode == null)
 		{
 			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; target node not found");
 			return;
@@ -417,8 +421,7 @@ public class ClassTransformer implements IClassTransformer
 
 		if (x == null || y == null || w == null || h == null)
 		{
-			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; local variables not found");
-			return;
+			throw new InstructionNotFoundException("Local variables: " + x + y + w + h);
 		}
 
 		InsnList toInject = new InsnList();
@@ -436,7 +439,7 @@ public class ClassTransformer implements IClassTransformer
 
 		method.instructions.insert(targetNode, toInject);
 
-		ModSpiceOfLife.Log.info(" Patched " + method.name);
+		ModSpiceOfLife.Log.debug(" Hooked into " + method.name + " to get tooltip position/size");
 	}
 
 	public void addCodeChickenDrawHoveringTextHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
@@ -445,8 +448,7 @@ public class ClassTransformer implements IClassTransformer
 
 		if (targetNode == null)
 		{
-			ModSpiceOfLife.Log.warn("Could not patch " + method.name + "; not able to find a suitable injection point");
-			return;
+			throw new PatternNotFoundException(method.name);
 		}
 
 		InsnList toInject = new InsnList();
@@ -464,7 +466,7 @@ public class ClassTransformer implements IClassTransformer
 
 		method.instructions.insertBefore(targetNode, toInject);
 
-		ModSpiceOfLife.Log.info(" Patched " + method.name);
+		ModSpiceOfLife.Log.debug(" Hooked into " + method.name + " to get tooltip position/size");
 	}
 
 }

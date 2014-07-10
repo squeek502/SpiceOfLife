@@ -63,7 +63,6 @@ public class ModSpiceOfLife
 	@EventHandler
     public void serverStarting(FMLServerStartingEvent event)
 	{
-		event.registerServerCommand(new Command());
 		FoodGroupRegistry.serverInit();
 	}
 }

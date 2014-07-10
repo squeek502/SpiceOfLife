@@ -1,12 +1,15 @@
 package squeek.spiceoflife.gui.widget;
 
 import org.lwjgl.opengl.GL11;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.ColorHelper;
 
+@SideOnly(Side.CLIENT)
 public class WidgetFoodEaten extends Gui
 {
 	public final FoodEaten foodEaten;

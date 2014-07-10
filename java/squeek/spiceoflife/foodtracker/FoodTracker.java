@@ -25,6 +25,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import cpw.mods.fml.relauncher.Side;
 
 public class FoodTracker
 {
@@ -112,7 +113,8 @@ public class FoodTracker
 	@SubscribeEvent
 	public void onClientConnectedToServer(ClientConnectedToServerEvent event)
 	{
-		ModConfig.assumeClientOnly();
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			ModConfig.assumeClientOnly();
 	}
 	
 	/**
