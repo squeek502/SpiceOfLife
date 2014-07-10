@@ -31,6 +31,8 @@ public class ModSpiceOfLife
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		ModConfig.init(event.getSuggestedConfigurationFile());
+		ModContent.registerItems();
+		ModContent.registerRecipes();
 	}
 
 	@EventHandler

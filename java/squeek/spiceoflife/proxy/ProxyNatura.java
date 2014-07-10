@@ -53,7 +53,6 @@ public class ProxyNatura
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 			}
 		}
 

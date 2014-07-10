@@ -39,7 +39,7 @@ public class FoodGroupMember implements IPackable
 		List<ItemStack> outputs = new ArrayList<ItemStack>();
 
 		@SuppressWarnings("unchecked")
-		List<IRecipe> recipeList = (List<IRecipe>) CraftingManager.getInstance().getRecipeList();
+		List<IRecipe> recipeList = CraftingManager.getInstance().getRecipeList();
 
 		for (IRecipe recipe : recipeList)
 		{

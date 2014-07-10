@@ -60,7 +60,6 @@ public class ProxyAgriculture
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 			}
 		}
 		return null;
@@ -81,7 +80,6 @@ public class ProxyAgriculture
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
 				}
 			}
 		}

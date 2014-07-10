@@ -14,11 +14,12 @@ public class ProxyHungerOverhaul
 	public static boolean initialized = false;
 
 	protected static Class<?> iguanaFood = null;
-	protected static Class<?> iguanaFoodStats = null;
+	public static Class<?> iguanaFoodStats = null;
 	protected static FoodStats dummyFoodStats = null;
 	protected static Field foodStatsPlayer = null;
 	protected static boolean modifyFoodValues = false;
-	protected static Field foodRegensHealth = null;
+	public static Field foodRegensHealth = null;
+	public static boolean initialFoodRegensHealthValue = false;
 	protected static Field difficultyScaling = null;
 	protected static Field difficultyScalingHunger = null;
 	protected static Field hungerLossRatePercentage = null;
@@ -39,6 +40,7 @@ public class ProxyHungerOverhaul
 				modifyFoodValues = iguanaConfig.getDeclaredField("modifyFoodValues").getBoolean(null) && Loader.isModLoaded("pamharvestcraft");
 				modFoodValueDivider = iguanaConfig.getDeclaredField("modFoodValueDivider").getInt(null);
 				foodRegensHealth = iguanaConfig.getDeclaredField("foodRegensHealth");
+				initialFoodRegensHealthValue = foodRegensHealth.getBoolean(null);
 
 				difficultyScaling = iguanaConfig.getDeclaredField("difficultyScaling");
 				difficultyScalingHunger = iguanaConfig.getDeclaredField("difficultyScalingHunger");

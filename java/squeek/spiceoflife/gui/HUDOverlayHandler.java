@@ -38,7 +38,7 @@ public class HUDOverlayHandler
 		if (mc.gameSettings.showDebugInfo)
 		{
 			FoodStats stats = mc.thePlayer.getFoodStats();
-			textEvent.left.add("hunger: " + stats.getFoodLevel() + ", saturation: " + df.format(stats.getSaturationLevel()) + (ModConfig.SHOW_FOOD_EXHAUSTION_OVERLAY ? ", exhaustion: " + df.format(FoodHelper.getExhaustionLevel(stats)) : ""));
+			textEvent.left.add("saturation: " + df.format(stats.getSaturationLevel()) + (ModConfig.SHOW_FOOD_EXHAUSTION_OVERLAY ? ", exhaustion: " + df.format(FoodHelper.getExhaustionLevel(stats)) : ""));
 		}
 	}
 

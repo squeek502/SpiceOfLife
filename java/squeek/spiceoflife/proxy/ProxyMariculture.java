@@ -145,7 +145,6 @@ public class ProxyMariculture
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 			}
 		}
 		return new FoodValues(0, 0);
