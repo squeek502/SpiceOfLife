@@ -59,7 +59,7 @@ public class FoodTracker
 		// give food journal
 		if (!foodHistory.wasGivenFoodJournal && (ModConfig.GIVE_FOOD_JOURNAL_ON_START || (ModConfig.GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS && ModConfig.FOOD_EATEN_THRESHOLD == 0)))
 		{
-			ItemFoodJournal.giveToPlayer(player);
+			ItemFoodJournal.giveToPlayer(event.player);
 			foodHistory.wasGivenFoodJournal = true;
 		}
 	}

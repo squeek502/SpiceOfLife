@@ -17,9 +17,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemFoodJournal extends Item
 {
 
-	public ItemFoodJournal(int itemId)
+	public ItemFoodJournal()
 	{
-		super(itemId - 256);
+		super();
 		setMaxStackSize(1);
 		setTextureName(ModInfo.MODID.toLowerCase() + ":" + ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setUnlocalizedName(ModInfo.MODID.toLowerCase() + "." + ModConfig.ITEM_FOOD_JOURNAL_NAME);

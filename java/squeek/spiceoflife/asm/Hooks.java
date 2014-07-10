@@ -36,7 +36,7 @@ public class Hooks
 		{
 			if (!ProxyHungerOverhaul.iguanaFoodStats.isInstance(foodStats))
 			{
-				ModSpiceOfLife.Log.warning("FoodStats is not an instance of IguanaFoodStats");
+				ModSpiceOfLife.Log.warn("FoodStats is not an instance of IguanaFoodStats");
 			}
 			try
 			{
@@ -44,7 +44,7 @@ public class Hooks
 				boolean currentRegenHealthSetting = ProxyHungerOverhaul.foodRegensHealth.getBoolean(null);
 				if (shouldRegenHealth && !currentRegenHealthSetting && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
 				{
-					ModSpiceOfLife.Log.warning("Hunger Overhaul's regen health config option is set to false (it was initially true)");
+					ModSpiceOfLife.Log.warn("Hunger Overhaul's regen health config option is set to false (it was initially true)");
 				}
 			}
 			catch (Exception e)
@@ -70,7 +70,7 @@ public class Hooks
 		{
 			if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && FoodHelper.isFood(lastFoodEaten) && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
 			{
-				ModSpiceOfLife.Log.warning(lastFoodEaten.getDisplayName() + " didn't count toward food history (player=" + lastEatingPlayer + ", timedelta=" + (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) + ")");
+				ModSpiceOfLife.Log.warn(lastFoodEaten.getDisplayName() + " didn't count toward food history (player=" + lastEatingPlayer + ", timedelta=" + (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) + ")");
 			}
 
 			return new FoodValues(hunger, saturationModifier);

@@ -224,9 +224,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 	 * ITEMS
 	 */
 
-	public static int ITEM_FOOD_JOURNAL_ID = ModConfig.ITEM_FOOD_JOURNAL_ID_DEFAULT;
+	public static int ITEM_FOOD_JOURNAL_ID = 0;
 	public static final String ITEM_FOOD_JOURNAL_NAME = "bookfoodjournal";
-	public static final int ITEM_FOOD_JOURNAL_ID_DEFAULT = 6850;
 
 	/*
 	 * FOOD GROUPS
@@ -292,12 +291,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// only use the config value immediately when server-side; the client assumes false until the server syncs the config
 		if (FMLCommonHandler.instance().getSide() == Side.SERVER)
 			FOOD_MODIFIER_ENABLED = FOOD_MODIFIER_ENABLED_CONFIG_VAL;
-
-		/*
-		 * ITEMS
-		 */
-
-		ITEM_FOOD_JOURNAL_ID = config.getItem(ITEM_FOOD_JOURNAL_NAME, ITEM_FOOD_JOURNAL_ID_DEFAULT).getInt(ITEM_FOOD_JOURNAL_ID_DEFAULT);
 
 		/*
 		 * FOOD GROUPS
@@ -462,7 +455,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		}
 
 		SHOW_FOOD_EXHAUSTION_OVERLAY = SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL;
-		CompatHelper.reregisterItem(ModContent.foodJournal, ModContent.foodJournal.itemID);
+		CompatHelper.reregisterItem(ModContent.foodJournal, ITEM_FOOD_JOURNAL_ID);
 
 		return null;
 	}
@@ -477,6 +470,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// assume false until the server syncs
 		FOOD_MODIFIER_ENABLED = false;
 		SHOW_FOOD_EXHAUSTION_OVERLAY = false;
-		CompatHelper.deregisterItem(ModContent.foodJournal);
+		ITEM_FOOD_JOURNAL_ID = CompatHelper.deregisterItem(ModContent.foodJournal);
 	}
 }

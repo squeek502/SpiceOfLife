@@ -27,7 +27,7 @@ public class WidgetButtonSortDirection extends GuiButton
     @Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY)
     {
-        if (this.drawButton)
+        if (this.visible)
         {
             boolean isHovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
