@@ -30,7 +30,8 @@ public class ItemFoodJournal extends Item
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
 	{
-		Minecraft.getMinecraft().displayGuiScreen(new GuiScreenFoodJournal());
+		if (world.isRemote)
+			Minecraft.getMinecraft().displayGuiScreen(new GuiScreenFoodJournal());
 		return super.onItemRightClick(itemStack, world, player);
 	}
 
