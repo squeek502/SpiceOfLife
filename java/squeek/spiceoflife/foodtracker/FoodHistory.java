@@ -77,6 +77,9 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 
 		for (FoodEaten foodEaten : history)
 		{
+			if (foodEaten.itemStack == null)
+				continue;
+
 			if ((food.isItemEqual(foodEaten.itemStack) && ItemStack.areItemStackTagsEqual(food, foodEaten.itemStack))
 					||
 					(ModConfig.USE_FOOD_GROUPS && foodGroup != null && foodGroup.equals(foodEaten.foodGroup)))
