@@ -40,6 +40,9 @@ public class WidgetFoodEaten extends Gui
 
 		FoodValues defaultFoodValues = FoodValues.get(foodEaten.itemStack);
 		
+		if (defaultFoodValues == null)
+			return;
+
 		mc.fontRenderer.drawString(displayName, x, y, ColorHelper.getRelativeColorInt(foodEaten.hungerRestored, 0, defaultFoodValues.hunger));
 
 		int barsNeeded = (int) Math.max(1, Math.ceil(Math.abs(defaultFoodValues.hunger) / 2f));

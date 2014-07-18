@@ -50,6 +50,22 @@ public class ClassTransformer implements IClassTransformer
 				throw new MethodNotFoundException("FoodStats.addStats(IF)");
 			}
 		}
+		
+		if (transformedName.equals("net.minecraft.block.BlockCake"))
+		{
+			boolean isObfuscated = !name.equals(transformedName);
+			ModSpiceOfLife.Log.fine("Patching BlockCake...");
+
+			ClassNode classNode = readClassFromBytes(bytes);
+			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "b" : "eatCakeSlice", isObfuscated ? "(Labw;IIILuf;)V" : "(Lnet/minecraft/world/World;IIILnet/minecraft/entity/player/EntityPlayer;)V");
+			if (methodNode != null)
+			{
+				addOnBlockFoodEatenHook(methodNode, Hooks.class, "onBlockFoodEaten", "(Lnet/minecraft/block/Block;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)V");
+				return writeClassToBytes(classNode);
+			}
+			else
+				throw new MethodNotFoundException("BlockCake.eatCakeSlice");
+		}
 
 		if (name.equals("iguanaman.hungeroverhaul.IguanaFoodStats"))
 		{
@@ -234,6 +250,39 @@ public class ClassTransformer implements IClassTransformer
 		toInject.add(new VarInsnNode(ALOAD, 0)); 		// this
 		toInject.add(new VarInsnNode(ALOAD, 1)); 		// param1: world
 		toInject.add(new VarInsnNode(ALOAD, 2)); 		// param2: player
+		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
+
+		method.instructions.insertBefore(targetNode, toInject);
+
+		ModSpiceOfLife.Log.fine(" Patched " + method.name);
+	}
+
+	public void addOnBlockFoodEatenHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)
+	{
+		AbstractInsnNode targetNode = findFirstInstructionOfType(method, IFEQ);
+
+		if (targetNode == null)
+			throw new InstructionNotFoundException(method.name + " -> " + hookMethod + " IFEQ");
+		
+		do 
+		{
+			targetNode = targetNode.getNext();
+		}
+		while (targetNode != null && targetNode.getOpcode() != ALOAD);
+		
+		if (targetNode == null)
+			throw new InstructionNotFoundException(method.name + " -> " + hookMethod + " ALOAD");
+
+		InsnList toInject = new InsnList();
+
+		/*
+		// equivalent to:
+		Hooks.onFoodEaten(this, world, player);
+		 */
+
+		toInject.add(new VarInsnNode(ALOAD, 0)); 		// this
+		toInject.add(new VarInsnNode(ALOAD, 1)); 		// param1: world
+		toInject.add(new VarInsnNode(ALOAD, 5)); 		// param2: player
 		toInject.add(new MethodInsnNode(INVOKESTATIC, hookClass.getName().replace('.', '/'), hookMethod, hookDesc));
 
 		method.instructions.insertBefore(targetNode, toInject);
