@@ -64,10 +64,17 @@ public class ClassTransformer implements IClassTransformer
 		if (transformedName.equals("net.minecraft.block.BlockCake"))
 		{
 			boolean isObfuscated = !name.equals(transformedName);
-			ModSpiceOfLife.Log.fine("Patching BlockCake...");
+			ModSpiceOfLife.Log.debug("Patching BlockCake...");
 
 			ClassNode classNode = readClassFromBytes(bytes);
-			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "b" : "eatCakeSlice", isObfuscated ? "(Labw;IIILuf;)V" : "(Lnet/minecraft/world/World;IIILnet/minecraft/entity/player/EntityPlayer;)V");
+
+			// 1.7.2 obfuscated names
+			MethodNode methodNode = findMethodNodeOfClass(classNode, isObfuscated ? "b" : "func_150036_b", isObfuscated ? "(Lafn;IIILxl;)V" : "(Lnet/minecraft/world/World;IIILnet/minecraft/entity/player/EntityPlayer;)V");
+
+			// try 1.7.10 obfuscated names
+			if (methodNode == null && isObfuscated)
+				methodNode = findMethodNodeOfClass(classNode, "b", "(Lahb;IIILyz;)V");
+
 			if (methodNode != null)
 			{
 				addOnBlockFoodEatenHook(methodNode, Hooks.class, "onBlockFoodEaten", "(Lnet/minecraft/block/Block;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)V");
@@ -303,7 +310,7 @@ public class ClassTransformer implements IClassTransformer
 
 		method.instructions.insertBefore(targetNode, toInject);
 
-		ModSpiceOfLife.Log.fine(" Patched " + method.name);
+		ModSpiceOfLife.Log.debug(" Patched " + method.name);
 	}
 
 	public void addFoodStatsHook(MethodNode method, Class<?> hookClass, String hookMethod, String hookDesc)

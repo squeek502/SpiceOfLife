@@ -2,7 +2,7 @@ package squeek.spiceoflife.helpers;
 
 import java.lang.reflect.Field;
 import cpw.mods.fml.relauncher.ReflectionHelper;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
@@ -21,7 +21,7 @@ public class FoodHelper
 	
 	public static boolean isFood(ItemStack itemStack)
 	{
-		return itemStack.getItem() instanceof ItemFood || ProxyAgriculture.isFood(itemStack) || ProxyMariculture.isFood(itemStack) || itemStack.getItem() == Item.cake;
+		return itemStack.getItem() instanceof ItemFood || ProxyAgriculture.isFood(itemStack) || ProxyMariculture.isFood(itemStack) || itemStack.getItem() == Items.cake;
 	}
 
 	public static float getExhaustionLevel(FoodStats foodStats)

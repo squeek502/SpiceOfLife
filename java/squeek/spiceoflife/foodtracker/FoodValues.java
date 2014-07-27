@@ -1,7 +1,7 @@
 package squeek.spiceoflife.foodtracker;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.ModConfig;
@@ -66,7 +66,7 @@ public class FoodValues
 			return ProxyAgriculture.getFoodValues(food);
 		else if (ProxyMariculture.isFood(food))
 			return ProxyMariculture.getFoodValues(food);
-		else if (food.getItem() == Item.cake)
+		else if (food.getItem() == Items.cake)
 			return new FoodValues(2, 0.1f);
 
 		return null;
