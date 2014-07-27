@@ -18,7 +18,7 @@ buildscript {
 apply plugin: 'forge'
 
 minecraft {
-    version = "1.7.2-10.12.1.1060"
+    version = "1.7.10-10.13.0.1180"
 }
 
 group = project.projectDir.name.toLowerCase()

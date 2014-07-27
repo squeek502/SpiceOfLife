@@ -109,7 +109,7 @@ public class TooltipOverlayHandler{
 				}
 			}
 			else
-				scale = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+				scale = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 			
 			boolean isTinkersContainerGui = (tinkersContainerGui != null && tinkersContainerGui.isInstance(curScreen));
 			boolean isValidContainerGui = curScreen instanceof GuiContainer || isTinkersContainerGui;
