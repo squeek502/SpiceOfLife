@@ -2,7 +2,10 @@ package squeek.spiceoflife.asm;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCake;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
 import net.minecraft.world.World;
@@ -97,6 +100,14 @@ public class Hooks
 			lastEatingPlayer = null;
 			lastFoodEaten = null;
 			lastTimeEaten = -1;
+		}
+	}
+	
+	public static void onBlockFoodEaten(Block block, World world, EntityPlayer player)
+	{
+		if (block instanceof BlockCake)
+		{
+			onFoodEaten(new ItemStack(Item.cake), world, player);
 		}
 	}
 

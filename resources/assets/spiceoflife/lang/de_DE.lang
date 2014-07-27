@@ -1,0 +1,28 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=Nährwert: 
+spiceoflife.tooltip.eaten.recently=%s in den letzen %d Mahlzeiten verzehrt
+spiceoflife.tooltip.eaten.recently.hunger=%s in den letzten %s Hungerwerten verzehrt
+spiceoflife.tooltip.not.eaten.recently=Nicht kürzlich verzehrt
+spiceoflife.tooltip.food.until.enabled.1=Nährwert nimmt ab, nachnem jegliche
+spiceoflife.tooltip.food.until.enabled.2=Nahrung %d weitere%s verzehrt wurde
+spiceoflife.tooltip.times.singular=s mal
+spiceoflife.tooltip.times.plural= Male
+spiceoflife.tooltip.hunger=Hunger
+spiceoflife.tooltip.food.group=Nahrungsgruppe: 
+
+# Advanced tooltip strings
+spiceoflife.tooltip.advanced.hunger.restored=Hunger gestillt: %s (Standard: %s)
+spiceoflife.tooltip.advanced.saturation.modifier=Sättigungsmodifikator: %s (Standard: %s)
+
+# Quantity descriptors
+spiceoflife.quantity.one.time=Einmal
+spiceoflife.quantity.two.times=Zweimal
+spiceoflife.quantity.x.times=%d Male
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=Am meisten verzehrte Nahrung
+spiceoflife.gui.no.food.history.yet=Verzehrte Nahrung wird nicht dokumentiert, bis der Nährwert abnimmt
+spiceoflife.gui.no.recent.food.eaten=Kürzlich keine Nahrung verzehrt
+
+# Items
+item.spiceoflife.bookfoodjournal.name=Nahrungsjournal

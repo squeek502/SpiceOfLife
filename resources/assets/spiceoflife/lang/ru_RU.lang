@@ -2,13 +2,13 @@
 spiceoflife.tooltip.nutritional.value=Питательная ценность: 
 spiceoflife.tooltip.eaten.recently=Съедено %s из последних %d
 spiceoflife.tooltip.eaten.recently.hunger=Eaten %s in the last %s hunger
-spiceoflife.tooltip.not.eaten.recently=Не было съедено недавно
+spiceoflife.tooltip.not.eaten.recently=Ещё не было съедено
 spiceoflife.tooltip.food.until.enabled.1=Уменьшение питательности начинается после
-spiceoflife.tooltip.food.until.enabled.2=употребления любой еды более %d %s
+spiceoflife.tooltip.food.until.enabled.2=употребления любой пищи более %d %s
 spiceoflife.tooltip.times.singular=раза
 spiceoflife.tooltip.times.plural=раз
 spiceoflife.tooltip.hunger=голода
-spiceoflife.tooltip.food.group=Группа еды: 
+spiceoflife.tooltip.food.group=Группа пищи: 
 
 # Advanced tooltip strings
 spiceoflife.tooltip.advanced.hunger.restored=Голода восстановлено: %s (по-умолч.: %s)
@@ -18,3 +18,11 @@ spiceoflife.tooltip.advanced.saturation.modifier=Модификатор насы
 spiceoflife.quantity.one.time=один раз
 spiceoflife.quantity.two.times=дважды
 spiceoflife.quantity.x.times=%d раз
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=Пища, съеденная за всё время
+spiceoflife.gui.no.food.history.yet=История питания не записывается, пока не начнётся уменьшение питательности
+spiceoflife.gui.no.recent.food.eaten=Пища ещё не была съедена
+
+# Items
+item.spiceoflife.bookfoodjournal.name=Журнал питания
