@@ -21,7 +21,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION)
+@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "required-after:AppleCore")
 public class ModSpiceOfLife
 {
 	public static final Logger Log = LogManager.getLogger(ModInfo.MODID);
