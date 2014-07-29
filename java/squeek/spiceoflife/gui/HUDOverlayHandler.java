@@ -1,6 +1,5 @@
 package squeek.spiceoflife.gui;
 
-import java.text.DecimalFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -12,9 +11,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
+import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -23,46 +22,31 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class HUDOverlayHandler{
+public class HUDOverlayHandler
+{
 	float flashAlpha = 0f;
 	byte alphaDir = 1;
 
 	private static final ResourceLocation modIcons = new ResourceLocation(ModInfo.MODID.toLowerCase(), "textures/icons.png");
-	private static final DecimalFormat df = new DecimalFormat("##.##");
-
-	@SubscribeEvent
-	public void onTextRender(RenderGameOverlayEvent.Text textEvent)
-	{
-		if (textEvent.type != RenderGameOverlayEvent.ElementType.TEXT)
-			return;
-
-		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.gameSettings.showDebugInfo)
-		{
-			FoodStats stats = mc.thePlayer.getFoodStats();
-			textEvent.left.add("saturation: " + df.format(stats.getSaturationLevel()) + (ModConfig.SHOW_FOOD_EXHAUSTION_OVERLAY ? ", exhaustion: " + df.format(FoodHelper.getExhaustionLevel(stats)) : ""));
-		}
-	}
 
 	@SubscribeEvent
 	public void onPreRender(RenderGameOverlayEvent.Pre event)
 	{
 		if (event.type != RenderGameOverlayEvent.ElementType.FOOD)
 			return;
-		
+
 		if (!ModConfig.SHOW_FOOD_EXHAUSTION_OVERLAY)
 			return;
 
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer player = mc.thePlayer;
-		FoodStats stats = player.getFoodStats();
 
 		ScaledResolution scale = event.resolution;
 
 		int left = scale.getScaledWidth() / 2 + 91;
 		int top = scale.getScaledHeight() - GuiIngameForge.right_height;
 
-		drawExhaustionOverlay(FoodHelper.getExhaustionLevel(stats), mc, left, top, 1f);
+		drawExhaustionOverlay(FoodHelper.getExhaustionLevel(player), mc, left, top, 1f);
 	}
 
 	@SubscribeEvent
@@ -96,7 +80,7 @@ public class HUDOverlayHandler{
 		}
 
 		// restored hunger/saturation overlay while holding food
-		FoodValues foodValues = FoodValues.getModified(heldItem, player);
+		FoodValues foodValues = FoodValues.get(heldItem, player);
 		drawHungerOverlay(foodValues.hunger, stats.getFoodLevel(), mc, left, top, flashAlpha);
 		int newFoodValue = stats.getFoodLevel() + foodValues.hunger;
 		float newSaturationValue = stats.getSaturationLevel() + foodValues.getSaturationIncrement();
@@ -174,7 +158,7 @@ public class HUDOverlayHandler{
 	{
 		mc.getTextureManager().bindTexture(modIcons);
 
-		float maxExhaustion = FoodHelper.getMaxExhaustionLevel(mc.thePlayer.worldObj);
+		float maxExhaustion = FoodHelper.getMaxExhaustionLevel(mc.thePlayer);
 		float ratio = exhaustion / maxExhaustion;
 		int width = (int) (ratio * 81);
 		int height = 9;

@@ -1,7 +1,7 @@
 The Spice Of Life
 =================
 
-Minecraft mod that encourages dietary variety through dimishing returns
+Minecraft mod that encourages dietary variety through dimishing returns. Uses the [AppleCore API](https://github.com/squeek502/AppleCore).
 
 [Minecraft Forum Thread](http://www.minecraftforum.net/topic/2688857-)
 

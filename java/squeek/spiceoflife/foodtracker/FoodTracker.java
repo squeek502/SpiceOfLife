@@ -3,32 +3,41 @@ package squeek.spiceoflife.foodtracker;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import squeek.applecore.api.food.FoodEvent;
 import squeek.spiceoflife.ModConfig;
-import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
-import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.items.ItemFoodJournal;
-import squeek.spiceoflife.network.PacketDifficultySetting;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
-import squeek.spiceoflife.network.PacketFoodExhaustion;
 import squeek.spiceoflife.network.PacketFoodHistory;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.relauncher.Side;
 
 public class FoodTracker
 {
+	/**
+	 * Save food eaten to the history
+	 */
+	@SubscribeEvent
+	public void onFoodEaten(FoodEvent.FoodEaten event)
+	{
+		if (event.player.worldObj.isRemote)
+			return;
+
+		FoodEaten foodEaten = new FoodEaten(event.food);
+		foodEaten.hungerRestored = event.foodValues.hunger;
+		foodEaten.foodGroup = FoodGroupRegistry.getFoodGroupForFood(event.food);
+
+		FoodTracker.addFoodEatenByPlayer(foodEaten, event.player);
+	}
+
 	/**
 	 * Add relevant extended entity data whenever an entity comes into existence
 	 */
@@ -116,34 +125,6 @@ public class FoodTracker
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			ModConfig.assumeClientOnly();
 	}
-	
-	/**
-	 * Sync saturation whenever it changes (vanilla MC only syncs when it hits 0)
-	 */
-	private float lastSaturationLevel = 0;
-	private float lastExhaustionLevel = 0;
-
-	@SubscribeEvent
-	public void onLivingUpdateEvent(LivingUpdateEvent event)
-	{
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.entity instanceof EntityPlayer))
-			return;
-
-		EntityPlayerMP player = (EntityPlayerMP) event.entity;
-
-		if (this.lastSaturationLevel != player.getFoodStats().getSaturationLevel())
-		{
-			CompatHelper.sendPlayerHealthUpdatePacket(player);
-			this.lastSaturationLevel = player.getFoodStats().getSaturationLevel();
-		}
-
-		float exhaustionLevel = FoodHelper.getExhaustionLevel(player.getFoodStats());
-		if (Math.abs(this.lastExhaustionLevel - exhaustionLevel) >= 0.01f)
-		{
-			PacketDispatcher.get().sendTo(new PacketFoodExhaustion(exhaustionLevel), player);
-			this.lastExhaustionLevel = exhaustionLevel;
-		}
-	}
 
 	public void syncFoodHistory(FoodHistory foodHistory)
 	{
@@ -178,23 +159,5 @@ public class FoodTracker
 	public static ItemStack getFoodLastEatenBy(EntityPlayer player)
 	{
 		return FoodHistory.get(player).getLastEatenFood().itemStack;
-	}
-
-	private int lastDifficultySetting = 0;
-
-	@SubscribeEvent
-	public void onWorldTick(WorldTickEvent event)
-	{
-		if (event.phase != TickEvent.Phase.END)
-			return;
-
-		if (event.world instanceof WorldServer)
-		{
-			if (this.lastDifficultySetting != event.world.difficultySetting.getDifficultyId())
-			{
-				PacketDispatcher.get().sendToAll(new PacketDifficultySetting(event.world.difficultySetting.getDifficultyId()));
-				this.lastDifficultySetting = event.world.difficultySetting.getDifficultyId();
-			}
-		}
 	}
 }

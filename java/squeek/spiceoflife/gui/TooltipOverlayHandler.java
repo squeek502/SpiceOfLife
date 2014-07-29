@@ -14,12 +14,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.asm.Hooks;
-import squeek.spiceoflife.foodtracker.FoodModifier;
-import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.KeyHelper;
 import cpw.mods.fml.common.Loader;
@@ -32,7 +31,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class TooltipOverlayHandler{
+public class TooltipOverlayHandler
+{
 	//private static final Field guiLeft = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiLeft", "field_147003_i", "i"));
 	//private static final Field guiTop = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "guiTop", "field_147009_r", "r"));
 	public static final Field theSlot = ReflectionHelper.findField(GuiContainer.class, ObfuscationReflectionHelper.remapFieldNames(GuiContainer.class.getName(), "theSlot", "field_147006_u", "u"));
@@ -73,12 +73,12 @@ public class TooltipOverlayHandler{
 			ModSpiceOfLife.Log.error("Unable to integrate the food values tooltip overlay with Tinkers Construct: ");
 			e.printStackTrace();
 		}
-		
+
 		try
 		{
 			scaledResolution1710Constructor = ScaledResolution.class.getConstructor(Minecraft.class, int.class, int.class);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 		}
 	}
@@ -88,13 +88,13 @@ public class TooltipOverlayHandler{
 	{
 		if (event.phase != TickEvent.Phase.END)
 			return;
-		
+
 		if (ModConfig.SHOW_FOOD_VALUES_IN_TOOLTIP)
 		{
 			Minecraft mc = Minecraft.getMinecraft();
 			EntityPlayer player = mc.thePlayer;
 			GuiScreen curScreen = mc.currentScreen;
-			
+
 			// in 1.7.10, the ScaledResolution constructor changed; allow for either one
 			ScaledResolution scale;
 			if (scaledResolution1710Constructor != null)
@@ -103,14 +103,14 @@ public class TooltipOverlayHandler{
 				{
 					scale = scaledResolution1710Constructor.newInstance(mc, mc.displayWidth, mc.displayHeight);
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					return;
 				}
 			}
 			else
 				scale = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-			
+
 			boolean isTinkersContainerGui = (tinkersContainerGui != null && tinkersContainerGui.isInstance(curScreen));
 			boolean isValidContainerGui = curScreen instanceof GuiContainer || isTinkersContainerGui;
 			if (isValidContainerGui && KeyHelper.isShiftKeyDown())
@@ -151,7 +151,7 @@ public class TooltipOverlayHandler{
 					if (defaultFoodValues.hunger == 0 && defaultFoodValues.saturationModifier == 0)
 						return;
 
-					FoodValues modifiedFoodValues = FoodModifier.getModifiedFoodValues(defaultFoodValues, FoodModifier.getFoodModifier(player, hoveredStack, player.getFoodStats(), defaultFoodValues.hunger, defaultFoodValues.saturationModifier));
+					FoodValues modifiedFoodValues = FoodValues.get(hoveredStack, player);
 
 					int barsNeeded = (int) Math.ceil(Math.abs(defaultFoodValues.hunger) / 2f);
 					int saturationBarsNeeded = (int) Math.max(1, Math.ceil(Math.abs(defaultFoodValues.getSaturationIncrement()) / 2f));

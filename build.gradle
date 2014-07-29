@@ -35,6 +35,7 @@ sourceSets.main{
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar,*.zip')
+    compile "applecore:AppleCore:1.7.10-1.0.0+33.d7008:deobf"
 }
 
 // variable replacement in source files

@@ -15,9 +15,7 @@ public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 		ConfigSync(PacketConfigSync.class),
 		FoodHistory(PacketFoodHistory.class),
 		FoodEatenAllTime(PacketFoodEatenAllTime.class),
-		FoodGroup(PacketFoodGroup.class),
-		FoodExhaustion(PacketFoodExhaustion.class),
-		DifficultySetting(PacketDifficultySetting.class);
+		FoodGroup(PacketFoodGroup.class);
 
 		public Class<? extends PacketBase> packet = null;
 

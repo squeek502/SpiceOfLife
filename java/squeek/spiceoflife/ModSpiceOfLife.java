@@ -3,6 +3,7 @@ package squeek.spiceoflife;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodTracker;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.gui.HUDOverlayHandler;
@@ -20,7 +21,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "after:HungerOverhaul;after:TConstruct")
+@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION)
 public class ModSpiceOfLife
 {
 	public static final Logger Log = LogManager.getLogger(ModInfo.MODID);
@@ -42,6 +43,7 @@ public class ModSpiceOfLife
 		FoodTracker foodTracker = new FoodTracker();
 		FMLCommonHandler.instance().bus().register(foodTracker);
 		MinecraftForge.EVENT_BUS.register(foodTracker);
+		MinecraftForge.EVENT_BUS.register(new FoodModifier());
 
 		if (event.getSide() == Side.CLIENT)
 		{

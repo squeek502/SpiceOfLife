@@ -3,22 +3,22 @@ package squeek.spiceoflife.gui;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodTracker;
-import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.ColorHelper;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.StringHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class TooltipHandler
@@ -48,15 +48,14 @@ public class TooltipHandler
 			else
 			{
 				int count = FoodTracker.getFoodHistoryCountOf(event.itemStack, event.entityPlayer);
-				FoodValues defaultFoodValues = FoodValues.get(event.itemStack);
-				foodModifier = FoodModifier.getFoodModifier(event.entityPlayer, event.itemStack, event.entityPlayer.getFoodStats(), defaultFoodValues.hunger, defaultFoodValues.saturationModifier);
-				FoodValues foodValues = foodModifier != 1 ? defaultFoodValues.getModified(foodModifier) : defaultFoodValues;
+				foodModifier = FoodModifier.getFoodModifier(event.entityPlayer, event.itemStack, FoodValues.get(event.itemStack));
+				FoodValues foodValues = FoodValues.get(event.itemStack, event.entityPlayer);
 
 				if (count > 0 || foodModifier != 1)
 					toolTipStringsToAdd.add(0, EnumChatFormatting.GRAY + StatCollector.translateToLocal("spiceoflife.tooltip.nutritional.value") + ColorHelper.getRelativeColor(foodModifier, 0D, 1D) + df.format(foodModifier * 100f) + "%" + (foodValues.hunger == 0 && foodModifier != 0f ? EnumChatFormatting.DARK_RED + " (" + foodValues.hunger + " " + StatCollector.translateToLocal("spiceoflife.tooltip.hunger") + ")" : ""));
 
 				if (count > 0)
-					toolTipStringsToAdd.add(EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC + StatCollector.translateToLocalFormatted("spiceoflife.tooltip.eaten.recently" + (ModConfig.USE_HUNGER_QUEUE ? ".hunger" : ""), StringHelper.getQuantityDescriptor(count), ModConfig.USE_HUNGER_QUEUE ? df.format(ModConfig.FOOD_HISTORY_LENGTH/2f) : ModConfig.FOOD_HISTORY_LENGTH));
+					toolTipStringsToAdd.add(EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC + StatCollector.translateToLocalFormatted("spiceoflife.tooltip.eaten.recently" + (ModConfig.USE_HUNGER_QUEUE ? ".hunger" : ""), StringHelper.getQuantityDescriptor(count), ModConfig.USE_HUNGER_QUEUE ? df.format(ModConfig.FOOD_HISTORY_LENGTH / 2f) : ModConfig.FOOD_HISTORY_LENGTH));
 				else
 					toolTipStringsToAdd.add(EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC + StatCollector.translateToLocal("spiceoflife.tooltip.not.eaten.recently"));
 			}
