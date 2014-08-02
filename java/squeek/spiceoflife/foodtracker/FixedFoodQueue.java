@@ -35,7 +35,9 @@ public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
 		for (int i = 0; i < nbtHistory.tagCount(); i++)
 		{
 			NBTTagCompound nbtFood = (NBTTagCompound) nbtHistory.getCompoundTagAt(i);
-			add(FoodEaten.loadFromNBTData(nbtFood));
+			FoodEaten foodEaten = FoodEaten.loadFromNBTData(nbtFood);
+			if (foodEaten != null)
+				add(foodEaten);
 		}
 	}
 

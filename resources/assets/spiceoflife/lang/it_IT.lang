@@ -8,13 +8,21 @@ spiceoflife.tooltip.food.until.enabled.2=aver mangiato qualunque pasto %d %s
 spiceoflife.tooltip.times.singular=volta
 spiceoflife.tooltip.times.plural=volte
 spiceoflife.tooltip.hunger=fame
-spiceoflife.tooltip.food.group=Gruppo di Cibo: 
+spiceoflife.tooltip.food.group=Gruppo alimentare: 
 
 # Advanced tooltip strings
 spiceoflife.tooltip.advanced.hunger.restored=Fame restaurata: %s (normale: %s)
-spiceoflife.tooltip.advanced.saturation.modifier=Modificatore per Saturazione: %s (normale: %s)
+spiceoflife.tooltip.advanced.saturation.modifier=Modificatore saturativa: %s (normale: %s)
 
 # Quantity descriptors
 spiceoflife.quantity.one.time=una volta
 spiceoflife.quantity.two.times=due volte
 spiceoflife.quantity.x.times=%d volte
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=Tutti i cibi mangiati
+spiceoflife.gui.no.food.history.yet=Storia alimentare non compare finchè la diminuzione inizia
+spiceoflife.gui.no.recent.food.eaten=Nessun cibo mangiato recentemente 
+
+# Items
+item.spiceoflife.bookfoodjournal.name=Diario alimentare
