@@ -126,7 +126,8 @@ public class GuiScreenFoodJournal extends GuiContainer
 					int localX = x + 36;
 					int localY = y + 32 + (int) ((foodEatenIndex - startIndex) * fontRenderer.FONT_HEIGHT * 2.5f);
 					foodEatenWidget.draw(localX, localY);
-					drawItemStack(foodEatenWidget.foodEaten.itemStack, localX, localY);
+					if (foodEatenWidget.foodEaten.itemStack != null)
+						drawItemStack(foodEatenWidget.foodEaten.itemStack, localX, localY);
 		
 					foodEatenIndex++;
 				}
@@ -144,7 +145,8 @@ public class GuiScreenFoodJournal extends GuiContainer
 					if (par1 >= localX && par1 < localX + 16 && par2 >= localY && par2 < localY + 16)
 					{
 						hoveredStack = foodEatenWidget.foodEaten.itemStack;
-						this.drawItemStackTooltip(foodEatenWidget.foodEaten.itemStack, par1, par2);
+						if (hoveredStack != null)
+							this.drawItemStackTooltip(hoveredStack, par1, par2);
 					}
 		
 					foodEatenIndex++;
