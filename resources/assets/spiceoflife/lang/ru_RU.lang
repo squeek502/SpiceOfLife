@@ -10,10 +10,6 @@ spiceoflife.tooltip.times.plural=раз
 spiceoflife.tooltip.hunger=голода
 spiceoflife.tooltip.food.group=Группа пищи: 
 
-# Advanced tooltip strings
-spiceoflife.tooltip.advanced.hunger.restored=Голода восстановлено: %s (по-умолч.: %s)
-spiceoflife.tooltip.advanced.saturation.modifier=Модификатор насыщенности: %s (по-умолч.: %s)
-
 # Quantity descriptors
 spiceoflife.quantity.one.time=один раз
 spiceoflife.quantity.two.times=дважды
