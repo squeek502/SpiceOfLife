@@ -10,10 +10,6 @@ spiceoflife.tooltip.times.plural=volte
 spiceoflife.tooltip.hunger=fame
 spiceoflife.tooltip.food.group=Gruppo alimentare: 
 
-# Advanced tooltip strings
-spiceoflife.tooltip.advanced.hunger.restored=Fame restaurata: %s (normale: %s)
-spiceoflife.tooltip.advanced.saturation.modifier=Modificatore saturativa: %s (normale: %s)
-
 # Quantity descriptors
 spiceoflife.quantity.one.time=una volta
 spiceoflife.quantity.two.times=due volte

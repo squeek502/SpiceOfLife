@@ -10,10 +10,6 @@ spiceoflife.tooltip.times.plural=times
 spiceoflife.tooltip.hunger=hunger
 spiceoflife.tooltip.food.group=Food Group: 
 
-# Advanced tooltip strings
-spiceoflife.tooltip.advanced.hunger.restored=Hunger restored: %s (default: %s)
-spiceoflife.tooltip.advanced.saturation.modifier=Saturation modifier: %s (default: %s)
-
 # Quantity descriptors
 spiceoflife.quantity.one.time=once
 spiceoflife.quantity.two.times=twice
