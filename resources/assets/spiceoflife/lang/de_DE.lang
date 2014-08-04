@@ -10,10 +10,6 @@ spiceoflife.tooltip.times.plural= Male
 spiceoflife.tooltip.hunger=Hunger
 spiceoflife.tooltip.food.group=Nahrungsgruppe: 
 
-# Advanced tooltip strings
-spiceoflife.tooltip.advanced.hunger.restored=Hunger gestillt: %s (Standard: %s)
-spiceoflife.tooltip.advanced.saturation.modifier=Sättigungsmodifikator: %s (Standard: %s)
-
 # Quantity descriptors
 spiceoflife.quantity.one.time=Einmal
 spiceoflife.quantity.two.times=Zweimal

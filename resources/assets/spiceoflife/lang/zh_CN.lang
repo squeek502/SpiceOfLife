@@ -10,10 +10,6 @@ spiceoflife.tooltip.times.plural=次
 spiceoflife.tooltip.hunger=h饱腹度
 spiceoflife.tooltip.food.group=食物组: 
 
-# Advanced tooltip strings
-spiceoflife.tooltip.advanced.hunger.restored=恢复饱腹度: %s (默认: %s)
-spiceoflife.tooltip.advanced.saturation.modifier=恢复隐藏饱腹度: %s (默认: %s)
-
 # Quantity descriptors
 spiceoflife.quantity.one.time=1次
 spiceoflife.quantity.two.times=2次
