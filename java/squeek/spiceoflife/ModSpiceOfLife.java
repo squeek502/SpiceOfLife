@@ -6,9 +6,7 @@ import org.apache.logging.log4j.Logger;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodTracker;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
-import squeek.spiceoflife.gui.HUDOverlayHandler;
 import squeek.spiceoflife.gui.TooltipHandler;
-import squeek.spiceoflife.gui.TooltipOverlayHandler;
 import squeek.spiceoflife.network.PacketHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -26,8 +24,8 @@ public class ModSpiceOfLife
 {
 	public static final Logger Log = LogManager.getLogger(ModInfo.MODID);
 
-    @Instance(ModInfo.MODID)
-    public static ModSpiceOfLife instance;
+	@Instance(ModInfo.MODID)
+	public static ModSpiceOfLife instance;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
@@ -48,10 +46,6 @@ public class ModSpiceOfLife
 		if (event.getSide() == Side.CLIENT)
 		{
 			MinecraftForge.EVENT_BUS.register(new TooltipHandler());
-			HUDOverlayHandler hudOverlayHandler = new HUDOverlayHandler();
-			FMLCommonHandler.instance().bus().register(hudOverlayHandler);
-			MinecraftForge.EVENT_BUS.register(hudOverlayHandler);
-			FMLCommonHandler.instance().bus().register(new TooltipOverlayHandler());
 		}
 
 		// need to make sure that the packet types get registered before packets are received
@@ -65,7 +59,7 @@ public class ModSpiceOfLife
 	}
 
 	@EventHandler
-    public void serverStarting(FMLServerStartingEvent event)
+	public void serverStarting(FMLServerStartingEvent event)
 	{
 		FoodGroupRegistry.serverInit();
 	}

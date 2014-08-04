@@ -2,23 +2,23 @@ package squeek.spiceoflife.helpers;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import squeek.applecore.api.AppleCoreAccessor;
+import squeek.applecore.api.AppleCoreAPI;
 
 public class FoodHelper
 {
 	public static boolean isFood(ItemStack itemStack)
 	{
-		return AppleCoreAccessor.get().isFood(itemStack);
+		return AppleCoreAPI.accessor.isFood(itemStack);
 	}
 
 	public static float getExhaustionLevel(EntityPlayer player)
 	{
-		return AppleCoreAccessor.get().getExhaustion(player);
+		return AppleCoreAPI.accessor.getExhaustion(player);
 	}
 
 	public static float getMaxExhaustionLevel(EntityPlayer player)
 	{
-		return AppleCoreAccessor.get().getMaxExhaustion(player);
+		return AppleCoreAPI.accessor.getMaxExhaustion(player);
 	}
 
 	public static float getSaturationModifierFromIncrement(float saturationIncrement, int hunger)

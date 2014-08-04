@@ -192,36 +192,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 					+ "Not given if a player was given a food journal by " + ModConfig.GIVE_FOOD_JOURNAL_ON_START_NAME;
 
 	/*
-	 * CLIENT
-	 */
-	private static final String CATEGORY_CLIENT = "client";
-	private static final String CATEGORY_CLIENT_COMMENT =
-			"These config settings are client-side only";
-
-	public static boolean SHOW_FOOD_VALUES_IN_TOOLTIP = true;
-	private static final String SHOW_FOOD_VALUES_IN_TOOLTIP_NAME = "show.food.values.in.tooltip";
-	private static final String SHOW_FOOD_VALUES_IN_TOOLTIP_COMMENT =
-			"If true, shows the hunger and saturation values of food in its tooltip while holding SHIFT";
-
-	public static boolean SHOW_SATURATION_OVERLAY = true;
-	private static final String SHOW_SATURATION_OVERLAY_NAME = "show.saturation.hud.overlay";
-	private static final String SHOW_SATURATION_OVERLAY_COMMENT =
-			"If true, shows your current saturation level overlayed on the hunger bar";
-
-	public static boolean SHOW_FOOD_VALUES_OVERLAY = true;
-	private static final String SHOW_FOOD_VALUES_OVERLAY_NAME = "show.food.values.hud.overlay";
-	private static final String SHOW_FOOD_VALUES_OVERLAY_COMMENT =
-			"If true, shows the hunger (and saturation if " + SHOW_SATURATION_OVERLAY_NAME + " is true) that would be restored by food you are currently holding";
-
-	// whether or not food exhaustion is actually enabled (we either are the server or know the server has the mod)
-	public static boolean SHOW_FOOD_EXHAUSTION_OVERLAY = false;
-	// the value written in the config file
-	public static boolean SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL = ModConfig.FOOD_MODIFIER_ENABLED_DEFAULT;
-	private static final String SHOW_FOOD_EXHAUSTION_OVERLAY_NAME = "show.food.exhaustion.hud.overlay";
-	private static final String SHOW_FOOD_EXHAUSTION_OVERLAY_COMMENT =
-			"If true, shows your food exhaustion as a progress bar behind the hunger bars";
-
-	/*
 	 * ITEMS
 	 */
 
@@ -278,20 +248,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 
 		FOOD_HUNGER_ROUNDING_MODE_STRING = config.get(CATEGORY_SERVER, FOOD_HUNGER_ROUNDING_MODE_NAME, FOOD_HUNGER_ROUNDING_MODE_DEFAULT, FOOD_HUNGER_ROUNDING_MODE_COMMENT).getString();
 		setRoundingMode();
-
-		/*
-		 * CLIENT
-		 */
-		config.getCategory(CATEGORY_CLIENT).setComment(CATEGORY_CLIENT_COMMENT);
-
-		SHOW_FOOD_VALUES_IN_TOOLTIP = config.get(CATEGORY_CLIENT, SHOW_FOOD_VALUES_IN_TOOLTIP_NAME, true, SHOW_FOOD_VALUES_IN_TOOLTIP_COMMENT).getBoolean(true);
-		SHOW_SATURATION_OVERLAY = config.get(CATEGORY_CLIENT, SHOW_SATURATION_OVERLAY_NAME, true, SHOW_SATURATION_OVERLAY_COMMENT).getBoolean(true);
-		SHOW_FOOD_VALUES_OVERLAY = config.get(CATEGORY_CLIENT, SHOW_FOOD_VALUES_OVERLAY_NAME, true, SHOW_FOOD_VALUES_OVERLAY_COMMENT).getBoolean(true);
-		SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL = config.get(CATEGORY_CLIENT, SHOW_FOOD_EXHAUSTION_OVERLAY_NAME, true, SHOW_FOOD_EXHAUSTION_OVERLAY_COMMENT).getBoolean(true);
-
-		// only use the config value immediately when server-side; the client assumes false until the server syncs the config
-		if (FMLCommonHandler.instance().getSide() == Side.SERVER)
-			FOOD_MODIFIER_ENABLED = FOOD_MODIFIER_ENABLED_CONFIG_VAL;
 
 		/*
 		 * FOOD GROUPS
@@ -455,7 +411,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FoodGroupRegistry.clear();
 		}
 
-		SHOW_FOOD_EXHAUSTION_OVERLAY = SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL;
 		CompatHelper.reregisterItem(ModContent.foodJournal, ITEM_FOOD_JOURNAL_ID);
 
 		return null;
@@ -471,7 +426,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 	{
 		// assume false until the server syncs
 		FOOD_MODIFIER_ENABLED = false;
-		SHOW_FOOD_EXHAUSTION_OVERLAY = false;
 		ITEM_FOOD_JOURNAL_ID = CompatHelper.deregisterItem(ModContent.foodJournal);
 	}
 }

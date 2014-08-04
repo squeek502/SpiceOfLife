@@ -36,7 +36,7 @@ public class WidgetButtonSortDirection extends GuiButton
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(modIcons);
             int x = 0;
-            int y = 63;
+            int y = 0;
 
             if (isHovered)
             {

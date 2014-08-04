@@ -35,7 +35,7 @@ sourceSets.main{
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar,*.zip')
-    compile "applecore:AppleCore:1.7.10-1.0.0+33.d7008:deobf"
+    compile "applecore:AppleCore:1.7.10-1.0.0+38.ead31:deobf"
 }
 
 // variable replacement in source files
@@ -68,14 +68,6 @@ processResources.dependsOn cleanModInfo
 compileJava.dependsOn processSourcesCustom
 afterEvaluate { project ->
 	processSourcesCustom.shouldRunAfter(sourceMainJava)
-}
-
-// Add Coremod Manifest
-jar {
-    manifest {
-        attributes 'FMLCorePlugin': 'squeek.spiceoflife.asm.ASMPlugin'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
 }
 
 processResources
