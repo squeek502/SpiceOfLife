@@ -5,7 +5,9 @@ import java.lang.reflect.Method;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.foodtracker.FoodValues;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.relauncher.Side;
 
 public class ProxyMariculture
 {
@@ -47,23 +49,30 @@ public class ProxyMariculture
 				ItemBait = Class.forName("mariculture.fishery.items.ItemBait");
 
 				ItemFood = Class.forName("mariculture.core.items.ItemFood");
-				getFoodLevel = ItemFood.getDeclaredMethod("getFoodLevel", int.class);
-				getFoodLevel.setAccessible(true);
-				getFoodSaturation = ItemFood.getDeclaredMethod("getFoodSaturation", int.class);
-				getFoodSaturation.setAccessible(true);
 
-				apiFishing = Class.forName("mariculture.api.fishery.Fishing");
-				apiIBaitHandler = Class.forName("mariculture.api.fishery.IBaitHandler");
-				apiIFishHelper = Class.forName("mariculture.api.fishery.IFishHelper");
-				apiFishSpecies = Class.forName("mariculture.api.fishery.fish.FishSpecies");
+				// all of this stuff is only used to get food values on the client
+				// some Mariculture API classes (FishSpecies) have client-only imports, so running this code on the server
+				// will cause ClassNotFoundExceptions when searching for methods in getDeclaredMethod
+				if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+				{
+					getFoodLevel = ItemFood.getDeclaredMethod("getFoodLevel", int.class);
+					getFoodLevel.setAccessible(true);
+					getFoodSaturation = ItemFood.getDeclaredMethod("getFoodSaturation", int.class);
+					getFoodSaturation.setAccessible(true);
 
-				fishingBait = apiFishing.getDeclaredField("bait");
-				fishingFish = apiFishing.getDeclaredField("fishHelper");
+					apiFishing = Class.forName("mariculture.api.fishery.Fishing");
+					apiIBaitHandler = Class.forName("mariculture.api.fishery.IBaitHandler");
+					apiIFishHelper = Class.forName("mariculture.api.fishery.IFishHelper");
+					apiFishSpecies = Class.forName("mariculture.api.fishery.fish.FishSpecies");
 
-				getSpecies = apiIFishHelper.getDeclaredMethod("getSpecies", int.class);
-				getBaitQuality = apiIBaitHandler.getDeclaredMethod("getBaitQuality", ItemStack.class);
-				FishSpecies_getFoodStat = apiFishSpecies.getDeclaredMethod("getFoodStat");
-				FishSpecies_getFoodSaturation = apiFishSpecies.getDeclaredMethod("getFoodSaturation");
+					fishingBait = apiFishing.getDeclaredField("bait");
+					fishingFish = apiFishing.getDeclaredField("fishHelper");
+
+					getSpecies = apiIFishHelper.getDeclaredMethod("getSpecies", int.class);
+					getBaitQuality = apiIBaitHandler.getDeclaredMethod("getBaitQuality", ItemStack.class);
+					FishSpecies_getFoodStat = apiFishSpecies.getDeclaredMethod("getFoodStat");
+					FishSpecies_getFoodSaturation = apiFishSpecies.getDeclaredMethod("getFoodSaturation");
+				}
 
 				initialized = true;
 			}
