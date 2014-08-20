@@ -141,7 +141,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final boolean AFFECT_FOOD_HUNGER_VALUES_DEFAULT = true;
 	private static final String AFFECT_FOOD_HUNGER_VALUES_COMMENT =
 			"If true, foods' hunger value will be multiplied by the current nutritional value\n"
-					+ "Set this to false and " + ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_NAME + " to true to make diminishing returns only affect saturation";
+					+ "Setting this to false and " + ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_NAME + " to true will make diminishing returns affect saturation only";
 
 	public static boolean AFFECT_NEGATIVE_FOOD_HUNGER_VALUES = ModConfig.AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT;
 	private static final String AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_NAME = "affect.negative.food.hunger.values";
@@ -155,8 +155,9 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final boolean AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT = false;
 	private static final String AFFECT_FOOD_SATURATION_MODIFIERS_COMMENT =
 			"If true, foods' saturation modifier will be multiplied by the current nutritional value\n"
-					+ "NOTE: Saturation bonuses of foods will automatically decrease as the hunger value of the food decreases\n"
-					+ "Setting this to true will make saturation bonuses decrease disproportionately more than hunger values";
+					+ "NOTE: When " + ModConfig.AFFECT_FOOD_HUNGER_VALUES_NAME + " is true, saturation bonuses of foods will automatically decrease as the hunger value of the food decreases\n"
+					+ "Setting this to true when " + ModConfig.AFFECT_FOOD_HUNGER_VALUES_NAME + " is true will make saturation bonuses decrease disproportionately more than hunger values\n"
+					+ "Setting this to true and " + ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_NAME + " to false will make diminishing returns affect saturation only";
 
 	public static boolean AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = ModConfig.AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT;
 	private static final String AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_NAME = "affect.negative.food.saturation.modifiers";
