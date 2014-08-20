@@ -136,11 +136,25 @@ public class ModConfig implements IPackable, IPacketProcessor
 		public abstract double round(double val);
 	}
 
+	public static boolean AFFECT_FOOD_HUNGER_VALUES = ModConfig.AFFECT_FOOD_HUNGER_VALUES_DEFAULT;
+	private static final String AFFECT_FOOD_HUNGER_VALUES_NAME = "affect.food.hunger.values";
+	private static final boolean AFFECT_FOOD_HUNGER_VALUES_DEFAULT = true;
+	private static final String AFFECT_FOOD_HUNGER_VALUES_COMMENT =
+			"If true, foods' hunger value will be multiplied by the current nutritional value\n"
+					+ "Set this to false and " + ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_NAME + " to true to make diminishing returns only affect saturation";
+
+	public static boolean AFFECT_NEGATIVE_FOOD_HUNGER_VALUES = ModConfig.AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT;
+	private static final String AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_NAME = "affect.negative.food.hunger.values";
+	private static final boolean AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT = false;
+	private static final String AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_COMMENT =
+			"If true, foods with negative hunger values will be made more negative as nutritional value decreases\n"
+					+ "NOTE: " + AFFECT_FOOD_HUNGER_VALUES_NAME + " must be true for this to have any affect";
+
 	public static boolean AFFECT_FOOD_SATURATION_MODIFIERS = ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT;
 	private static final String AFFECT_FOOD_SATURATION_MODIFIERS_NAME = "affect.food.saturation.modifiers";
 	private static final boolean AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT = false;
 	private static final String AFFECT_FOOD_SATURATION_MODIFIERS_COMMENT =
-			"If true, foods' saturation modifier will also be multiplied by the nutritional value\n"
+			"If true, foods' saturation modifier will be multiplied by the current nutritional value\n"
 					+ "NOTE: Saturation bonuses of foods will automatically decrease as the hunger value of the food decreases\n"
 					+ "Setting this to true will make saturation bonuses decrease disproportionately more than hunger values";
 
@@ -269,6 +283,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 		FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, FOOD_EATEN_THRESHOLD_NAME, FOOD_EATEN_THRESHOLD_DEFAULT, FOOD_EATEN_THRESHOLD_COMMENT).getInt();
 		CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_NAME, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_COMMENT).getBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT);
 		USE_FOOD_GROUPS = config.get(CATEGORY_SERVER, USE_FOOD_GROUPS_NAME, USE_FOOD_GROUPS_DEFAULT, USE_FOOD_GROUPS_COMMENT).getBoolean(USE_FOOD_GROUPS_DEFAULT);
+		AFFECT_FOOD_HUNGER_VALUES = config.get(CATEGORY_SERVER, AFFECT_FOOD_HUNGER_VALUES_NAME, AFFECT_FOOD_HUNGER_VALUES_DEFAULT, AFFECT_FOOD_HUNGER_VALUES_COMMENT).getBoolean(AFFECT_FOOD_HUNGER_VALUES_DEFAULT);
+		AFFECT_NEGATIVE_FOOD_HUNGER_VALUES = config.get(CATEGORY_SERVER, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_NAME, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_COMMENT).getBoolean(AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT);
 		AFFECT_FOOD_SATURATION_MODIFIERS = config.get(CATEGORY_SERVER, AFFECT_FOOD_SATURATION_MODIFIERS_NAME, AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT, AFFECT_FOOD_SATURATION_MODIFIERS_COMMENT).getBoolean(AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT);
 		AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = config.get(CATEGORY_SERVER, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_NAME, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_COMMENT).getBoolean(AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT);
 		USE_HUNGER_QUEUE = config.get(CATEGORY_SERVER, USE_HUNGER_QUEUE_NAME, USE_HUNGER_QUEUE_DEFAULT, USE_HUNGER_QUEUE_COMMENT).getBoolean(USE_HUNGER_QUEUE_DEFAULT);
