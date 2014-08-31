@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.FoodHistory;
@@ -225,7 +224,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 	 * ITEMS
 	 */
 
-	public static int ITEM_FOOD_JOURNAL_ID = 0;
 	public static final String ITEM_FOOD_JOURNAL_NAME = "bookfoodjournal";
 
 	/*
@@ -456,7 +454,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 		}
 
 		SHOW_FOOD_EXHAUSTION_OVERLAY = SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL;
-		CompatHelper.reregisterItem(ModContent.foodJournal, ITEM_FOOD_JOURNAL_ID);
 
 		return null;
 	}
@@ -472,6 +469,5 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// assume false until the server syncs
 		FOOD_MODIFIER_ENABLED = false;
 		SHOW_FOOD_EXHAUSTION_OVERLAY = false;
-		ITEM_FOOD_JOURNAL_ID = CompatHelper.deregisterItem(ModContent.foodJournal);
 	}
 }
