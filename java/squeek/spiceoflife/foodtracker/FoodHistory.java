@@ -105,6 +105,13 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		return history.peekLast();
 	}
 
+	public void reset()
+	{
+		history.clear();
+		totalFoodsEatenAllTime = 0;
+		wasGivenFoodJournal = false;
+	}
+
 	public static FoodHistory get(EntityPlayer player)
 	{
 		FoodHistory foodHistory = (FoodHistory) player.getExtendedProperties(TAG_KEY);

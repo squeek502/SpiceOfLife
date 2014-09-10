@@ -3,6 +3,7 @@ package squeek.spiceoflife;
 import java.util.logging.Logger;
 import net.minecraftforge.common.MinecraftForge;
 import squeek.spiceoflife.foodtracker.FoodTracker;
+import squeek.spiceoflife.foodtracker.commands.CommandResetHistory;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.gui.HUDOverlayHandler;
 import squeek.spiceoflife.gui.TooltipOverlayHandler;
@@ -66,5 +67,6 @@ public class ModSpiceOfLife
     public void serverStarting(FMLServerStartingEvent event)
 	{
 		FoodGroupRegistry.serverInit();
+		event.registerServerCommand(new CommandResetHistory());
 	}
 }

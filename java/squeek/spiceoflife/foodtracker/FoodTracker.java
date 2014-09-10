@@ -142,7 +142,7 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHan
 		}
 	}
 
-	public void syncFoodHistory(FoodHistory foodHistory)
+	public static void syncFoodHistory(FoodHistory foodHistory)
 	{
 		PacketDispatcher.get().sendTo(new PacketFoodEatenAllTime(foodHistory.totalFoodsEatenAllTime), (EntityPlayerMP) foodHistory.player);
 		PacketDispatcher.get().sendTo(new PacketFoodHistory(foodHistory, true), (EntityPlayerMP) foodHistory.player);
