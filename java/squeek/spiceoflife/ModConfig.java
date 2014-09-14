@@ -1,12 +1,8 @@
 package squeek.spiceoflife;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.ConfigCategory;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import squeek.spiceoflife.compat.CompatHelper;
@@ -14,7 +10,7 @@ import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 import squeek.spiceoflife.foodtracker.FoodModifier;
-import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupConfig;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.IPacketProcessor;
@@ -85,11 +81,11 @@ public class ModConfig implements IPackable, IPacketProcessor
 			"If true, a player's food history will be empty once they pass the " + FOOD_EATEN_THRESHOLD_NAME + "\n"
 					+ "If false, any food eaten before the threshold is passed will also count after it is passed";
 
-	public static boolean USE_FOOD_GROUPS = ModConfig.USE_FOOD_GROUPS_DEFAULT;
-	private static final String USE_FOOD_GROUPS_NAME = "use.food.groups";
-	private static final boolean USE_FOOD_GROUPS_DEFAULT = false;
-	private static final String USE_FOOD_GROUPS_COMMENT =
-			"See 'foodgroups' settings category";
+	public static boolean USE_FOOD_GROUPS_AS_WHITELISTS = ModConfig.USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT;
+	private static final String USE_FOOD_GROUPS_AS_WHITELISTS_NAME = "use.food.groups.as.whitelists";
+	private static final boolean USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT = false;
+	private static final String USE_FOOD_GROUPS_AS_WHITELISTS_COMMENT =
+			"If true, any foods not in a food group will be excluded from diminishing returns";
 
 	public static RoundingMode FOOD_HUNGER_ROUNDING_MODE = null;
 	public static String FOOD_HUNGER_ROUNDING_MODE_STRING = ModConfig.FOOD_HUNGER_ROUNDING_MODE_DEFAULT;
@@ -247,8 +243,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 	 */
 	private static final String CATEGORY_FOODGROUPS = "foodgroups";
 	private static final String CATEGORY_FOODGROUPS_COMMENT =
-			COMMENT_SERVER_SIDE_OPTIONS + "\n"
-					+ "NOTE: Food groups are a work-in-progress; not all features have been implemented and/or tested";
+			"Food groups are defined using .json files in /config/SpiceOfLife/\n"
+					+ "See /config/SpiceOfLife/example-food-group.json";
 
 	public static void init(File file)
 	{
@@ -283,7 +279,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		FOOD_HISTORY_PERSISTS_THROUGH_DEATH = config.get(CATEGORY_SERVER, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_NAME, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_COMMENT).getBoolean(FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT);
 		FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, FOOD_EATEN_THRESHOLD_NAME, FOOD_EATEN_THRESHOLD_DEFAULT, FOOD_EATEN_THRESHOLD_COMMENT).getInt();
 		CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_NAME, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_COMMENT).getBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT);
-		USE_FOOD_GROUPS = config.get(CATEGORY_SERVER, USE_FOOD_GROUPS_NAME, USE_FOOD_GROUPS_DEFAULT, USE_FOOD_GROUPS_COMMENT).getBoolean(USE_FOOD_GROUPS_DEFAULT);
+		USE_FOOD_GROUPS_AS_WHITELISTS = config.get(CATEGORY_SERVER, USE_FOOD_GROUPS_AS_WHITELISTS_NAME, USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT, USE_FOOD_GROUPS_AS_WHITELISTS_COMMENT).getBoolean(USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT);
 		AFFECT_FOOD_HUNGER_VALUES = config.get(CATEGORY_SERVER, AFFECT_FOOD_HUNGER_VALUES_NAME, AFFECT_FOOD_HUNGER_VALUES_DEFAULT, AFFECT_FOOD_HUNGER_VALUES_COMMENT).getBoolean(AFFECT_FOOD_HUNGER_VALUES_DEFAULT);
 		AFFECT_NEGATIVE_FOOD_HUNGER_VALUES = config.get(CATEGORY_SERVER, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_NAME, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_COMMENT).getBoolean(AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT);
 		AFFECT_FOOD_SATURATION_MODIFIERS = config.get(CATEGORY_SERVER, AFFECT_FOOD_SATURATION_MODIFIERS_NAME, AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT, AFFECT_FOOD_SATURATION_MODIFIERS_COMMENT).getBoolean(AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT);
@@ -319,85 +315,13 @@ public class ModConfig implements IPackable, IPacketProcessor
 		 * FOOD GROUPS
 		 */
 		config.getCategory(CATEGORY_FOODGROUPS).setComment(CATEGORY_FOODGROUPS_COMMENT);
+		FoodGroupConfig.setup(file.getParentFile());
 
-		writeExampleFoodGroup();
-
-		if (USE_FOOD_GROUPS)
-			loadFoodGroups();
+		// remove obsolete config options
+		config.getCategory(CATEGORY_SERVER).remove("use.food.groups");
+		config.getCategory(CATEGORY_FOODGROUPS).clear();
 
 		save();
-	}
-
-	public static void loadFoodGroups()
-	{
-		List<String> enabledFoodGroups = new ArrayList<String>();
-
-		ConfigCategory categoryFoodGroups = config.getCategory(CATEGORY_FOODGROUPS);
-
-		for (String configKey : categoryFoodGroups.keySet())
-		{
-			if (configKey.endsWith(".enabled") && config.get(CATEGORY_FOODGROUPS, configKey, false).getBoolean(false))
-				enabledFoodGroups.add(configKey.substring(0, configKey.length() - ".enabled".length()));
-		}
-
-		for (String foodGroupIdent : enabledFoodGroups)
-		{
-			String name = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".name", foodGroupIdent).getString();
-			int priority = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".priority", 0).getInt();
-
-			FoodGroup foodGroup = new FoodGroup(foodGroupIdent, name, priority);
-
-			String[] items = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".items", new String[]{}).getStringList();
-			String[] oredicts = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".oredicts", new String[]{}).getStringList();
-			//String[] baseItems = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".item.recipe.bases", new String[]{}).getStringList();
-			//String[] baseOredicts = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".oredict.recipe.bases", new String[]{}).getStringList();
-
-			for (String itemString : items)
-			{
-				addItemToFoodGroup(foodGroup, itemString, false);
-			}
-			/*
-			for (String itemString : baseItems)
-			{
-				addItemToFoodGroup(foodGroup, itemString, true);
-			}
-			*/
-			for (String oredictString : oredicts)
-			{
-				foodGroup.addFood(oredictString, false);
-			}
-			/*
-			for (String oredictString : baseOredicts)
-			{
-				foodGroup.addFood(oredictString, true);
-			}
-			*/
-
-			FoodGroupRegistry.addFoodGroup(foodGroup);
-		}
-	}
-
-	public static void addItemToFoodGroup(FoodGroup foodGroup, String itemString, boolean isBaseItem)
-	{
-		String[] itemStringParts = itemString.split(":");
-		if (itemStringParts.length > 0)
-		{
-			int itemId = Integer.parseInt(itemStringParts[0]);
-			boolean exactMetadata = itemStringParts.length > 1 && itemStringParts[1] != "*";
-			int metadata = itemStringParts.length > 1 && exactMetadata ? Integer.parseInt(itemStringParts[1]) : 0;
-			foodGroup.addFood(new ItemStack(itemId, 1, metadata), exactMetadata, isBaseItem);
-		}
-	}
-
-	public static void writeExampleFoodGroup()
-	{
-		config.get(CATEGORY_FOODGROUPS, "example.enabled", false);
-		config.get(CATEGORY_FOODGROUPS, "example.name", "Example");
-		config.get(CATEGORY_FOODGROUPS, "example.priority", 0, "Food can only belong to one food group\nin the case of conflicting food groups, the food group with the highest priority will be selected\nExample: A food group with priority 3 will take precedence over a food group with priority 1");
-		config.get(CATEGORY_FOODGROUPS, "example.items", new String[]{"260", "322:0"}, "A list of item IDs in id:meta format\nThis example adds red apples (id 260 with any metadata) and golden apples (id 322 with metadata 0), thereby excluding enchanted golden apples (id 322 with metadata 1)");
-		//config.get(CATEGORY_FOODGROUPS, "example.item.recipe.bases", new String[]{"260", "322:0"}, "A list of item IDs in id:meta format\nEach item in this list will also include any item derived from it (meaning any item where the base item is used in some part of its crafting recipe)\nNote: To have an item work as either a direct match or a recipe base, it needs to be in both lists");
-		config.get(CATEGORY_FOODGROUPS, "example.oredicts", new String[]{"listAllfruit", "listAllberry"}, "A list of ore dictionary entries\nThis example adds two oredictionary entries created by Pam's HarvestCraft, including all fruit and all berries");
-		//config.get(CATEGORY_FOODGROUPS, "example.oredict.recipe.bases", new String[]{"listAllfruit", "listAllberry"}, "A list of ore dictionary entries\nEach entry in this list will also include any item derived from it (meaning any item where the base oredictionary entry is used in some part of its crafting recipe)\nNote: To have an entry work as either a direct match or a recipe base, it needs to be in both lists");
 	}
 
 	public static void setRoundingMode()
@@ -439,7 +363,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			data.writeBoolean(FOOD_HISTORY_PERSISTS_THROUGH_DEATH);
 			data.writeInt(FOOD_EATEN_THRESHOLD);
 			data.writeBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD);
-			data.writeBoolean(USE_FOOD_GROUPS);
+			data.writeBoolean(USE_FOOD_GROUPS_AS_WHITELISTS);
 			data.writeBoolean(AFFECT_FOOD_SATURATION_MODIFIERS);
 			data.writeBoolean(AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS);
 			data.writeBoolean(USE_HUNGER_QUEUE);
@@ -458,7 +382,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FOOD_HISTORY_PERSISTS_THROUGH_DEATH = data.readBoolean();
 			FOOD_EATEN_THRESHOLD = data.readInt();
 			CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = data.readBoolean();
-			USE_FOOD_GROUPS = data.readBoolean();
+			USE_FOOD_GROUPS_AS_WHITELISTS = data.readBoolean();
 			AFFECT_FOOD_SATURATION_MODIFIERS = data.readBoolean();
 			AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = data.readBoolean();
 			USE_HUNGER_QUEUE = data.readBoolean();
@@ -472,7 +396,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		if (FOOD_MODIFIER_ENABLED)
 		{
 			setRoundingMode();
-			FoodModifier.onFormulaChanged();
+			FoodModifier.onGlobalFormulaChanged();
 			FoodHistory.get(player).onHistoryTypeChanged();
 			FoodGroupRegistry.clear();
 		}

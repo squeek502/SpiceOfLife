@@ -8,6 +8,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
 import net.minecraft.world.World;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.proxy.ProxyAgriculture;
 import squeek.spiceoflife.proxy.ProxyHungerOverhaul;
 import squeek.spiceoflife.proxy.ProxyMariculture;
@@ -19,7 +20,12 @@ public class FoodHelper
 	{
 		foodExhaustion.setAccessible(true);
 	}
-	
+
+	public static boolean isValidFood(ItemStack itemStack)
+	{
+		return isFood(itemStack) && !FoodGroupRegistry.isFoodBlacklisted(itemStack);
+	}
+
 	public static boolean isFood(ItemStack itemStack)
 	{
 		return (itemStack.getItem() instanceof ItemFood && isEdible(itemStack)) || ProxyAgriculture.isFood(itemStack) || ProxyMariculture.isFood(itemStack) || itemStack.getItem() == Item.cake;

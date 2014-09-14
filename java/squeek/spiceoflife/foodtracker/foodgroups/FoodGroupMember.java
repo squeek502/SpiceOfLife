@@ -207,10 +207,8 @@ public class FoodGroupMember implements IPackable
 	{
 		itemStack = data.readItemStack();
 		oredictName = data.readUTF();
-		oredictName = oredictName != "" ? oredictName : null;
+		oredictName = !oredictName.equals("") ? oredictName : null;
 		exactMetadata = data.readBoolean();
 		baseItemForRecipes = data.readBoolean();
-
-		initMatchingItemsList();
 	}
 }

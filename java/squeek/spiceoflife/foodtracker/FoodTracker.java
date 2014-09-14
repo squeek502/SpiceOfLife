@@ -62,6 +62,7 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHan
 
 		// server needs to send any loaded data to the client
 		FoodHistory foodHistory = FoodHistory.get(player);
+		foodHistory.validate();
 		syncFoodHistory(foodHistory);
 
 		// give food journal
