@@ -16,7 +16,7 @@
 			"260",
 			"322:0"
 		]
-	}
+	},
 
 	// The name that will be shown in the tooltip.
 	// Can be localized. Unused for hidden food groups.
@@ -45,5 +45,5 @@
 	// instead of the main diminishing returns formula 
 	// See the food.modifier.formula config option in the main SpiceOfLife.cfg for documentation
 	// Optional; default if not defined: food.modifier.formula from SpiceOfLife.cfg
-	"formula": "MAX(0, 1 - count/2)",
+	"formula": "MAX(0, 1 - count/2)"
 }
