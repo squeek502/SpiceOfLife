@@ -200,6 +200,18 @@ public class ModConfig implements IPackable, IPacketProcessor
 			"If true, a food journal will be given to each player once diminishing returns start for them\n"
 					+ "Not given if a player was given a food journal by " + ModConfig.GIVE_FOOD_JOURNAL_ON_START_NAME;
 
+	public static float FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = ModConfig.FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT;
+	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME = "give.food.journal.on.dimishing.returns.start";
+	private static final float FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT = 0.25f;
+	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_COMMENT =
+			"The chance for food to drop from an open food container when the player jumps";
+
+	public static int FOOD_CONTAINERS_MAX_STACKSIZE = ModConfig.FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT;
+	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_NAME = "give.food.journal.on.dimishing.returns.start";
+	private static final int FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT = 2;
+	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_COMMENT =
+			"The maximum stacksize per slot in a food container";
+
 	/*
 	 * CLIENT
 	 */
@@ -237,6 +249,14 @@ public class ModConfig implements IPackable, IPacketProcessor
 	public static int ITEM_FOOD_JOURNAL_ID = ModConfig.ITEM_FOOD_JOURNAL_ID_DEFAULT;
 	public static final String ITEM_FOOD_JOURNAL_NAME = "bookfoodjournal";
 	public static final int ITEM_FOOD_JOURNAL_ID_DEFAULT = 6850;
+
+	public static int ITEM_LUNCH_BOX_ID = ModConfig.ITEM_LUNCH_BOX_ID_DEFAULT;
+	public static final String ITEM_LUNCH_BOX_NAME = "lunchbox";
+	public static final int ITEM_LUNCH_BOX_ID_DEFAULT = 6851;
+
+	public static int ITEM_LUNCH_BAG_ID = ModConfig.ITEM_LUNCH_BAG_ID_DEFAULT;
+	public static final String ITEM_LUNCH_BAG_NAME = "lunchbag";
+	public static final int ITEM_LUNCH_BAG_ID_DEFAULT = 6851;
 
 	/*
 	 * FOOD GROUPS
@@ -287,6 +307,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 		USE_HUNGER_QUEUE = config.get(CATEGORY_SERVER, USE_HUNGER_QUEUE_NAME, USE_HUNGER_QUEUE_DEFAULT, USE_HUNGER_QUEUE_COMMENT).getBoolean(USE_HUNGER_QUEUE_DEFAULT);
 		GIVE_FOOD_JOURNAL_ON_START = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_START_NAME, GIVE_FOOD_JOURNAL_ON_START_DEFAULT, GIVE_FOOD_JOURNAL_ON_START_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_START_DEFAULT);
 		GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_NAME, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT);
+		FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = (float) config.get(CATEGORY_SERVER, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_COMMENT).getDouble(FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT);
+		FOOD_CONTAINERS_MAX_STACKSIZE = config.get(CATEGORY_SERVER, FOOD_CONTAINERS_MAX_STACKSIZE_NAME, FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT, FOOD_CONTAINERS_MAX_STACKSIZE_COMMENT).getInt(FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT);
 
 		FOOD_HUNGER_ROUNDING_MODE_STRING = config.get(CATEGORY_SERVER, FOOD_HUNGER_ROUNDING_MODE_NAME, FOOD_HUNGER_ROUNDING_MODE_DEFAULT, FOOD_HUNGER_ROUNDING_MODE_COMMENT).getString();
 		setRoundingMode();
@@ -310,6 +332,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 		 */
 
 		ITEM_FOOD_JOURNAL_ID = config.getItem(ITEM_FOOD_JOURNAL_NAME, ITEM_FOOD_JOURNAL_ID_DEFAULT).getInt(ITEM_FOOD_JOURNAL_ID_DEFAULT);
+		ITEM_LUNCH_BOX_ID = config.getItem(ITEM_LUNCH_BOX_NAME, ITEM_LUNCH_BOX_ID_DEFAULT).getInt(ITEM_LUNCH_BOX_ID_DEFAULT);
+		ITEM_LUNCH_BAG_ID = config.getItem(ITEM_LUNCH_BAG_NAME, ITEM_LUNCH_BAG_ID_DEFAULT).getInt(ITEM_LUNCH_BAG_ID_DEFAULT);
 
 		/*
 		 * FOOD GROUPS
@@ -369,6 +393,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			data.writeBoolean(USE_HUNGER_QUEUE);
 			data.writeUTF(FOOD_HUNGER_ROUNDING_MODE_STRING);
 		}
+		data.writeInt(FOOD_CONTAINERS_MAX_STACKSIZE);
 	}
 
 	@Override
@@ -388,6 +413,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			USE_HUNGER_QUEUE = data.readBoolean();
 			FOOD_HUNGER_ROUNDING_MODE_STRING = data.readUTF();
 		}
+		FOOD_CONTAINERS_MAX_STACKSIZE = data.readInt();
 	}
 
 	@Override
@@ -403,6 +429,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 
 		SHOW_FOOD_EXHAUSTION_OVERLAY = SHOW_FOOD_EXHAUSTION_OVERLAY_CONFIG_VAL;
 		CompatHelper.reregisterItem(ModContent.foodJournal, ModContent.foodJournal.itemID);
+		CompatHelper.reregisterItem(ModContent.lunchBox, ModContent.lunchBox.itemID);
 
 		return null;
 	}
@@ -419,5 +446,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 		FOOD_MODIFIER_ENABLED = false;
 		SHOW_FOOD_EXHAUSTION_OVERLAY = false;
 		CompatHelper.deregisterItem(ModContent.foodJournal);
+		CompatHelper.deregisterItem(ModContent.lunchBox);
 	}
 }

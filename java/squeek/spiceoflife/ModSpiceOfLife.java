@@ -10,6 +10,8 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.gui.HUDOverlayHandler;
 import squeek.spiceoflife.gui.TooltipOverlayHandler;
 import squeek.spiceoflife.gui.TooltipHandler;
+import squeek.spiceoflife.helpers.GuiHelper;
+import squeek.spiceoflife.helpers.MovementHelper;
 import squeek.spiceoflife.network.PacketHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -51,6 +53,8 @@ public class ModSpiceOfLife
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
+		GuiHelper.init();
+		MovementHelper.init();
 		FoodTracker foodTracker = new FoodTracker();
 		MinecraftForge.EVENT_BUS.register(foodTracker);
 		GameRegistry.registerPlayerTracker(foodTracker);

@@ -51,7 +51,12 @@ public class FoodHelper
 
 	public static boolean isValidFood(ItemStack itemStack)
 	{
-		return isFood(itemStack) && !FoodGroupRegistry.isFoodBlacklisted(itemStack);
+		return isFood(itemStack) && canFoodDiminish(itemStack);
+	}
+
+	public static boolean canFoodDiminish(ItemStack itemStack)
+	{
+		return !FoodGroupRegistry.isFoodBlacklisted(itemStack);
 	}
 
 	public static boolean isFood(ItemStack itemStack)

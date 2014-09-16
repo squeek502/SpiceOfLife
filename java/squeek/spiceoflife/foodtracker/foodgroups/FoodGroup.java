@@ -168,4 +168,15 @@ public class FoodGroup implements IPackable
 			addFood(foodMember);
 		}
 	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (super.equals(obj))
+			return true;
+		if (obj instanceof FoodGroup)
+			return ((FoodGroup) obj).identifier.equals(identifier);
+
+		return false;
+	}
 }
