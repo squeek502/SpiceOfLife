@@ -256,7 +256,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 
 	public static int ITEM_LUNCH_BAG_ID = ModConfig.ITEM_LUNCH_BAG_ID_DEFAULT;
 	public static final String ITEM_LUNCH_BAG_NAME = "lunchbag";
-	public static final int ITEM_LUNCH_BAG_ID_DEFAULT = 6851;
+	public static final int ITEM_LUNCH_BAG_ID_DEFAULT = 6852;
 
 	/*
 	 * FOOD GROUPS
