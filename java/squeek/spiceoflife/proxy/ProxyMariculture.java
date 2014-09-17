@@ -45,7 +45,7 @@ public class ProxyMariculture
 				
 				nerfFood = Loader.isModLoaded("HungerOverhaul");
 
-				ItemFishyFood = Class.forName("mariculture.fishery.items.ItemFishyFood");
+				ItemFishyFood = Class.forName("mariculture.fishery.items.ItemFishy");
 				ItemBait = Class.forName("mariculture.fishery.items.ItemBait");
 
 				ItemFood = Class.forName("mariculture.core.items.ItemFood");
