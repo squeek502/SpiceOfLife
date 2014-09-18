@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
 import net.minecraft.world.World;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.items.ItemFoodContainer;
 import squeek.spiceoflife.proxy.ProxyAgriculture;
 import squeek.spiceoflife.proxy.ProxyHungerOverhaul;
 import squeek.spiceoflife.proxy.ProxyMariculture;
@@ -62,6 +63,11 @@ public class FoodHelper
 	public static boolean isFood(ItemStack itemStack)
 	{
 		return (itemStack.getItem() instanceof ItemFood && isEdible(itemStack)) || ProxyAgriculture.isFood(itemStack) || ProxyMariculture.isFood(itemStack) || itemStack.getItem() == Item.cake;
+	}
+
+	public static boolean isFoodContainer(ItemStack itemStack)
+	{
+		return itemStack.getItem() instanceof ItemFoodContainer;
 	}
 
 	public static boolean isEdible(ItemStack itemStack)

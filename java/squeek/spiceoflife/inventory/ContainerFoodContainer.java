@@ -41,8 +41,6 @@ public class ContainerFoodContainer extends ContainerGeneric
 
 		if (itemStack != null)
 			((ItemFoodContainer) itemStack.getItem()).setIsOpen(itemStack, false);
-		else
-			ModSpiceOfLife.Log.warning("The open food container was not found when closing");
 
 		super.onContainerClosed(player);
 	}

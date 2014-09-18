@@ -161,19 +161,21 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver
 			ContainerFoodContainer openFoodContainer = (ContainerFoodContainer) player.openContainer;
 			UUID droppedUUID = getUUID(itemStack);
 
-			// if the cursor item is the open food container, then it will create an infinite loop
-			// due to the container dropping the cursor item when it is closed
-			ItemStack itemOnTheCursor = player.inventory.getItemStack();
-			if (itemOnTheCursor != null && itemOnTheCursor.getItem() instanceof ItemFoodContainer)
-			{
-				if (((ItemFoodContainer) itemOnTheCursor.getItem()).getUUID(itemOnTheCursor).equals(droppedUUID))
-				{
-					player.inventory.setItemStack(null);
-				}
-			}
-
 			if (openFoodContainer.getUUID().equals(droppedUUID))
+			{
+				// if the cursor item is the open food container, then it will create an infinite loop
+				// due to the container dropping the cursor item when it is closed
+				ItemStack itemOnTheCursor = player.inventory.getItemStack();
+				if (itemOnTheCursor != null && itemOnTheCursor.getItem() instanceof ItemFoodContainer)
+				{
+					if (((ItemFoodContainer) itemOnTheCursor.getItem()).getUUID(itemOnTheCursor).equals(droppedUUID))
+					{
+						player.inventory.setItemStack(null);
+					}
+				}
+
 				player.closeScreen();
+			}
 		}
 		return super.onDroppedByPlayer(itemStack, player);
 	}
@@ -293,6 +295,14 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver
 			inventory.setInventorySlotContents(slotWithBestFood, foodToEat);
 		}
 		return super.onEaten(itemStack, world, player);
+	}
+
+	public ItemStack getBestFoodForPlayerToEat(ItemStack itemStack, EntityPlayer player)
+	{
+		IInventory inventory = getInventory(itemStack);
+		int slotWithBestFood = MealPrioritizationHelper.findBestFoodForPlayerToEat(player, inventory);
+		ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
+		return foodToEat;
 	}
 
 	@SideOnly(Side.CLIENT)

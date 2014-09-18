@@ -18,6 +18,7 @@ import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
+import squeek.spiceoflife.items.ItemFoodContainer;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.relauncher.Side;
@@ -90,11 +91,22 @@ public class HUDOverlayHandler implements ITickHandler
 		if (ModConfig.SHOW_SATURATION_OVERLAY)
 			drawSaturationOverlay(0, stats.getSaturationLevel(), mc, left, top, 1f);
 
-		if (!ModConfig.SHOW_FOOD_VALUES_OVERLAY || heldItem == null || !FoodHelper.isFood(heldItem))
+		if (!ModConfig.SHOW_FOOD_VALUES_OVERLAY || heldItem == null || !(FoodHelper.isFood(heldItem) || FoodHelper.isFoodContainer(heldItem)))
 		{
 			flashAlpha = 0;
 			alphaDir = 1;
 			return;
+		}
+
+		if (FoodHelper.isFoodContainer(heldItem))
+		{
+			if (!((ItemFoodContainer) heldItem.getItem()).canPlayerEatFrom(player, heldItem))
+				return;
+
+			heldItem = ((ItemFoodContainer) heldItem.getItem()).getBestFoodForPlayerToEat(heldItem, player);
+
+			if (heldItem == null)
+				return;
 		}
 
 		// restored hunger/saturation overlay while holding food

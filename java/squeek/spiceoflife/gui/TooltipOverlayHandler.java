@@ -22,6 +22,7 @@ import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.KeyHelper;
+import squeek.spiceoflife.items.ItemFoodContainer;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
@@ -121,8 +122,16 @@ public class TooltipOverlayHandler implements ITickHandler
 				}
 
 				// if the hovered stack is a food and there is no item being dragged
-				if (player.inventory.getItemStack() == null && hoveredStack != null && FoodHelper.isFood(hoveredStack))
+				if (player.inventory.getItemStack() == null && hoveredStack != null && (FoodHelper.isFood(hoveredStack) || FoodHelper.isFoodContainer(hoveredStack)))
 				{
+					if (FoodHelper.isFoodContainer(hoveredStack))
+					{
+						hoveredStack = ((ItemFoodContainer) hoveredStack.getItem()).getBestFoodForPlayerToEat(hoveredStack, player);
+
+						if (hoveredStack == null)
+							return;
+					}
+
 					FoodValues defaultFoodValues = FoodValues.get(hoveredStack);
 
 					if (defaultFoodValues.hunger == 0 && defaultFoodValues.saturationModifier == 0)
