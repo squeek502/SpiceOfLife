@@ -18,7 +18,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.helpers.*;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.InventoryFoodInfo;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
@@ -203,7 +202,6 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver
 				if (player.isSprinting())
 					chanceToDrop *= 2f;
 
-				ModSpiceOfLife.Log.info(Float.toString(chanceToDrop));
 				if (chanceToDrop > 0 && random.nextFloat() <= chanceToDrop)
 				{
 					ItemStack itemToDrop = InventoryHelper.removeRandomSingleItemFromInventory(getInventory(itemStack), random);
