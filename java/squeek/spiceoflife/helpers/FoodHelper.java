@@ -4,12 +4,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import squeek.applecore.api.AppleCoreAPI;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.items.ItemFoodContainer;
 
 public class FoodHelper
 {
 	public static boolean isValidFood(ItemStack itemStack)
 	{
-		return isFood(itemStack) && canFoodDiminish(itemStack);
+		return isFood(itemStack) && !isFoodContainer(itemStack) && canFoodDiminish(itemStack);
 	}
 
 	public static boolean canFoodDiminish(ItemStack itemStack)
@@ -20,6 +21,11 @@ public class FoodHelper
 	public static boolean isFood(ItemStack itemStack)
 	{
 		return AppleCoreAPI.accessor.isFood(itemStack);
+	}
+
+	public static boolean isFoodContainer(ItemStack itemStack)
+	{
+		return itemStack.getItem() instanceof ItemFoodContainer;
 	}
 
 	public static float getExhaustionLevel(EntityPlayer player)

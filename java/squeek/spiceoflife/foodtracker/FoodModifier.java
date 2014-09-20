@@ -8,6 +8,8 @@ import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.helpers.FoodHelper;
+import squeek.spiceoflife.items.ItemFoodContainer;
 import com.udojava.evalex.Expression;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -21,7 +23,13 @@ public class FoodModifier
 	{
 		if (ModConfig.FOOD_MODIFIER_ENABLED)
 		{
-			float modifier = FoodModifier.getFoodModifier(event.player, event.food, event.foodValues);
+			ItemStack actualFood = event.food;
+			if (FoodHelper.isFoodContainer(event.food))
+			{
+				actualFood = ((ItemFoodContainer) event.food.getItem()).getBestFoodForPlayerToEat(event.food, event.player);
+			}
+
+			float modifier = FoodModifier.getFoodModifier(event.player, actualFood, event.foodValues);
 			FoodValues modifiedFoodValues = FoodModifier.getModifiedFoodValues(event.foodValues, modifier);
 
 			event.foodValues = modifiedFoodValues;

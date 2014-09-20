@@ -16,6 +16,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import squeek.applecore.api.food.FoodValues;
+import squeek.applecore.api.food.IEdible;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.ModSpiceOfLife;
@@ -25,11 +27,12 @@ import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.inventory.INBTInventoryHaver;
 import squeek.spiceoflife.inventory.NBTInventory;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemFoodContainer extends Item implements INBTInventoryHaver
+public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdible
 {
 	private IIcon iconOpenEmpty;
 	private IIcon iconOpenFull;
@@ -251,7 +254,10 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver
 	@Override
 	public EnumAction getItemUseAction(ItemStack itemStack)
 	{
-		return EnumAction.eat;
+		if (canBeEatenFrom(itemStack))
+			return EnumAction.eat;
+		else
+			return EnumAction.none;
 	}
 
 	@Override
@@ -347,6 +353,16 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver
 	public boolean isItemValidForSlot(NBTInventory inventory, int slotNum, ItemStack itemStack)
 	{
 		return FoodHelper.isFood(itemStack);
+	}
+
+	/*
+	 * IEdible implementation
+	 */
+	@Override
+	@SideOnly(Side.CLIENT)
+	public FoodValues getFoodValues(ItemStack itemStack)
+	{
+		return FoodValues.get(getBestFoodForPlayerToEat(itemStack, FMLClientHandler.instance().getClientPlayerEntity()));
 	}
 
 }
