@@ -1,28 +1,21 @@
 package squeek.spiceoflife;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import squeek.spiceoflife.compat.CompatHelper;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 import squeek.spiceoflife.foodtracker.FoodModifier;
-import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupConfig;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.IPacketProcessor;
 import squeek.spiceoflife.network.PacketBase;
 import squeek.spiceoflife.network.PacketConfigSync;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -87,11 +80,11 @@ public class ModConfig implements IPackable, IPacketProcessor
 			"If true, a player's food history will be empty once they pass the " + FOOD_EATEN_THRESHOLD_NAME + "\n"
 					+ "If false, any food eaten before the threshold is passed will also count after it is passed";
 
-	public static boolean USE_FOOD_GROUPS = ModConfig.USE_FOOD_GROUPS_DEFAULT;
-	private static final String USE_FOOD_GROUPS_NAME = "use.food.groups";
-	private static final boolean USE_FOOD_GROUPS_DEFAULT = false;
-	private static final String USE_FOOD_GROUPS_COMMENT =
-			"See 'foodgroups' settings category";
+	public static boolean USE_FOOD_GROUPS_AS_WHITELISTS = ModConfig.USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT;
+	private static final String USE_FOOD_GROUPS_AS_WHITELISTS_NAME = "use.food.groups.as.whitelists";
+	private static final boolean USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT = false;
+	private static final String USE_FOOD_GROUPS_AS_WHITELISTS_COMMENT =
+			"If true, any foods not in a food group will be excluded from diminishing returns";
 
 	public static RoundingMode FOOD_HUNGER_ROUNDING_MODE = null;
 	public static String FOOD_HUNGER_ROUNDING_MODE_STRING = ModConfig.FOOD_HUNGER_ROUNDING_MODE_DEFAULT;
@@ -138,13 +131,28 @@ public class ModConfig implements IPackable, IPacketProcessor
 		public abstract double round(double val);
 	}
 
+	public static boolean AFFECT_FOOD_HUNGER_VALUES = ModConfig.AFFECT_FOOD_HUNGER_VALUES_DEFAULT;
+	private static final String AFFECT_FOOD_HUNGER_VALUES_NAME = "affect.food.hunger.values";
+	private static final boolean AFFECT_FOOD_HUNGER_VALUES_DEFAULT = true;
+	private static final String AFFECT_FOOD_HUNGER_VALUES_COMMENT =
+			"If true, foods' hunger value will be multiplied by the current nutritional value\n"
+					+ "Setting this to false and " + ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_NAME + " to true will make diminishing returns affect saturation only";
+
+	public static boolean AFFECT_NEGATIVE_FOOD_HUNGER_VALUES = ModConfig.AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT;
+	private static final String AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_NAME = "affect.negative.food.hunger.values";
+	private static final boolean AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT = false;
+	private static final String AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_COMMENT =
+			"If true, foods with negative hunger values will be made more negative as nutritional value decreases\n"
+					+ "NOTE: " + AFFECT_FOOD_HUNGER_VALUES_NAME + " must be true for this to have any affect";
+
 	public static boolean AFFECT_FOOD_SATURATION_MODIFIERS = ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT;
 	private static final String AFFECT_FOOD_SATURATION_MODIFIERS_NAME = "affect.food.saturation.modifiers";
 	private static final boolean AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT = false;
 	private static final String AFFECT_FOOD_SATURATION_MODIFIERS_COMMENT =
-			"If true, foods' saturation modifier will also be multiplied by the nutritional value\n"
-					+ "NOTE: Saturation bonuses of foods will automatically decrease as the hunger value of the food decreases\n"
-					+ "Setting this to true will make saturation bonuses decrease disproportionately more than hunger values";
+			"If true, foods' saturation modifier will be multiplied by the current nutritional value\n"
+					+ "NOTE: When " + ModConfig.AFFECT_FOOD_HUNGER_VALUES_NAME + " is true, saturation bonuses of foods will automatically decrease as the hunger value of the food decreases\n"
+					+ "Setting this to true when " + ModConfig.AFFECT_FOOD_HUNGER_VALUES_NAME + " is true will make saturation bonuses decrease disproportionately more than hunger values\n"
+					+ "Setting this to true and " + ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_NAME + " to false will make diminishing returns affect saturation only";
 
 	public static boolean AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = ModConfig.AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT;
 	private static final String AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_NAME = "affect.negative.food.saturation.modifiers";
@@ -191,20 +199,39 @@ public class ModConfig implements IPackable, IPacketProcessor
 			"If true, a food journal will be given to each player once diminishing returns start for them\n"
 					+ "Not given if a player was given a food journal by " + ModConfig.GIVE_FOOD_JOURNAL_ON_START_NAME;
 
+	public static float FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = ModConfig.FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT;
+	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME = "give.food.journal.on.dimishing.returns.start";
+	private static final float FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT = 0.25f;
+	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_COMMENT =
+			"The chance for food to drop from an open food container when the player jumps";
+
+	public static int FOOD_CONTAINERS_MAX_STACKSIZE = ModConfig.FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT;
+	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_NAME = "give.food.journal.on.dimishing.returns.start";
+	private static final int FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT = 2;
+	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_COMMENT =
+			"The maximum stacksize per slot in a food container";
+
 	/*
 	 * ITEMS
 	 */
 
-	public static int ITEM_FOOD_JOURNAL_ID = 0;
 	public static final String ITEM_FOOD_JOURNAL_NAME = "bookfoodjournal";
+
+	public static int ITEM_LUNCH_BOX_ID = ModConfig.ITEM_LUNCH_BOX_ID_DEFAULT;
+	public static final String ITEM_LUNCH_BOX_NAME = "lunchbox";
+	public static final int ITEM_LUNCH_BOX_ID_DEFAULT = 6851;
+
+	public static int ITEM_LUNCH_BAG_ID = ModConfig.ITEM_LUNCH_BAG_ID_DEFAULT;
+	public static final String ITEM_LUNCH_BAG_NAME = "lunchbag";
+	public static final int ITEM_LUNCH_BAG_ID_DEFAULT = 6852;
 
 	/*
 	 * FOOD GROUPS
 	 */
 	private static final String CATEGORY_FOODGROUPS = "foodgroups";
 	private static final String CATEGORY_FOODGROUPS_COMMENT =
-			COMMENT_SERVER_SIDE_OPTIONS + "\n"
-					+ "NOTE: Food groups are a work-in-progress; not all features have been implemented and/or tested";
+			"Food groups are defined using .json files in /config/SpiceOfLife/\n"
+					+ "See /config/SpiceOfLife/example-food-group.json";
 
 	public static void init(File file)
 	{
@@ -239,12 +266,16 @@ public class ModConfig implements IPackable, IPacketProcessor
 		FOOD_HISTORY_PERSISTS_THROUGH_DEATH = config.get(CATEGORY_SERVER, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_NAME, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT, FOOD_HISTORY_PERSISTS_THROUGH_DEATH_COMMENT).getBoolean(FOOD_HISTORY_PERSISTS_THROUGH_DEATH_DEFAULT);
 		FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, FOOD_EATEN_THRESHOLD_NAME, FOOD_EATEN_THRESHOLD_DEFAULT, FOOD_EATEN_THRESHOLD_COMMENT).getInt();
 		CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = config.get(CATEGORY_SERVER, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_NAME, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT, CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_COMMENT).getBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT);
-		USE_FOOD_GROUPS = config.get(CATEGORY_SERVER, USE_FOOD_GROUPS_NAME, USE_FOOD_GROUPS_DEFAULT, USE_FOOD_GROUPS_COMMENT).getBoolean(USE_FOOD_GROUPS_DEFAULT);
+		USE_FOOD_GROUPS_AS_WHITELISTS = config.get(CATEGORY_SERVER, USE_FOOD_GROUPS_AS_WHITELISTS_NAME, USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT, USE_FOOD_GROUPS_AS_WHITELISTS_COMMENT).getBoolean(USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT);
+		AFFECT_FOOD_HUNGER_VALUES = config.get(CATEGORY_SERVER, AFFECT_FOOD_HUNGER_VALUES_NAME, AFFECT_FOOD_HUNGER_VALUES_DEFAULT, AFFECT_FOOD_HUNGER_VALUES_COMMENT).getBoolean(AFFECT_FOOD_HUNGER_VALUES_DEFAULT);
+		AFFECT_NEGATIVE_FOOD_HUNGER_VALUES = config.get(CATEGORY_SERVER, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_NAME, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT, AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_COMMENT).getBoolean(AFFECT_NEGATIVE_FOOD_HUNGER_VALUES_DEFAULT);
 		AFFECT_FOOD_SATURATION_MODIFIERS = config.get(CATEGORY_SERVER, AFFECT_FOOD_SATURATION_MODIFIERS_NAME, AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT, AFFECT_FOOD_SATURATION_MODIFIERS_COMMENT).getBoolean(AFFECT_FOOD_SATURATION_MODIFIERS_DEFAULT);
 		AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = config.get(CATEGORY_SERVER, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_NAME, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT, AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_COMMENT).getBoolean(AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT);
 		USE_HUNGER_QUEUE = config.get(CATEGORY_SERVER, USE_HUNGER_QUEUE_NAME, USE_HUNGER_QUEUE_DEFAULT, USE_HUNGER_QUEUE_COMMENT).getBoolean(USE_HUNGER_QUEUE_DEFAULT);
 		GIVE_FOOD_JOURNAL_ON_START = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_START_NAME, GIVE_FOOD_JOURNAL_ON_START_DEFAULT, GIVE_FOOD_JOURNAL_ON_START_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_START_DEFAULT);
 		GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_NAME, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT);
+		FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = (float) config.get(CATEGORY_SERVER, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_COMMENT).getDouble(FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT);
+		FOOD_CONTAINERS_MAX_STACKSIZE = config.get(CATEGORY_SERVER, FOOD_CONTAINERS_MAX_STACKSIZE_NAME, FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT, FOOD_CONTAINERS_MAX_STACKSIZE_COMMENT).getInt(FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT);
 
 		FOOD_HUNGER_ROUNDING_MODE_STRING = config.get(CATEGORY_SERVER, FOOD_HUNGER_ROUNDING_MODE_NAME, FOOD_HUNGER_ROUNDING_MODE_DEFAULT, FOOD_HUNGER_ROUNDING_MODE_COMMENT).getString();
 		setRoundingMode();
@@ -253,85 +284,13 @@ public class ModConfig implements IPackable, IPacketProcessor
 		 * FOOD GROUPS
 		 */
 		config.getCategory(CATEGORY_FOODGROUPS).setComment(CATEGORY_FOODGROUPS_COMMENT);
+		FoodGroupConfig.setup(file.getParentFile());
 
-		writeExampleFoodGroup();
-
-		if (USE_FOOD_GROUPS)
-			loadFoodGroups();
+		// remove obsolete config options
+		config.getCategory(CATEGORY_SERVER).remove("use.food.groups");
+		config.getCategory(CATEGORY_FOODGROUPS).clear();
 
 		save();
-	}
-
-	public static void loadFoodGroups()
-	{
-		List<String> enabledFoodGroups = new ArrayList<String>();
-
-		ConfigCategory categoryFoodGroups = config.getCategory(CATEGORY_FOODGROUPS);
-
-		for (String configKey : categoryFoodGroups.keySet())
-		{
-			if (configKey.endsWith(".enabled") && config.get(CATEGORY_FOODGROUPS, configKey, false).getBoolean(false))
-				enabledFoodGroups.add(configKey.substring(0, configKey.length() - ".enabled".length()));
-		}
-
-		for (String foodGroupIdent : enabledFoodGroups)
-		{
-			String name = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".name", foodGroupIdent).getString();
-			int priority = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".priority", 0).getInt();
-
-			FoodGroup foodGroup = new FoodGroup(foodGroupIdent, name, priority);
-
-			String[] items = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".items", new String[]{}).getStringList();
-			String[] oredicts = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".oredicts", new String[]{}).getStringList();
-			//String[] baseItems = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".item.recipe.bases", new String[]{}).getStringList();
-			//String[] baseOredicts = config.get(CATEGORY_FOODGROUPS, foodGroupIdent + ".oredict.recipe.bases", new String[]{}).getStringList();
-
-			for (String itemString : items)
-			{
-				addItemToFoodGroup(foodGroup, itemString, false);
-			}
-			/*
-			for (String itemString : baseItems)
-			{
-				addItemToFoodGroup(foodGroup, itemString, true);
-			}
-			*/
-			for (String oredictString : oredicts)
-			{
-				foodGroup.addFood(oredictString, false);
-			}
-			/*
-			for (String oredictString : baseOredicts)
-			{
-				foodGroup.addFood(oredictString, true);
-			}
-			*/
-
-			FoodGroupRegistry.addFoodGroup(foodGroup);
-		}
-	}
-
-	public static void addItemToFoodGroup(FoodGroup foodGroup, String itemString, boolean isBaseItem)
-	{
-		String[] itemStringParts = itemString.split(":");
-		if (itemStringParts.length > 1)
-		{
-			Item item = GameRegistry.findItem(itemStringParts[0], itemStringParts[1]);
-			boolean exactMetadata = itemStringParts.length > 2 && itemStringParts[2] != "*";
-			int metadata = itemStringParts.length > 2 && exactMetadata ? Integer.parseInt(itemStringParts[2]) : 0;
-			foodGroup.addFood(new ItemStack(item, 1, metadata), exactMetadata, isBaseItem);
-		}
-	}
-
-	public static void writeExampleFoodGroup()
-	{
-		config.get(CATEGORY_FOODGROUPS, "example.enabled", false);
-		config.get(CATEGORY_FOODGROUPS, "example.name", "Example");
-		config.get(CATEGORY_FOODGROUPS, "example.priority", 0, "Food can only belong to one food group\nin the case of conflicting food groups, the food group with the highest priority will be selected\nExample: A food group with priority 3 will take precedence over a food group with priority 1");
-		config.get(CATEGORY_FOODGROUPS, "example.items", new String[]{"minecraft:apple", "minecraft:golden_apple:0"}, "A list of items in mod:name:meta format\nThis example adds red apples and golden apples (metadata 0), thereby excluding enchanted golden apples (metadata 1)");
-		//config.get(CATEGORY_FOODGROUPS, "example.item.recipe.bases", new String[]{"minecraft:apple", "minecraft:golden_apple:0"}, "A list of items in mod:name:meta format\nEach item in this list will also include any item derived from it (meaning any item where the base item is used in some part of its crafting recipe)\nNote: To have an item work as either a direct match or a recipe base, it needs to be in both lists");
-		config.get(CATEGORY_FOODGROUPS, "example.oredicts", new String[]{"listAllfruit", "listAllberry"}, "A list of ore dictionary entries\nThis example adds two oredictionary entries created by Pam's HarvestCraft, including all fruit and all berries");
-		//config.get(CATEGORY_FOODGROUPS, "example.oredict.recipe.bases", new String[]{"listAllfruit", "listAllberry"}, "A list of ore dictionary entries\nEach entry in this list will also include any item derived from it (meaning any item where the base oredictionary entry is used in some part of its crafting recipe)\nNote: To have an entry work as either a direct match or a recipe base, it needs to be in both lists");
 	}
 
 	public static void setRoundingMode()
@@ -373,12 +332,13 @@ public class ModConfig implements IPackable, IPacketProcessor
 			data.writeBoolean(FOOD_HISTORY_PERSISTS_THROUGH_DEATH);
 			data.writeInt(FOOD_EATEN_THRESHOLD);
 			data.writeBoolean(CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD);
-			data.writeBoolean(USE_FOOD_GROUPS);
+			data.writeBoolean(USE_FOOD_GROUPS_AS_WHITELISTS);
 			data.writeBoolean(AFFECT_FOOD_SATURATION_MODIFIERS);
 			data.writeBoolean(AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS);
 			data.writeBoolean(USE_HUNGER_QUEUE);
 			data.writeUTF(FOOD_HUNGER_ROUNDING_MODE_STRING);
 		}
+		data.writeInt(FOOD_CONTAINERS_MAX_STACKSIZE);
 	}
 
 	@Override
@@ -392,12 +352,13 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FOOD_HISTORY_PERSISTS_THROUGH_DEATH = data.readBoolean();
 			FOOD_EATEN_THRESHOLD = data.readInt();
 			CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD = data.readBoolean();
-			USE_FOOD_GROUPS = data.readBoolean();
+			USE_FOOD_GROUPS_AS_WHITELISTS = data.readBoolean();
 			AFFECT_FOOD_SATURATION_MODIFIERS = data.readBoolean();
 			AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = data.readBoolean();
 			USE_HUNGER_QUEUE = data.readBoolean();
 			FOOD_HUNGER_ROUNDING_MODE_STRING = data.readUTF();
 		}
+		FOOD_CONTAINERS_MAX_STACKSIZE = data.readInt();
 	}
 
 	@Override
@@ -406,12 +367,11 @@ public class ModConfig implements IPackable, IPacketProcessor
 		if (FOOD_MODIFIER_ENABLED)
 		{
 			setRoundingMode();
-			FoodModifier.onFormulaChanged();
+			FoodModifier.onGlobalFormulaChanged();
 			FoodHistory.get(player).onHistoryTypeChanged();
 			FoodGroupRegistry.clear();
 		}
 
-		CompatHelper.reregisterItem(ModContent.foodJournal, ITEM_FOOD_JOURNAL_ID);
 
 		return null;
 	}
@@ -426,6 +386,5 @@ public class ModConfig implements IPackable, IPacketProcessor
 	{
 		// assume false until the server syncs
 		FOOD_MODIFIER_ENABLED = false;
-		ITEM_FOOD_JOURNAL_ID = CompatHelper.deregisterItem(ModContent.foodJournal);
 	}
 }

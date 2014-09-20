@@ -2,27 +2,33 @@ package squeek.spiceoflife.foodtracker.foodgroups;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import com.google.gson.annotations.SerializedName;
+import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import squeek.spiceoflife.compat.IByteIO;
+import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.interfaces.IPackable;
 
 public class FoodGroup implements IPackable
 {
-	public String identifier;
-	public String name;
-	public int priority;
+	transient public String identifier;
+	transient private List<FoodGroupMember> foods = new ArrayList<FoodGroupMember>();
+	transient private FoodModifier foodModifier;
 
-	private List<FoodGroupMember> foods = new ArrayList<FoodGroupMember>();
+	public boolean enabled = true;
+	public String name = null;
+	public int priority = 0;
+	public boolean blacklist = false;
+	public boolean hidden = false;
+	public String formula = null;
+	@SerializedName("food")
+	public Map<String, List<String>> foodStringsByType;
 
 	public FoodGroup()
 	{
-		this(null, null, 0);
-	}
-	
-	public FoodGroup(String identifier, String name)
-	{
-		this(identifier, name, 0);
 	}
 
 	public FoodGroup(String identifier, String name, int priority)
@@ -32,12 +38,34 @@ public class FoodGroup implements IPackable
 		this.priority = priority;
 	}
 
+	public void initFromConfig()
+	{
+		List<String> oredictStrings = foodStringsByType.get("oredict");
+		if (oredictStrings != null)
+		{
+			for (String oredictString : oredictStrings)
+			{
+				addFood(oredictString);
+			}
+		}
+
+		List<String> itemStrings = foodStringsByType.get("items");
+		if (itemStrings != null)
+		{
+			for (String itemString : itemStrings)
+			{
+				addItemFromString(itemString);
+			}
+		}
+	}
+	
 	public void init()
 	{
 		for (FoodGroupMember foodMember : foods)
 		{
 			foodMember.initMatchingItemsList();
 		}
+		foodModifier = formula != null ? new FoodModifier(formula) : FoodModifier.GLOBAL;
 	}
 
 	public boolean isFoodIncluded(ItemStack food)
@@ -49,10 +77,18 @@ public class FoodGroup implements IPackable
 		}
 		return false;
 	}
-	
+
 	public String getLocalizedName()
 	{
-		return StatCollector.translateToLocal(name);
+		if (name != null)
+			return StatCollector.translateToLocal(name);
+		else
+			return StatCollector.translateToLocal("spiceoflife.foodgroup." + identifier);
+	}
+
+	public FoodModifier getFoodModifier()
+	{
+		return foodModifier;
 	}
 
 	public void addFood(String oredictName)
@@ -67,7 +103,7 @@ public class FoodGroup implements IPackable
 
 	public void addFood(ItemStack itemStack, boolean exactMetadata)
 	{
-		addFood(itemStack, false);
+		addFood(itemStack, exactMetadata, false);
 	}
 	
 	public void addFood(ItemStack itemStack, boolean exactMetadata, boolean baseItemForRecipes)
@@ -80,14 +116,34 @@ public class FoodGroup implements IPackable
 		foods.add(foodMember);
 	}
 
+	public void addItemFromString(String itemString)
+	{
+		addItemFromString(itemString, false);
+	}
+
+	public void addItemFromString(String itemString, boolean isBaseItem)
+	{
+		String[] itemStringParts = itemString.split(":");
+		if (itemStringParts.length > 1)
+		{
+			Item item = GameRegistry.findItem(itemStringParts[0], itemStringParts[1]);
+			boolean exactMetadata = itemStringParts.length > 2 && itemStringParts[2] != "*";
+			int metadata = itemStringParts.length > 2 && exactMetadata ? Integer.parseInt(itemStringParts[2]) : 0;
+			addFood(new ItemStack(item, 1, metadata), exactMetadata, isBaseItem);
+		}
+	}
+
 	@Override
 	public void pack(IByteIO data)
 	{
 		data.writeUTF(identifier);
-		data.writeUTF(name);
+		data.writeUTF(name != null ? name : "");
+		data.writeUTF(formula != null ? formula : "");
 		data.writeShort(priority);
+		data.writeBoolean(blacklist);
+		data.writeBoolean(hidden);
 		data.writeShort(foods.size());
-		
+
 		for (FoodGroupMember foodMember : foods)
 		{
 			foodMember.pack(data);
@@ -99,14 +155,30 @@ public class FoodGroup implements IPackable
 	{
 		identifier = data.readUTF();
 		name = data.readUTF();
+		name = !name.equals("") ? name : null;
+		formula = data.readUTF();
+		formula = !formula.equals("") ? formula : null;
 		priority = data.readShort();
+		blacklist = data.readBoolean();
+		hidden = data.readBoolean();
 		int size = data.readShort();
-		
+
 		for (int i=0; i<size; i++)
 		{
 			FoodGroupMember foodMember = new FoodGroupMember();
 			foodMember.unpack(data);
 			addFood(foodMember);
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (super.equals(obj))
+			return true;
+		if (obj instanceof FoodGroup)
+			return ((FoodGroup) obj).identifier.equals(identifier);
+
+		return false;
 	}
 }

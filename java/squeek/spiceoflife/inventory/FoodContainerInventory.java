@@ -1,0 +1,50 @@
+package squeek.spiceoflife.inventory;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import squeek.spiceoflife.items.ItemFoodContainer;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public class FoodContainerInventory extends NBTInventory
+{
+	protected ItemFoodContainer itemFoodContainer;
+	protected ItemStack itemStackFoodContainer;
+
+	public FoodContainerInventory(ItemFoodContainer itemFoodContainer, ItemStack itemStackFoodContainer)
+	{
+		super(itemFoodContainer);
+		this.itemFoodContainer = itemFoodContainer;
+		this.itemStackFoodContainer = itemStackFoodContainer;
+
+		readFromNBTData(itemFoodContainer.getInventoryTag(itemStackFoodContainer));
+	}
+
+	@Override
+	public void onInventoryChanged()
+	{
+		// the itemstack on the client can change, so make sure we always get the
+		// new itemstack when making changes to the nbt tag
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+		{
+			findMatchingClientItemStack();
+		}
+
+		this.writeToNBTData(itemFoodContainer.getInventoryTag(itemStackFoodContainer));
+
+		super.onInventoryChanged();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void findMatchingClientItemStack()
+	{
+		EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
+		if (player.openContainer != null && player.openContainer instanceof ContainerFoodContainer)
+		{
+			ContainerFoodContainer openFoodContainer = (ContainerFoodContainer) player.openContainer;
+			itemStackFoodContainer = openFoodContainer.findFoodContainerWithUUID(itemFoodContainer.getUUID(itemStackFoodContainer));
+		}
+	}
+}

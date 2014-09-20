@@ -38,6 +38,7 @@ public class PacketFoodGroup extends PacketBase
 	@Override
 	public PacketBase processAndReply(Side side, EntityPlayer player)
 	{
+		foodGroup.init();
 		FoodGroupRegistry.addFoodGroup(foodGroup);
 		return null;
 	}

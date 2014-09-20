@@ -6,12 +6,16 @@ import net.minecraft.item.ItemStack;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
+import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import com.udojava.evalex.Expression;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class FoodModifier
 {
+	public static final FoodModifier GLOBAL = new FoodModifier();
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void getFoodValues(FoodEvent.GetPlayerFoodValues event)
 	{
@@ -24,16 +28,26 @@ public class FoodModifier
 		}
 	}
 
-	public static Expression expression = getNewExpression();
+	public Expression expression;
 
-	private static Expression getNewExpression()
+	public FoodModifier()
 	{
-		return new Expression(ModConfig.FOOD_MODIFIER_FORMULA).with("max_history_length", new BigDecimal(ModConfig.FOOD_HISTORY_LENGTH));
+		this(ModConfig.FOOD_MODIFIER_FORMULA);
 	}
 
-	public static void onFormulaChanged()
+	public FoodModifier(String formula)
 	{
-		expression = getNewExpression();
+		setFormula(formula);
+	}
+
+	public void setFormula(String formula)
+	{
+		expression = new Expression(formula);
+	}
+
+	public static void onGlobalFormulaChanged()
+	{
+		FoodModifier.GLOBAL.setFormula(ModConfig.FOOD_MODIFIER_FORMULA);
 	}
 
 	public static float getFoodModifier(EntityPlayer player, ItemStack food, FoodValues foodValues)
@@ -42,20 +56,24 @@ public class FoodModifier
 			return 1f;
 
 		FoodHistory foodHistory = FoodHistory.get(player);
-		int count = foodHistory.getFoodCount(food);
-		int historySize = foodHistory.getHistoryLengthInRelevantUnits();
 		int totalFoodsEaten = foodHistory.totalFoodsEatenAllTime;
 
 		if (ModConfig.FOOD_EATEN_THRESHOLD > 0 && totalFoodsEaten < ModConfig.FOOD_EATEN_THRESHOLD)
 			return 1f;
 
-		BigDecimal result = expression.with("count", new BigDecimal(count))
+		int count = foodHistory.getFoodCount(food);
+		int historySize = foodHistory.getHistoryLengthInRelevantUnits();
+		FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
+		FoodModifier effectiveFoodModifier = foodGroup != null ? foodGroup.getFoodModifier() : FoodModifier.GLOBAL;
+
+		BigDecimal result = effectiveFoodModifier.expression.with("count", new BigDecimal(count))
 				.and("cur_history_length", new BigDecimal(historySize))
 				.and("food_hunger_value", new BigDecimal(foodValues.hunger))
 				.and("food_saturation_mod", new BigDecimal(foodValues.saturationModifier))
 				.and("cur_hunger", new BigDecimal(player.getFoodStats().getFoodLevel()))
 				.and("cur_saturation", new BigDecimal(player.getFoodStats().getSaturationLevel()))
 				.and("total_food_eaten", new BigDecimal(totalFoodsEaten))
+				.and("max_history_length", new BigDecimal(ModConfig.FOOD_HISTORY_LENGTH))
 				.eval();
 
 		return result.floatValue();

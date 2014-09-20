@@ -1,5 +1,7 @@
 package squeek.spiceoflife.foodtracker;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,6 +13,7 @@ import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
 import squeek.spiceoflife.items.ItemFoodJournal;
@@ -70,10 +73,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	public int getFoodCount(ItemStack food)
 	{
 		int count = 0;
-		FoodGroup foodGroup = null;
-
-		if (ModConfig.USE_FOOD_GROUPS)
-			foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
+		FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
 
 		for (FoodEaten foodEaten : history)
 		{
@@ -82,7 +82,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 
 			if ((food.isItemEqual(foodEaten.itemStack) && ItemStack.areItemStackTagsEqual(food, foodEaten.itemStack))
 					||
-					(ModConfig.USE_FOOD_GROUPS && foodGroup != null && foodGroup.equals(foodEaten.foodGroup)))
+					(foodGroup != null && foodGroup.equals(foodEaten.foodGroup)))
 			{
 				count += 1;
 			}
@@ -103,6 +103,27 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	public FoodEaten getLastEatenFood()
 	{
 		return history.peekLast();
+	}
+
+	public void reset()
+	{
+		history.clear();
+		totalFoodsEatenAllTime = 0;
+		wasGivenFoodJournal = false;
+	}
+
+	public void validate()
+	{
+		List<FoodEaten> invalidFoods = new ArrayList<FoodEaten>();
+		for (FoodEaten foodEaten : history)
+		{
+			if (!FoodHelper.isValidFood(foodEaten.itemStack))
+			{
+				invalidFoods.add(foodEaten);
+			}
+		}
+		history.removeAll(invalidFoods);
+		totalFoodsEatenAllTime -= invalidFoods.size();
 	}
 
 	public static FoodHistory get(EntityPlayer player)

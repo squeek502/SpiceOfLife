@@ -1,0 +1,24 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=Valeur nutrionelle: 
+spiceoflife.tooltip.eaten.recently=%s des %d dernières nourritures ont été consommées
+spiceoflife.tooltip.eaten.recently.hunger=A mangé %s des %s derniers gigots
+spiceoflife.tooltip.not.eaten.recently=Pas consommé récemment
+spiceoflife.tooltip.food.until.enabled.1=Les rendements décroisants commenceront après
+spiceoflife.tooltip.food.until.enabled.2=avoir mangé toute nourriture %d de plus que %s
+spiceoflife.tooltip.times.singular=fois
+spiceoflife.tooltip.times.plural=fois
+spiceoflife.tooltip.hunger=gigots
+spiceoflife.tooltip.food.group=Groupe de Nourriture: 
+
+# Quantity descriptors
+spiceoflife.quantity.one.time=une fois
+spiceoflife.quantity.two.times=deux fois
+spiceoflife.quantity.x.times=%d fois
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=Nourriture tout le temps consommée
+spiceoflife.gui.no.food.history.yet=L'historique de la nourriture ne sera chargé qu'une fois les rendements décroissants auront commencé.
+spiceoflife.gui.no.recent.food.eaten=Pas consommé récemment
+
+# Items
+item.spiceoflife.bookfoodjournal.name=Journal de Nourriture

@@ -64,6 +64,7 @@ public class FoodTracker
 
 		// server needs to send any loaded data to the client
 		FoodHistory foodHistory = FoodHistory.get(event.player);
+		foodHistory.validate();
 		syncFoodHistory(foodHistory);
 
 		// give food journal
@@ -126,7 +127,7 @@ public class FoodTracker
 			ModConfig.assumeClientOnly();
 	}
 
-	public void syncFoodHistory(FoodHistory foodHistory)
+	public static void syncFoodHistory(FoodHistory foodHistory)
 	{
 		PacketDispatcher.get().sendTo(new PacketFoodEatenAllTime(foodHistory.totalFoodsEatenAllTime), (EntityPlayerMP) foodHistory.player);
 		PacketDispatcher.get().sendTo(new PacketFoodHistory(foodHistory, true), (EntityPlayerMP) foodHistory.player);
