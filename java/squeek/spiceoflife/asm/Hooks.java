@@ -71,7 +71,7 @@ public class Hooks
 		}
 		else
 		{
-			if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && FoodHelper.isFood(lastFoodEaten) && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
+			if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && FoodHelper.isValidFood(lastFoodEaten) && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
 			{
 				ModSpiceOfLife.Log.warn(lastFoodEaten.getDisplayName() + " didn't count toward food history (player=" + lastEatingPlayer + ", timedelta=" + (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) + ")");
 			}
@@ -89,7 +89,7 @@ public class Hooks
 	public static void onFoodEaten(ItemStack itemStack, World world, EntityPlayer player)
 	{
 		// only react to ItemFood items (because things like TiC chisels use onFoodEaten)
-		if (FoodHelper.isFood(itemStack))
+		if (FoodHelper.isValidFood(itemStack))
 		{
 			lastEatingPlayer = player;
 			lastFoodEaten = itemStack;

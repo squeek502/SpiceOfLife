@@ -60,7 +60,26 @@ public class ClassTransformer implements IClassTransformer
 				throw new MethodNotFoundException("FoodStats.addStats(IF)");
 			}
 		}
-		
+
+		if (transformedName.equals("harderpeaceful.FoodStatsHP"))
+		{
+			ClassNode classNode = readClassFromBytes(bytes);
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_75111_a", "(IF)V");
+
+			if (methodNode == null)
+				methodNode = findMethodNodeOfClass(classNode, "addStats", "(IF)V");
+
+			if (methodNode != null)
+			{
+				addFoodStatsHook(methodNode, Hooks.class, "getModifiedFoodValues", "(Lnet/minecraft/util/FoodStats;IF)Lsqueek/spiceoflife/foodtracker/FoodValues;");
+				return writeClassToBytes(classNode);
+			}
+			else
+			{
+				throw new MethodNotFoundException("FoodStatsHP.func_75111_a(IF)");
+			}
+		}
+
 		if (transformedName.equals("net.minecraft.block.BlockCake"))
 		{
 			boolean isObfuscated = !name.equals(transformedName);

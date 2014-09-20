@@ -28,14 +28,14 @@ public class TooltipHandler
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event)
 	{
-		if (ModConfig.FOOD_MODIFIER_ENABLED && event.itemStack != null && FoodHelper.isFood(event.itemStack))
+		if (ModConfig.FOOD_MODIFIER_ENABLED && event.itemStack != null && FoodHelper.isValidFood(event.itemStack))
 		{
 			int totalFoodEaten = FoodHistory.get(event.entityPlayer).totalFoodsEatenAllTime;
 			float foodModifier = 1f;
 			List<String> toolTipStringsToAdd = new ArrayList<String>();
-			FoodGroup foodGroup = ModConfig.USE_FOOD_GROUPS ? FoodGroupRegistry.getFoodGroupForFood(event.itemStack) : null;
+			FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(event.itemStack);
 
-			if (ModConfig.USE_FOOD_GROUPS && foodGroup != null)
+			if (foodGroup != null && !foodGroup.hidden)
 			{
 				toolTipStringsToAdd.add(StatCollector.translateToLocal("spiceoflife.tooltip.food.group") + EnumChatFormatting.ITALIC + foodGroup.getLocalizedName());
 			}
