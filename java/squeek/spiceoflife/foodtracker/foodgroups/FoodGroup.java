@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import squeek.spiceoflife.compat.IByteIO;
@@ -125,9 +126,12 @@ public class FoodGroup implements IPackable
 		if (itemStringParts.length > 0)
 		{
 			int itemId = Integer.parseInt(itemStringParts[0]);
-			boolean exactMetadata = itemStringParts.length > 1 && itemStringParts[1] != "*";
-			int metadata = itemStringParts.length > 1 && exactMetadata ? Integer.parseInt(itemStringParts[1]) : 0;
-			addFood(new ItemStack(itemId, 1, metadata), exactMetadata, isBaseItem);
+			if (Item.itemsList[itemId] != null)
+			{
+				boolean exactMetadata = itemStringParts.length > 1 && itemStringParts[1] != "*";
+				int metadata = itemStringParts.length > 1 && exactMetadata ? Integer.parseInt(itemStringParts[1]) : 0;
+				addFood(new ItemStack(itemId, 1, metadata), exactMetadata, isBaseItem);
+			}
 		}
 	}
 
