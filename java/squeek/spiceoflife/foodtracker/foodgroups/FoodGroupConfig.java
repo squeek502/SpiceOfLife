@@ -27,12 +27,23 @@ public class FoodGroupConfig
 	public static void writeExampleFoodGroup(File configDirectory)
 	{
 		final String exampleFoodGroupFileName = "example-food-group.json";
-		File exampleFoodGroupSource = new File(ModSpiceOfLife.instance.sourceFile, "example/" + exampleFoodGroupFileName);
+		final String exampleFoodGroupRelativePath = "example/" + exampleFoodGroupFileName;
 		File exampleFoodGroupDest = new File(configDirectory, exampleFoodGroupFileName);
 
 		try
 		{
-			FileHelper.copyFile(exampleFoodGroupSource, exampleFoodGroupDest, shouldOverwriteExampleFoodGroup(exampleFoodGroupDest));
+			boolean shouldOverwrite = shouldOverwriteExampleFoodGroup(exampleFoodGroupDest);
+			if (ModSpiceOfLife.instance.sourceFile.isDirectory())
+			{
+				File sourceFile = new File(ModSpiceOfLife.instance.sourceFile, exampleFoodGroupRelativePath);
+				FileHelper.copyFile(sourceFile, exampleFoodGroupDest, shouldOverwrite);
+			}
+			else
+			{
+				InputStream exampleFoodGroupInputStream = FoodGroupConfig.class.getClassLoader().getResourceAsStream(exampleFoodGroupRelativePath);
+				FileHelper.copyFile(exampleFoodGroupInputStream, exampleFoodGroupDest, shouldOverwrite);
+				exampleFoodGroupInputStream.close();
+			}
 		}
 		catch (IOException e)
 		{
