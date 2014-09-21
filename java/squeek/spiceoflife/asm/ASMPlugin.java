@@ -2,7 +2,9 @@ package squeek.spiceoflife.asm;
 
 import java.util.Map;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
+@TransformerExclusions("squeek.spiceoflife.asm")
 public class ASMPlugin implements IFMLLoadingPlugin
 {
 	@Override
