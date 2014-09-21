@@ -193,8 +193,6 @@ public class FoodTracker implements IPlayerTracker, IConnectionHandler, ITickHan
 	@Override
 	public void connectionClosed(INetworkManager manager)
 	{
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-			ModConfig.assumeClientOnly();
 	}
 
 	@Override
