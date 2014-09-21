@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
 
 public class FileHelper
 {
@@ -13,12 +13,26 @@ public class FileHelper
 		copyFile(sourceFile, destFile, false);
 	}
 
-	// from https://gist.github.com/donaldmunro/2959131
 	public static void copyFile(File sourceFile, File destFile, final boolean overwrite) throws IOException
 	{
-		if (destFile.isDirectory())
-			destFile = new File(destFile, sourceFile.getName());
+		InputStream sourceInput = null;
+		try
+		{
+			sourceInput = new FileInputStream(sourceFile);
+			copyFile(sourceInput, destFile, overwrite);
+		}
+		finally
+		{
+			if (sourceInput != null)
+			{
+				sourceInput.close();
+			}
+		}
 
+	}
+
+	public static void copyFile(InputStream sourceInput, File destFile, final boolean overwrite) throws IOException
+	{
 		if (destFile.exists())
 		{
 			if (overwrite)
@@ -29,41 +43,22 @@ public class FileHelper
 			destFile.createNewFile();
 		}
 
-		FileInputStream fIn = null;
-		FileOutputStream fOut = null;
-		FileChannel source = null;
-		FileChannel destination = null;
+		FileOutputStream destOutput = null;
 		try
 		{
-			fIn = new FileInputStream(sourceFile);
-			source = fIn.getChannel();
-			fOut = new FileOutputStream(destFile);
-			destination = fOut.getChannel();
-			long transfered = 0;
-			long bytes = source.size();
-			while (transfered < bytes)
+			destOutput = new FileOutputStream(destFile);
+			int readBytes = 0;
+			byte[] buffer = new byte[4096];
+			while ((readBytes = sourceInput.read(buffer)) > 0)
 			{
-				transfered += destination.transferFrom(source, 0, source.size());
-				destination.position(transfered);
+				destOutput.write(buffer, 0, readBytes);
 			}
 		}
 		finally
 		{
-			if (source != null)
+			if (destOutput != null)
 			{
-				source.close();
-			}
-			if (fIn != null)
-			{
-				fIn.close();
-			}
-			if (destination != null)
-			{
-				destination.close();
-			}
-			if (fOut != null)
-			{
-				fOut.close();
+				destOutput.close();
 			}
 		}
 	}
