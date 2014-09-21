@@ -41,7 +41,7 @@ repositories {
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar,*.zip')
-    compile "applecore:AppleCore:1.7.10-1.0.0+46.e75e3:deobf"
+    compile "applecore:AppleCore:1.7.10-1.0.0:deobf"
 }
 
 // variable replacement in source files
