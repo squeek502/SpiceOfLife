@@ -201,13 +201,13 @@ public class ModConfig implements IPackable, IPacketProcessor
 					+ "Not given if a player was given a food journal by " + ModConfig.GIVE_FOOD_JOURNAL_ON_START_NAME;
 
 	public static float FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = ModConfig.FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT;
-	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME = "give.food.journal.on.dimishing.returns.start";
+	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME = "food.containers.chance.to.drop.food";
 	private static final float FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT = 0.25f;
 	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_COMMENT =
 			"The chance for food to drop from an open food container when the player jumps";
 
 	public static int FOOD_CONTAINERS_MAX_STACKSIZE = ModConfig.FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT;
-	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_NAME = "give.food.journal.on.dimishing.returns.start";
+	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_NAME = "food.containers.max.stacksize";
 	private static final int FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT = 2;
 	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_COMMENT =
 			"The maximum stacksize per slot in a food container";
