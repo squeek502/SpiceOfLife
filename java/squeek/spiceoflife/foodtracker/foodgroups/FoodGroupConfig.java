@@ -77,7 +77,7 @@ public class FoodGroupConfig
 			{
 				FileReader reader = new FileReader(configFile);
 				FoodGroup foodGroup = gson.fromJson(reader, FoodGroup.class);
-				if (foodGroup != null)
+				if (foodGroup != null && foodGroup.enabled)
 				{
 					foodGroup.identifier = FilenameUtils.removeExtension(configFile.getName());
 					foodGroup.initFromConfig();
