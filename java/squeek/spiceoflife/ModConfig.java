@@ -394,6 +394,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			data.writeUTF(FOOD_HUNGER_ROUNDING_MODE_STRING);
 		}
 		data.writeInt(FOOD_CONTAINERS_MAX_STACKSIZE);
+		data.writeFloat(FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD);
 	}
 
 	@Override
@@ -414,6 +415,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FOOD_HUNGER_ROUNDING_MODE_STRING = data.readUTF();
 		}
 		FOOD_CONTAINERS_MAX_STACKSIZE = data.readInt();
+		FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = data.readFloat();
 	}
 
 	@Override
