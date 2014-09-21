@@ -64,7 +64,7 @@ public class ClassTransformer implements IClassTransformer
 		if (transformedName.equals("harderpeaceful.FoodStatsHP"))
 		{
 			ClassNode classNode = readClassFromBytes(bytes);
-			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_75111_a", "(IF)V");
+			MethodNode methodNode = findMethodNodeOfClass(classNode, "func_75122_a", "(IF)V");
 
 			if (methodNode == null)
 				methodNode = findMethodNodeOfClass(classNode, "addStats", "(IF)V");
@@ -76,7 +76,7 @@ public class ClassTransformer implements IClassTransformer
 			}
 			else
 			{
-				throw new MethodNotFoundException("FoodStatsHP.func_75111_a(IF)");
+				throw new MethodNotFoundException("FoodStatsHP.func_75122_a(IF)");
 			}
 		}
 
