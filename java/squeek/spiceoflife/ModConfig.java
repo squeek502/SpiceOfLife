@@ -46,7 +46,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	public static boolean FOOD_MODIFIER_ENABLED_CONFIG_VAL = ModConfig.FOOD_MODIFIER_ENABLED_DEFAULT;
 	private static final String FOOD_MODIFIER_ENABLED_NAME = "food.modifier.enabled";
 	private static final boolean FOOD_MODIFIER_ENABLED_DEFAULT = true;
-	private static final String FOOD_MODIFIER_ENABLED_COMMENT = "If false, disables the entire diminishing returns part of the mod\nSet this to false if you only want the client-side tooltip/HUD additions";
+	private static final String FOOD_MODIFIER_ENABLED_COMMENT = "If false, disables the entire diminishing returns part of the mod";
 
 	/*
 	 * SERVER
@@ -228,10 +228,17 @@ public class ModConfig implements IPackable, IPacketProcessor
 	/*
 	 * FOOD GROUPS
 	 */
+	@Deprecated
 	private static final String CATEGORY_FOODGROUPS = "foodgroups";
 	private static final String CATEGORY_FOODGROUPS_COMMENT =
 			"Food groups are defined using .json files in /config/SpiceOfLife/\n"
 					+ "See /config/SpiceOfLife/example-food-group.json";
+
+	/*
+	 * OBSOLETED
+	 */
+	@Deprecated
+	private static final String CATEGORY_CLIENT = "client";
 
 	public static void init(File file)
 	{
@@ -289,6 +296,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// remove obsolete config options
 		config.getCategory(CATEGORY_SERVER).remove("use.food.groups");
 		config.getCategory(CATEGORY_FOODGROUPS).clear();
+		config.removeCategory(config.getCategory(CATEGORY_CLIENT));
 
 		save();
 	}
