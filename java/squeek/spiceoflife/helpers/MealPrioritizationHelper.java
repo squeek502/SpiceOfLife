@@ -48,7 +48,7 @@ public class MealPrioritizationHelper
 		@Override
 		public int compare(InventoryFoodInfo a, InventoryFoodInfo b)
 		{
-			return Integer.compare(a.modifiedFoodValues.hunger, b.modifiedFoodValues.hunger);
+			return integerCompare(a.modifiedFoodValues.hunger, b.modifiedFoodValues.hunger);
 		}
 	};
 
@@ -61,7 +61,7 @@ public class MealPrioritizationHelper
 			if (compareResult == 0)
 			{
 				Random random = new Random();
-				return Integer.compare(random.nextInt(), random.nextInt());
+				return integerCompare(random.nextInt(), random.nextInt());
 			}
 			return compareResult;
 		}
@@ -92,7 +92,7 @@ public class MealPrioritizationHelper
 			{
 				int aRemainder = maxHungerRestored - a.modifiedFoodValues.hunger;
 				int bRemainder = maxHungerRestored - b.modifiedFoodValues.hunger;
-				compareResult = Integer.compare(Math.abs(aRemainder), Math.abs(bRemainder));
+				compareResult = integerCompare(Math.abs(aRemainder), Math.abs(bRemainder));
 				if (compareResult == 0 && aRemainder != bRemainder)
 				{
 					// too low over too high
@@ -174,5 +174,10 @@ public class MealPrioritizationHelper
 		}
 
 		return foodInfo;
+	}
+
+	private static int integerCompare(int a, int b)
+	{
+		return (a < b) ? -1 : ((a == b) ? 0 : 1);
 	}
 }

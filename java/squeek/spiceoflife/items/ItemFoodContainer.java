@@ -13,6 +13,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -214,6 +216,24 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		}
 
 		super.onUpdate(itemStack, world, ownerEntity, par4, par5);
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public void addInformation(ItemStack itemStack, EntityPlayer player, List toolTip, boolean isAdvanced)
+	{
+		super.addInformation(itemStack, player, toolTip, isAdvanced);
+
+		String openCloseLineColor = EnumChatFormatting.GRAY.toString();
+		if (isOpen(itemStack))
+		{
+			toolTip.add(openCloseLineColor + StatCollector.translateToLocalFormatted("spiceoflife.tooltip.to.close.food.container"));
+
+			if (ModConfig.FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD > 0)
+				toolTip.add(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.ITALIC + StatCollector.translateToLocal("spiceoflife.tooltip.can.spill.food"));
+		}
+		else
+			toolTip.add(openCloseLineColor + StatCollector.translateToLocalFormatted("spiceoflife.tooltip.to.open.food.container"));
 	}
 
 	@Override
