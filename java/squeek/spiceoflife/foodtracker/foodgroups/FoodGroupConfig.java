@@ -55,7 +55,7 @@ public class FoodGroupConfig
 		String firstLine = exampleFoodGroupReader.readLine();
 		exampleFoodGroupReader.close();
 
-		return !firstLine.equals("// Mod Version: " + ModInfo.VERSION);
+		return firstLine == null || !firstLine.equals("// Mod Version: " + ModInfo.VERSION);
 	}
 
 	public static void load()
@@ -66,10 +66,13 @@ public class FoodGroupConfig
 			{
 				FileReader reader = new FileReader(configFile);
 				FoodGroup foodGroup = gson.fromJson(reader, FoodGroup.class);
-				foodGroup.identifier = FilenameUtils.removeExtension(configFile.getName());
-				foodGroup.initFromConfig();
+				if (foodGroup != null)
+				{
+					foodGroup.identifier = FilenameUtils.removeExtension(configFile.getName());
+					foodGroup.initFromConfig();
+					FoodGroupRegistry.addFoodGroup(foodGroup);
+				}
 				reader.close();
-				FoodGroupRegistry.addFoodGroup(foodGroup);
 			}
 			catch (FileNotFoundException e)
 			{
