@@ -37,6 +37,8 @@ public class FileHelper
 		{
 			if (overwrite)
 				destFile.delete();
+			else
+				return;
 		}
 		else
 		{
