@@ -1,6 +1,7 @@
 package squeek.spiceoflife.helpers;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import squeek.applecore.api.AppleCoreAPI;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
@@ -31,6 +32,11 @@ public class FoodHelper
 	public static float getExhaustionLevel(EntityPlayer player)
 	{
 		return AppleCoreAPI.accessor.getExhaustion(player);
+	}
+
+	public static boolean isDirectlyEdible(ItemStack itemStack)
+	{
+		return !(itemStack.getItem() == Items.cake || isFoodContainer(itemStack));
 	}
 
 	public static float getMaxExhaustionLevel(EntityPlayer player)

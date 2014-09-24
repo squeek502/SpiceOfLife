@@ -372,7 +372,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	@Override
 	public boolean isItemValidForSlot(NBTInventory inventory, int slotNum, ItemStack itemStack)
 	{
-		return FoodHelper.isFood(itemStack);
+		return FoodHelper.isFood(itemStack) && FoodHelper.isDirectlyEdible(itemStack);
 	}
 
 	/*
