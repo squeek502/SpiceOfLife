@@ -76,11 +76,16 @@ public class FoodHelper
 		return useAction == EnumAction.eat || useAction == EnumAction.drink;
 	}
 
+	public static boolean isDirectlyEdible(ItemStack itemStack)
+	{
+		return !(itemStack.getItem() == Item.cake || isFoodContainer(itemStack));
+	}
+
 	public static float getExhaustionLevel(FoodStats foodStats)
 	{
 		try
 		{
-			if (harderPeacefulExhaustion != null)
+			if (harderPeacefulExhaustion != null && !ProxyHungerOverhaul.initialized)
 				return harderPeacefulExhaustion.getFloat(foodStats);
 			else
 				return foodExhaustion.getFloat(foodStats);
@@ -96,7 +101,7 @@ public class FoodHelper
 	{
 		try
 		{
-			if (harderPeacefulExhaustion != null)
+			if (harderPeacefulExhaustion != null && !ProxyHungerOverhaul.initialized)
 				harderPeacefulExhaustion.setFloat(foodStats, val);
 			else
 				foodExhaustion.setFloat(foodStats, val);
