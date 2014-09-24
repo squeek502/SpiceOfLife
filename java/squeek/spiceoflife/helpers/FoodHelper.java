@@ -78,7 +78,7 @@ public class FoodHelper
 
 	public static boolean isDirectlyEdible(ItemStack itemStack)
 	{
-		return !(itemStack.getItem() == Item.cake || isFoodContainer(itemStack));
+		return !(itemStack.getItem() == Items.cake || isFoodContainer(itemStack));
 	}
 
 	public static float getExhaustionLevel(FoodStats foodStats)
