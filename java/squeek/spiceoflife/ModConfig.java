@@ -203,7 +203,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME = "food.containers.chance.to.drop.food";
 	private static final float FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT = 0.25f;
 	private static final String FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_COMMENT =
-			"The chance for food to drop from an open food container when the player jumps";
+			"The chance for food to drop from an open food container when the player jumps\n"
+					+ "Temporarily disabled while a better implementation is written (this config option will do nothing)";
 
 	public static int FOOD_CONTAINERS_MAX_STACKSIZE = ModConfig.FOOD_CONTAINERS_MAX_STACKSIZE_DEFAULT;
 	private static final String FOOD_CONTAINERS_MAX_STACKSIZE_NAME = "food.containers.max.stacksize";
@@ -297,6 +298,9 @@ public class ModConfig implements IPackable, IPacketProcessor
 		config.getCategory(CATEGORY_SERVER).remove("use.food.groups");
 		config.getCategory(CATEGORY_FOODGROUPS).clear();
 		config.removeCategory(config.getCategory(CATEGORY_CLIENT));
+
+		// temporarily disable chance to drop food, needs a better implementation
+		FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = 0;
 
 		save();
 	}

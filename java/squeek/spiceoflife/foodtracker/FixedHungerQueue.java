@@ -38,7 +38,7 @@ public class FixedHungerQueue extends FixedFoodQueue
 	@Override
 	protected void trimToMaxSize()
 	{
-		while (hunger > limit)
+		while (hunger > limit && peekFirst() != null)
 		{
 			hunger -= 1;
 			hungerOverflow += 1;

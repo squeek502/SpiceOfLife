@@ -1,0 +1,28 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=Valor nutricional: 
+spiceoflife.tooltip.eaten.recently=Comido %s de las últimas %d alimento
+spiceoflife.tooltip.eaten.recently.hunger=ingerido %s en los últimos %s hambre
+spiceoflife.tooltip.not.eaten.recently=No ingerido recientemente
+spiceoflife.tooltip.food.until.enabled.1=El rendimiento decrece despues de
+spiceoflife.tooltip.food.until.enabled.2=comer cualquier alimento %d mas %s
+spiceoflife.tooltip.times.singular=vez
+spiceoflife.tooltip.times.plural=veces
+spiceoflife.tooltip.hunger=hambre
+spiceoflife.tooltip.food.group=Grupo de Alimentos: 
+spiceoflife.tooltip.to.close.food.container=Usa mientras te agachas para cerrar
+spiceoflife.tooltip.to.open.food.container=Usa mientras te agachas para abrir
+spiceoflife.tooltip.can.spill.food=Los alimentos puede derramarse mientras este abierto
+# Quantity descriptors
+spiceoflife.quantity.one.time=una vez
+spiceoflife.quantity.two.times=dos veces
+spiceoflife.quantity.x.times=%d veces
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=Alimentos ingeridos todo el tiempo
+spiceoflife.gui.no.food.history.yet=La historia alimenticia no se registra hasta que el rendimiento decreciente empieza.
+spiceoflife.gui.no.recent.food.eaten=Ningun alimento ingerido recientemente
+
+# Items
+item.spiceoflife.bookfoodjournal.name=Diario de Comidas
+item.spiceoflife.lunchbox.name=Caja de Comida
+item.spiceoflife.lunchbag.name=Bolsa de Comida

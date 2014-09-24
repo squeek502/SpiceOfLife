@@ -44,7 +44,9 @@ public class FoodContainerInventory extends NBTInventory
 		if (player.openContainer != null && player.openContainer instanceof ContainerFoodContainer)
 		{
 			ContainerFoodContainer openFoodContainer = (ContainerFoodContainer) player.openContainer;
-			itemStackFoodContainer = openFoodContainer.findFoodContainerWithUUID(itemFoodContainer.getUUID(itemStackFoodContainer));
+			ItemStack matchingFoodContainer = openFoodContainer.findFoodContainerWithUUID(itemFoodContainer.getUUID(itemStackFoodContainer));
+			if (matchingFoodContainer != null)
+				itemStackFoodContainer = matchingFoodContainer;
 		}
 	}
 }
