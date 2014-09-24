@@ -18,6 +18,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
 import squeek.applecore.api.food.IEdible;
 import squeek.spiceoflife.ModConfig;
@@ -29,6 +30,7 @@ import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.inventory.INBTInventoryHaver;
 import squeek.spiceoflife.inventory.NBTInventory;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -381,6 +383,18 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	public FoodValues getFoodValues(ItemStack itemStack)
 	{
 		return FoodValues.get(getBestFoodForPlayerToEat(itemStack, FMLClientHandler.instance().getClientPlayerEntity()));
+	}
+
+	// necessary to stop food containers themselves being modified
+	// for example, HO's modFoodDivider was being applied to the values
+	// shown in the tooltips/overlay
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void getFoodValues(FoodEvent.GetFoodValues event)
+	{
+		if (FoodHelper.isFoodContainer(event.food))
+		{
+			event.foodValues = event.unmodifiedFoodValues;
+		}
 	}
 
 }
