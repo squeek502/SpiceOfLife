@@ -76,6 +76,11 @@ public class FoodHelper
 		return useAction == EnumAction.eat || useAction == EnumAction.drink;
 	}
 
+	public static boolean isDirectlyEdible(ItemStack itemStack)
+	{
+		return !(itemStack.getItem() == Item.cake || isFoodContainer(itemStack));
+	}
+
 	public static float getExhaustionLevel(FoodStats foodStats)
 	{
 		try
