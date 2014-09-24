@@ -85,7 +85,7 @@ public class FoodHelper
 	{
 		try
 		{
-			if (harderPeacefulExhaustion != null)
+			if (harderPeacefulExhaustion != null && !ProxyHungerOverhaul.initialized)
 				return harderPeacefulExhaustion.getFloat(foodStats);
 			else
 				return foodExhaustion.getFloat(foodStats);
@@ -101,7 +101,7 @@ public class FoodHelper
 	{
 		try
 		{
-			if (harderPeacefulExhaustion != null)
+			if (harderPeacefulExhaustion != null && !ProxyHungerOverhaul.initialized)
 				harderPeacefulExhaustion.setFloat(foodStats, val);
 			else
 				foodExhaustion.setFloat(foodStats, val);
