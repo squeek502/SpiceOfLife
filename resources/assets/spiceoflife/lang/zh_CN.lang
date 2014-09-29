@@ -7,7 +7,7 @@ spiceoflife.tooltip.food.until.enabled.1=恢复效果衰退次数为:
 spiceoflife.tooltip.food.until.enabled.2=摄入%d食物超过%s
 spiceoflife.tooltip.times.singular=次
 spiceoflife.tooltip.times.plural=次
-spiceoflife.tooltip.hunger=h饱腹度
+spiceoflife.tooltip.hunger=饱腹度
 spiceoflife.tooltip.food.group=食物组: 
 
 # Quantity descriptors
