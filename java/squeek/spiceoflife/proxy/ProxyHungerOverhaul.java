@@ -8,10 +8,19 @@ import net.minecraft.world.World;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class ProxyHungerOverhaul
 {
 	public static boolean initialized = false;
+
+	static final Field foodLevel = ReflectionHelper.findField(FoodStats.class, "foodLevel", "field_75127_a", "a");
+	static final Field foodSaturationLevel = ReflectionHelper.findField(FoodStats.class, "foodSaturationLevel", "field_75125_b", "b");
+	static
+	{
+		foodLevel.setAccessible(true);
+		foodSaturationLevel.setAccessible(true);
+	}
 
 	protected static Class<?> iguanaFood = null;
 	public static Class<?> iguanaFoodStats = null;
@@ -66,15 +75,15 @@ public class ProxyHungerOverhaul
 		try
 		{
 			// this would cause a NPE from the player being null, but addStats was patched using ASM (see asm/ClassTransformer.java) to avoid it
-			dummyFoodStats.setFoodLevel(0);
-			dummyFoodStats.setFoodSaturationLevel(0);
+			foodLevel.setInt(dummyFoodStats, 0);
+			foodSaturationLevel.setFloat(dummyFoodStats, 0f);
 			dummyFoodStats.addStats(itemFood);
 
 			int hunger = dummyFoodStats.getFoodLevel();
 
 			// redo in order to always get the true saturation value (for foods with a high saturation:hunger ratio)
-			dummyFoodStats.setFoodLevel(20);
-			dummyFoodStats.setFoodSaturationLevel(0);
+			foodLevel.setInt(dummyFoodStats, 20);
+			foodSaturationLevel.setFloat(dummyFoodStats, 0f);
 			dummyFoodStats.addStats(itemFood);
 
 			float saturationModifier = FoodValues.getSaturationModifierFromIncrement(dummyFoodStats.getSaturationLevel(), hunger);
