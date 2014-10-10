@@ -17,7 +17,6 @@ import squeek.spiceoflife.foodtracker.FoodTracker;
 import squeek.spiceoflife.foodtracker.FoodValues;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.FoodHelper;
-import squeek.spiceoflife.proxy.ProxyHungerOverhaul;
 
 public class Hooks
 {
@@ -35,27 +34,7 @@ public class Hooks
 	 */
 	public static FoodValues getModifiedFoodValues(FoodStats foodStats, int hunger, float saturationModifier)
 	{
-		if (ProxyHungerOverhaul.initialized && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
-		{
-			if (!ProxyHungerOverhaul.iguanaFoodStats.isInstance(foodStats))
-			{
-				ModSpiceOfLife.Log.warn("FoodStats is not an instance of IguanaFoodStats");
-			}
-			try
-			{
-				boolean shouldRegenHealth = ProxyHungerOverhaul.initialFoodRegensHealthValue;
-				boolean currentRegenHealthSetting = ProxyHungerOverhaul.foodRegensHealth.getBoolean(null);
-				if (shouldRegenHealth && !currentRegenHealthSetting && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
-				{
-					ModSpiceOfLife.Log.warn("Hunger Overhaul's regen health config option is set to false (it was initially true)");
-				}
-			}
-			catch (Exception e)
-			{
-			}
-		}
-
-		if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && lastEatingPlayer != null && (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) <= 0 && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
+		if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && lastEatingPlayer != null && (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) <= 0)
 		{
 			float modifier = FoodModifier.getFoodModifier(lastEatingPlayer, lastFoodEaten, foodStats, hunger, saturationModifier);
 			FoodValues modifiedFoodValues = FoodModifier.getModifiedFoodValues(new FoodValues(hunger, saturationModifier), modifier);
@@ -71,7 +50,7 @@ public class Hooks
 		}
 		else
 		{
-			if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && FoodHelper.isValidFood(lastFoodEaten) && !ProxyHungerOverhaul.isDummyFoodStats(foodStats))
+			if (ModConfig.FOOD_MODIFIER_ENABLED && lastFoodEaten != null && FoodHelper.isValidFood(lastFoodEaten))
 			{
 				ModSpiceOfLife.Log.warn(lastFoodEaten.getDisplayName() + " didn't count toward food history (player=" + lastEatingPlayer + ", timedelta=" + (lastEatingPlayer.worldObj.getWorldTime() - lastTimeEaten) + ")");
 			}

@@ -6,7 +6,6 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.proxy.ProxyAgriculture;
-import squeek.spiceoflife.proxy.ProxyHungerOverhaul;
 import squeek.spiceoflife.proxy.ProxyMariculture;
 import squeek.spiceoflife.proxy.ProxyNatura;
 import squeek.spiceoflife.proxy.ProxyTiC;
@@ -63,8 +62,6 @@ public class FoodValues
 				return ProxyTiC.getSpecialFoodValues(food);
 			else if (ProxyNatura.isSpecialFood(itemFood))
 				return ProxyNatura.getSpecialFoodValues(food);
-			else if (ProxyHungerOverhaul.foodValuesWillBeModified(food))
-				return ProxyHungerOverhaul.getModifiedFoodValues(food);
 			else
 				return new FoodValues(itemFood.func_150905_g(food), itemFood.func_150906_h(food));
 		}

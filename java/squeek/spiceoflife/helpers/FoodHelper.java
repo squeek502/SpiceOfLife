@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.items.ItemFoodContainer;
 import squeek.spiceoflife.proxy.ProxyAgriculture;
-import squeek.spiceoflife.proxy.ProxyHungerOverhaul;
 import squeek.spiceoflife.proxy.ProxyMariculture;
 
 public class FoodHelper
@@ -85,7 +84,7 @@ public class FoodHelper
 	{
 		try
 		{
-			if (harderPeacefulExhaustion != null && !ProxyHungerOverhaul.initialized)
+			if (harderPeacefulExhaustion != null)
 				return harderPeacefulExhaustion.getFloat(foodStats);
 			else
 				return foodExhaustion.getFloat(foodStats);
@@ -101,7 +100,7 @@ public class FoodHelper
 	{
 		try
 		{
-			if (harderPeacefulExhaustion != null && !ProxyHungerOverhaul.initialized)
+			if (harderPeacefulExhaustion != null)
 				harderPeacefulExhaustion.setFloat(foodStats, val);
 			else
 				foodExhaustion.setFloat(foodStats, val);
@@ -114,9 +113,6 @@ public class FoodHelper
 
 	public static float getMaxExhaustionLevel(World world)
 	{
-		if (ProxyHungerOverhaul.initialized)
-			return ProxyHungerOverhaul.getMaxExhaustionLevel(world);
-		else
-			return 4f;
+		return 4f;
 	}
 }
