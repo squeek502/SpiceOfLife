@@ -29,7 +29,8 @@ import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.inventory.INBTInventoryHaver;
 import squeek.spiceoflife.inventory.NBTInventory;
-import cpw.mods.fml.client.FMLClientHandler;
+import squeek.spiceoflife.network.NetworkHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -379,10 +380,20 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	 * IEdible implementation
 	 */
 	@Override
-	@SideOnly(Side.CLIENT)
 	public FoodValues getFoodValues(ItemStack itemStack)
 	{
-		return FoodValues.get(getBestFoodForPlayerToEat(itemStack, FMLClientHandler.instance().getClientPlayerEntity()));
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+		{
+			// the client uses the food values for tooltips/etc, so it should
+			// inherit them from the food that will be eaten
+			return FoodValues.get(getBestFoodForPlayerToEat(itemStack, NetworkHelper.getClientPlayer()));
+		}
+		else
+		{
+			// the server only needs to know that food values are non-null
+			// this is used for the isFood check
+			return new FoodValues(0, 0f);
+		}
 	}
 
 	// necessary to stop food containers themselves being modified
