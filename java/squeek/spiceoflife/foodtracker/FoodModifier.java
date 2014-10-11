@@ -3,6 +3,8 @@ package squeek.spiceoflife.foodtracker;
 import java.math.BigDecimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
+import squeek.applecore.api.AppleCoreAPI;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
@@ -33,6 +35,30 @@ public class FoodModifier
 			FoodValues modifiedFoodValues = FoodModifier.getModifiedFoodValues(event.foodValues, modifier);
 
 			event.foodValues = modifiedFoodValues;
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void getFoodEatingSpeed(PlayerUseItemEvent.Start event)
+	{
+		if (ModConfig.FOOD_EATING_SPEED_MODIFIER > 0 && AppleCoreAPI.accessor.isFood(event.item))
+		{
+			ItemStack actualFood = event.item;
+			if (FoodHelper.isFoodContainer(event.item))
+			{
+				actualFood = ((ItemFoodContainer) event.item.getItem()).getBestFoodForPlayerToEat(event.item, event.entityPlayer);
+			}
+
+			float nutritionalValue = FoodModifier.getFoodModifier(event.entityPlayer, actualFood, AppleCoreAPI.accessor.getFoodValues(actualFood));
+			float denominator = (float) Math.pow(nutritionalValue, ModConfig.FOOD_EATING_SPEED_MODIFIER);
+
+			if (denominator > 0)
+				event.duration = (int) (event.duration / denominator);
+			else
+				event.duration = Short.MAX_VALUE;
+
+			if (ModConfig.FOOD_EATING_DURATION_MAX > 0)
+				event.duration = Math.max(event.duration, ModConfig.FOOD_EATING_DURATION_MAX);
 		}
 	}
 
