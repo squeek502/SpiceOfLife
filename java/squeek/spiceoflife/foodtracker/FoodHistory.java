@@ -56,18 +56,20 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 			totalFoodsEatenAllTime++;
 
 		boolean isAtThreshold = countsTowardsAllTime && totalFoodsEatenAllTime == ModConfig.FOOD_EATEN_THRESHOLD;
-		if (player != null && !player.worldObj.isRemote && ModConfig.GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS && !wasGivenFoodJournal && isAtThreshold)
+		if (player != null && !player.worldObj.isRemote)
 		{
-			ItemFoodJournal.giveToPlayer(player);
-			wasGivenFoodJournal = true;
+			if (ModConfig.GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS && !wasGivenFoodJournal && isAtThreshold)
+			{
+				ItemFoodJournal.giveToPlayer(player);
+				wasGivenFoodJournal = true;
+			}
+			if (ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD && isAtThreshold)
+			{
+				history.clear();
+				return true;
+			}
 		}
-		if (ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD && isAtThreshold)
-		{
-			history.clear();
-			return true;
-		}
-		else
-			return history.add(foodEaten);
+		return history.add(foodEaten);
 	}
 
 	public int getFoodCount(ItemStack food)
