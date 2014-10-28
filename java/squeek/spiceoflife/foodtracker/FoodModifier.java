@@ -115,8 +115,16 @@ public class FoodModifier
 
 	public static FoodValues getModifiedFoodValues(FoodValues foodValues, float modifier)
 	{
-		int hunger = (int) ModConfig.FOOD_HUNGER_ROUNDING_MODE.round(foodValues.hunger * modifier);
+		int hunger = foodValues.hunger;
 		float saturationModifier = foodValues.saturationModifier;
+
+		if (ModConfig.AFFECT_FOOD_HUNGER_VALUES)
+		{
+			if (hunger < 0 && ModConfig.AFFECT_NEGATIVE_FOOD_HUNGER_VALUES)
+				hunger = (int) ModConfig.FOOD_HUNGER_ROUNDING_MODE.round(hunger * (2 - modifier));
+			else if (hunger > 0)
+				hunger = (int) ModConfig.FOOD_HUNGER_ROUNDING_MODE.round(hunger * modifier);
+		}
 
 		if (ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS)
 		{
@@ -125,6 +133,7 @@ public class FoodModifier
 			else if (saturationModifier > 0)
 				saturationModifier *= modifier;
 		}
+
 		return new FoodValues(hunger, saturationModifier);
 	}
 }
