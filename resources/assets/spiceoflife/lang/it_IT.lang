@@ -9,6 +9,9 @@ spiceoflife.tooltip.times.singular=volta
 spiceoflife.tooltip.times.plural=volte
 spiceoflife.tooltip.hunger=fame
 spiceoflife.tooltip.food.group=Gruppo alimentare: 
+spiceoflife.tooltip.to.close.food.container=Click con shift per chiudere
+spiceoflife.tooltip.to.open.food.container=Click con shift per aprire
+spiceoflife.tooltip.can.spill.food=Cibo può uscire mentre è aperto
 
 # Quantity descriptors
 spiceoflife.quantity.one.time=una volta
@@ -22,3 +25,5 @@ spiceoflife.gui.no.recent.food.eaten=Nessun cibo mangiato recentemente
 
 # Items
 item.spiceoflife.bookfoodjournal.name=Diario alimentare
+item.spiceoflife.lunchbox.name=Portapranzo
+item.spiceoflife.lunchbag.name=Sacchetto con pranzo
