@@ -1,0 +1,29 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=영양가: 
+spiceoflife.tooltip.eaten.recently=%s는 %d번째 전에 마지막으로 섭취하였습니다.
+spiceoflife.tooltip.eaten.recently.hunger=%s가 채워준 허기는 %s 입니다.
+spiceoflife.tooltip.not.eaten.recently=최근에 먹은 적 없음
+spiceoflife.tooltip.food.until.enabled.1=Diminishing returns start after
+spiceoflife.tooltip.food.until.enabled.2=eating any food %d more %s
+spiceoflife.tooltip.times.singular=시간
+spiceoflife.tooltip.times.plural=횟수
+spiceoflife.tooltip.hunger=배고픔
+spiceoflife.tooltip.food.group=식품군 :
+spiceoflife.tooltip.to.close.food.container=Use while sneaking to close
+spiceoflife.tooltip.to.open.food.container=Use while sneaking to open
+spiceoflife.tooltip.can.spill.food=Food can spill out while open
+
+# Quantity descriptors
+spiceoflife.quantity.one.time=첫번째
+spiceoflife.quantity.two.times=두번째
+spiceoflife.quantity.x.times=%d 번
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=All-time food eaten
+spiceoflife.gui.no.food.history.yet=Food history not logged until diminishing returns start
+spiceoflife.gui.no.recent.food.eaten=No food eaten recently
+
+# Items
+item.spiceoflife.bookfoodjournal.name=음식 잡지
+item.spiceoflife.lunchbox.name=Lunch Box
+item.spiceoflife.lunchbag.name=Lunch Bag
