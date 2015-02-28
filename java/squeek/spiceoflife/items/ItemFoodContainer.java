@@ -261,7 +261,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		if (!world.isRemote && isOpen(itemStack))
 		{
 			IInventory inventoryHit = InventoryHelper.getInventoryAtLocation(world, x, y, z);
-			if (inventoryHit != null)
+			if (inventoryHit != null && inventoryHit.isUseableByPlayer(player))
 			{
 				tryDumpFoodInto(itemStack, inventoryHit, player);
 				tryPullFoodFrom(itemStack, inventoryHit, player);
