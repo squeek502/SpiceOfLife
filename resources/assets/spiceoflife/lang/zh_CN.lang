@@ -9,6 +9,9 @@ spiceoflife.tooltip.times.singular=次
 spiceoflife.tooltip.times.plural=次
 spiceoflife.tooltip.hunger=饱腹度
 spiceoflife.tooltip.food.group=食物组: 
+spiceoflife.tooltip.to.close.food.container=潜行时使用以关闭
+spiceoflife.tooltip.to.open.food.container=潜行时使用以开启
+spiceoflife.tooltip.can.spill.food=打开时食物会从中涌出
 
 # Quantity descriptors
 spiceoflife.quantity.one.time=1次
@@ -21,4 +24,6 @@ spiceoflife.gui.no.food.history.yet=直到恢复效果衰退才开始记录进�
 spiceoflife.gui.no.recent.food.eaten=最近没有进食
 
 # Items
-item.spiceoflife.bookfoodjournal.name=食录
+item.spiceoflife.bookfoodjournal.name=膳食记录
+item.spiceoflife.lunchbox.name=午餐盒
+item.spiceoflife.lunchbag.name=午餐袋
