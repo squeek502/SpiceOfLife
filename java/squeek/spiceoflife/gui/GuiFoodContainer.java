@@ -1,15 +1,15 @@
 package squeek.spiceoflife.gui;
 
-import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.helpers.GuiHelper;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
+import squeek.spiceoflife.inventory.FoodContainerInventory;
 
 public class GuiFoodContainer extends GuiContainer
 {
@@ -19,9 +19,9 @@ public class GuiFoodContainer extends GuiContainer
 	public int xStart;
 	public int yStart;
 
-	public GuiFoodContainer(InventoryPlayer playerInventory, IInventory foodContainerInventory, ItemStack itemStack)
+	public GuiFoodContainer(InventoryPlayer playerInventory, FoodContainerInventory foodContainerInventory)
 	{
-		super(new ContainerFoodContainer(playerInventory, foodContainerInventory, itemStack));
+		super(new ContainerFoodContainer(playerInventory, foodContainerInventory));
 		this.inventory = foodContainerInventory;
 		this.playerInventory = playerInventory;
 		this.ySize = 133;
@@ -51,7 +51,7 @@ public class GuiFoodContainer extends GuiContainer
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(guiTexture);
 		this.drawTexturedModalRect(xStart, yStart, 0, 0, xSize, ySize);
-		
+
 		int slotsX = ((ContainerFoodContainer) inventorySlots).slotsX - 1;
 		int slotsY = ((ContainerFoodContainer) inventorySlots).slotsY - 1;
 		for (int slotNum = 0; slotNum < inventory.getSizeInventory(); slotNum++)

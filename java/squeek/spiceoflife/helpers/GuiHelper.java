@@ -2,13 +2,13 @@ package squeek.spiceoflife.helpers;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.gui.GuiFoodContainer;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
+import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.items.ItemFoodContainer;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -63,8 +63,8 @@ public class GuiHelper implements IGuiHandler
 				ItemStack heldItem = player.getHeldItem();
 				if (heldItem != null && heldItem.getItem() instanceof ItemFoodContainer)
 				{
-					IInventory foodContainerInventory = ((ItemFoodContainer) heldItem.getItem()).getInventory(heldItem);
-					return isClientSide ? new GuiFoodContainer(player.inventory, foodContainerInventory, heldItem) : new ContainerFoodContainer(player.inventory, foodContainerInventory, heldItem);
+					FoodContainerInventory foodContainerInventory = ((ItemFoodContainer) heldItem.getItem()).getInventory(heldItem);
+					return isClientSide ? new GuiFoodContainer(player.inventory, foodContainerInventory) : new ContainerFoodContainer(player.inventory, foodContainerInventory);
 				}
 				break;
 			default:
