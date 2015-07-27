@@ -1,19 +1,18 @@
-package squeek.spiceoflife.foodtracker;
+package squeek.spiceoflife.foodtracker.foodqueue;
 
+import java.util.LinkedList;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import squeek.spiceoflife.compat.IByteIO;
 import net.minecraftforge.common.util.Constants;
+import squeek.spiceoflife.compat.IByteIO;
+import squeek.spiceoflife.foodtracker.FoodEaten;
+import squeek.spiceoflife.interfaces.IPackable;
+import squeek.spiceoflife.interfaces.ISaveable;
 
-public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
+public abstract class FoodQueue extends LinkedList<FoodEaten> implements IPackable, ISaveable
 {
 
-	private static final long serialVersionUID = -1906960830995592577L;
-
-	public FixedFoodQueue(int limit)
-	{
-		super(limit);
-	}
+	private static final long serialVersionUID = -4619224291718876433L;
 
 	@Override
 	public void writeToNBTData(NBTTagCompound data)
@@ -44,15 +43,11 @@ public class FixedFoodQueue extends FixedSizeQueue<FoodEaten>
 	@Override
 	public void pack(IByteIO data)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void unpack(IByteIO data)
 	{
-		// TODO Auto-generated method stub
-		
 	}
-	
+
 }

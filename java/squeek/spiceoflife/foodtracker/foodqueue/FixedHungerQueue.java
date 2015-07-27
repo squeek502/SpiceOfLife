@@ -1,6 +1,8 @@
-package squeek.spiceoflife.foodtracker;
+package squeek.spiceoflife.foodtracker.foodqueue;
 
-public class FixedHungerQueue extends FixedFoodQueue
+import squeek.spiceoflife.foodtracker.FoodEaten;
+
+public class FixedHungerQueue extends FixedSizeQueue
 {
 	private static final long serialVersionUID = -1347372098150405272L;
 	protected int hunger;
@@ -10,7 +12,7 @@ public class FixedHungerQueue extends FixedFoodQueue
 	{
 		super(limit);
 	}
-	
+
 	@Override
 	public boolean add(FoodEaten foodEaten)
 	{
@@ -22,19 +24,19 @@ public class FixedHungerQueue extends FixedFoodQueue
 		}
 		return added;
 	}
-	
+
 	@Override
 	public void clear()
 	{
 		super.clear();
 		hunger = hungerOverflow = 0;
 	}
-	
+
 	public int hunger()
 	{
 		return hunger;
 	}
-	
+
 	@Override
 	protected void trimToMaxSize()
 	{
@@ -42,7 +44,7 @@ public class FixedHungerQueue extends FixedFoodQueue
 		{
 			hunger -= 1;
 			hungerOverflow += 1;
-			
+
 			while (hungerOverflow >= peekFirst().hungerRestored)
 			{
 				hungerOverflow -= removeFirst().hungerRestored;

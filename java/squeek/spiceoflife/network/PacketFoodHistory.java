@@ -14,18 +14,18 @@ public class PacketFoodHistory extends PacketBase
 	public PacketFoodHistory()
 	{
 	}
-	
+
 	public PacketFoodHistory(FoodHistory foodHistory)
 	{
 		this.foodHistory = foodHistory;
 	}
-	
+
 	public PacketFoodHistory(FoodHistory foodHistory, boolean shouldOverwrite)
 	{
 		this(foodHistory);
 		this.shouldOverwrite = shouldOverwrite;
 	}
-	
+
 	public PacketFoodHistory(FoodEaten foodEaten)
 	{
 		this.foodHistory = new FoodHistory();
@@ -56,13 +56,16 @@ public class PacketFoodHistory extends PacketBase
 		FoodHistory foodHistory = FoodHistory.get(player);
 
 		if (shouldOverwrite)
+		{
 			foodHistory.getHistory().clear();
-		
+			foodHistory.ticksActive = this.foodHistory.ticksActive;
+		}
+
 		for (FoodEaten foodEaten : this.foodHistory.getHistory())
 		{
 			foodHistory.addFood(foodEaten, !shouldOverwrite);
 		}
-		
+
 		return null;
 	}
 }

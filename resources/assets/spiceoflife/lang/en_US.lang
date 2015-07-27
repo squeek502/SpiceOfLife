@@ -2,6 +2,7 @@
 spiceoflife.tooltip.nutritional.value=Nutritional value: 
 spiceoflife.tooltip.eaten.recently=Eaten %s out of the last %d foods
 spiceoflife.tooltip.eaten.recently.hunger=Eaten %s in the last %s hunger
+spiceoflife.tooltip.eaten.recently.time=Eaten %s in the last %s days
 spiceoflife.tooltip.not.eaten.recently=Not eaten recently
 spiceoflife.tooltip.food.until.enabled.1=Diminishing returns start after
 spiceoflife.tooltip.food.until.enabled.2=eating any food %d more %s

@@ -13,7 +13,12 @@ import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.foodtracker.foodqueue.FixedHungerQueue;
+import squeek.spiceoflife.foodtracker.foodqueue.FixedSizeQueue;
+import squeek.spiceoflife.foodtracker.foodqueue.FixedTimeQueue;
+import squeek.spiceoflife.foodtracker.foodqueue.FoodQueue;
 import squeek.spiceoflife.helpers.FoodHelper;
+import squeek.spiceoflife.helpers.MiscHelper;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
 import squeek.spiceoflife.items.ItemFoodJournal;
@@ -22,9 +27,10 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 {
 	public static final String TAG_KEY = ModInfo.MODID + "History";
 	public final EntityPlayer player;
-	protected FixedSizeQueue<FoodEaten> history = ModConfig.USE_HUNGER_QUEUE ? new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH) : new FixedFoodQueue(ModConfig.FOOD_HISTORY_LENGTH);
+	protected FoodQueue history = FoodHistory.getNewFoodQueue();
 	public int totalFoodsEatenAllTime = 0;
-	boolean wasGivenFoodJournal = false;
+	public boolean wasGivenFoodJournal = false;
+	public long ticksActive = 0;
 
 	public FoodHistory()
 	{
@@ -40,9 +46,24 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 
 	public void onHistoryTypeChanged()
 	{
-		FixedSizeQueue<FoodEaten> oldHistory = history;
-		history = ModConfig.USE_HUNGER_QUEUE ? new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH) : new FixedFoodQueue(ModConfig.FOOD_HISTORY_LENGTH);
+		FoodQueue oldHistory = history;
+		history = FoodHistory.getNewFoodQueue();
 		history.addAll(oldHistory);
+	}
+	
+	public static FoodQueue getNewFoodQueue()
+	{
+		if (ModConfig.USE_HUNGER_QUEUE)
+			return new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH);
+		else if (ModConfig.USE_TIME_QUEUE)
+			return new FixedTimeQueue(ModConfig.FOOD_HISTORY_LENGTH * MiscHelper.TICKS_PER_DAY);
+		else
+			return new FixedSizeQueue(ModConfig.FOOD_HISTORY_LENGTH);
+	}
+
+	public void deltaTicksActive(long delta)
+	{
+		this.ticksActive += delta;
 	}
 
 	public boolean addFood(FoodEaten foodEaten)
@@ -92,7 +113,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		return count;
 	}
 
-	public FixedSizeQueue<FoodEaten> getHistory()
+	public FoodQueue getHistory()
 	{
 		return history;
 	}
@@ -112,6 +133,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		history.clear();
 		totalFoodsEatenAllTime = 0;
 		wasGivenFoodJournal = false;
+		ticksActive = 0;
 	}
 
 	public void validate()
@@ -139,6 +161,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	@Override
 	public void pack(IByteIO data)
 	{
+		data.writeLong(ticksActive);
 		data.writeShort(getHistory().size());
 
 		for (FoodEaten foodEaten : getHistory())
@@ -150,6 +173,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	@Override
 	public void unpack(IByteIO data)
 	{
+		ticksActive = data.readLong();
 		short historySize = data.readShort();
 
 		for (int i = 0; i < historySize; i++)
@@ -190,6 +214,10 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		{
 			persistentCompound.setBoolean("FoodJournal", wasGivenFoodJournal);
 		}
+		if (ticksActive > 0)
+		{
+			persistentCompound.setLong("Ticks", ticksActive);
+		}
 
 		if (data != null && !nonPersistentCompound.hasNoTags())
 			data.setTag(TAG_KEY, nonPersistentCompound);
@@ -218,6 +246,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 
 			totalFoodsEatenAllTime = persistentCompound.getInteger("Total");
 			wasGivenFoodJournal = persistentCompound.getBoolean("FoodJournal");
+			ticksActive = persistentCompound.getLong("Ticks");
 		}
 	}
 

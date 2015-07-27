@@ -5,10 +5,12 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
+import squeek.spiceoflife.foodtracker.foodqueue.FixedTimeQueue;
 import squeek.spiceoflife.items.ItemFoodJournal;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
 import squeek.spiceoflife.network.PacketFoodHistory;
@@ -31,7 +33,7 @@ public class FoodTracker
 		if (event.player.worldObj.isRemote)
 			return;
 
-		FoodEaten foodEaten = new FoodEaten(event.food);
+		FoodEaten foodEaten = new FoodEaten(event.food, event.player);
 		foodEaten.hungerRestored = event.foodValues.hunger;
 		foodEaten.foodGroup = FoodGroupRegistry.getFoodGroupForFood(event.food);
 
@@ -47,6 +49,26 @@ public class FoodTracker
 		if (event.entity instanceof EntityPlayer)
 		{
 			FoodHistory.get((EntityPlayer) event.entity);
+		}
+	}
+
+	/**
+	 * Keep track of how many ticks the player has actively spent on the server,
+	 * and make sure the food history prunes expired items
+	 */
+	@SubscribeEvent
+	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event)
+	{
+		if (!(event.entityLiving instanceof EntityPlayer))
+			return;
+
+		FoodHistory foodHistory = FoodHistory.get((EntityPlayer) event.entityLiving);
+		foodHistory.deltaTicksActive(1);
+
+		if (ModConfig.USE_TIME_QUEUE)
+		{
+			FixedTimeQueue timeQueue = (FixedTimeQueue) foodHistory.getHistory();
+			timeQueue.prune(event.entityLiving.worldObj.getTotalWorldTime(), foodHistory.ticksActive);
 		}
 	}
 

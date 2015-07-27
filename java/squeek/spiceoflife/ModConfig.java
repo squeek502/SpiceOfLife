@@ -186,6 +186,21 @@ public class ModConfig implements IPackable, IPacketProcessor
 					+ "3 foods that restored 4 hunger each, 12 foods that restored 1 hunger each, etc\n"
 					+ "NOTE: " + FOOD_HISTORY_LENGTH_NAME + " uses hunger units, where 1 hunger unit = 1/2 hunger bar";
 
+	public static boolean USE_TIME_QUEUE = ModConfig.USE_TIME_QUEUE_DEFAULT;
+	private static final String USE_TIME_QUEUE_NAME = "use.time.for.food.history.length";
+	private static final boolean USE_TIME_QUEUE_DEFAULT = false;
+	private static final String USE_TIME_QUEUE_COMMENT =
+			"If true, " + FOOD_HISTORY_LENGTH_NAME + " will use time (in Minecraft days) instead of number of foods eaten for its maximum length\n"
+					+ "For example, a " + FOOD_HISTORY_LENGTH_NAME + " length of 12 will store all foods eaten in the last 12 Minecraft days.\n"
+					+ "Note: On servers, time only advances for each player while they are logged in unless " + ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF_NAME + " is set to true";
+
+	public static boolean PROGRESS_TIME_WHILE_LOGGED_OFF = ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF_DEFAULT;
+	private static final String PROGRESS_TIME_WHILE_LOGGED_OFF_NAME = "use.time.progress.time.while.logged.off";
+	private static final boolean PROGRESS_TIME_WHILE_LOGGED_OFF_DEFAULT = false;
+	private static final String PROGRESS_TIME_WHILE_LOGGED_OFF_COMMENT =
+			"If true, food history time will still progress for each player while that player is logged out.\n"
+					+ "NOTE: " + USE_TIME_QUEUE_NAME + " must be true for this to have any affect";
+
 	public static String FOOD_MODIFIER_FORMULA = ModConfig.FOOD_MODIFIER_FORMULA_STRING_DEFAULT;
 	private static final String FOOD_MODIFIER_FORMULA_STRING_NAME = "food.modifier.formula";
 	private static final String FOOD_MODIFIER_FORMULA_STRING_DEFAULT = "MAX(0, (1 - count/12))^MIN(8, food_hunger_value)";
@@ -298,6 +313,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 		FOOD_EATING_SPEED_MODIFIER = (float) config.get(CATEGORY_SERVER, FOOD_EATING_SPEED_MODIFIER_NAME, FOOD_EATING_SPEED_MODIFIER_DEFAULT, FOOD_EATING_SPEED_MODIFIER_COMMENT).getDouble(FOOD_EATING_SPEED_MODIFIER_DEFAULT);
 		FOOD_EATING_DURATION_MAX = config.get(CATEGORY_SERVER, FOOD_EATING_DURATION_MAX_NAME, FOOD_EATING_DURATION_MAX_DEFAULT, FOOD_EATING_DURATION_MAX_COMMENT).getInt(FOOD_EATING_DURATION_MAX_DEFAULT);
 		USE_HUNGER_QUEUE = config.get(CATEGORY_SERVER, USE_HUNGER_QUEUE_NAME, USE_HUNGER_QUEUE_DEFAULT, USE_HUNGER_QUEUE_COMMENT).getBoolean(USE_HUNGER_QUEUE_DEFAULT);
+		USE_TIME_QUEUE = config.get(CATEGORY_SERVER, USE_TIME_QUEUE_NAME, USE_TIME_QUEUE_DEFAULT, USE_TIME_QUEUE_COMMENT).getBoolean(USE_TIME_QUEUE_DEFAULT);
+		PROGRESS_TIME_WHILE_LOGGED_OFF = config.get(CATEGORY_SERVER, PROGRESS_TIME_WHILE_LOGGED_OFF_NAME, PROGRESS_TIME_WHILE_LOGGED_OFF_DEFAULT, PROGRESS_TIME_WHILE_LOGGED_OFF_COMMENT).getBoolean(PROGRESS_TIME_WHILE_LOGGED_OFF_DEFAULT);
 		GIVE_FOOD_JOURNAL_ON_START = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_START_NAME, GIVE_FOOD_JOURNAL_ON_START_DEFAULT, GIVE_FOOD_JOURNAL_ON_START_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_START_DEFAULT);
 		GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS = config.get(CATEGORY_SERVER, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_NAME, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT, GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_COMMENT).getBoolean(GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS_DEFAULT);
 		FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = (float) config.get(CATEGORY_SERVER, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_NAME, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT, FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_COMMENT).getDouble(FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD_DEFAULT);
@@ -368,6 +385,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 			data.writeFloat(FOOD_EATING_SPEED_MODIFIER);
 			data.writeInt(FOOD_EATING_DURATION_MAX);
 			data.writeBoolean(USE_HUNGER_QUEUE);
+			data.writeBoolean(USE_TIME_QUEUE);
+			data.writeBoolean(PROGRESS_TIME_WHILE_LOGGED_OFF);
 			data.writeUTF(FOOD_HUNGER_ROUNDING_MODE_STRING);
 		}
 		data.writeInt(FOOD_CONTAINERS_MAX_STACKSIZE);
@@ -391,6 +410,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FOOD_EATING_SPEED_MODIFIER = data.readFloat();
 			FOOD_EATING_DURATION_MAX = data.readInt();
 			USE_HUNGER_QUEUE = data.readBoolean();
+			USE_TIME_QUEUE = data.readBoolean();
+			PROGRESS_TIME_WHILE_LOGGED_OFF = data.readBoolean();
 			FOOD_HUNGER_ROUNDING_MODE_STRING = data.readUTF();
 		}
 		FOOD_CONTAINERS_MAX_STACKSIZE = data.readInt();

@@ -1,26 +1,31 @@
 package squeek.spiceoflife.foodtracker;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class FoodEaten implements IPackable, ISaveable
 {
 	public int hungerRestored = 0;
 	public ItemStack itemStack = null;
 	public FoodGroup foodGroup = null;
-	
+	public long worldTimeEaten = 0;
+	public long playerTimeEaten = 0;
+
 	public FoodEaten()
 	{
 	}
 
-	public FoodEaten(ItemStack food)
+	public FoodEaten(ItemStack food, EntityPlayer eater)
 	{
 		this.itemStack = food;
+		this.playerTimeEaten = FoodHistory.get(eater).ticksActive;
+		this.worldTimeEaten = eater.getEntityWorld().getTotalWorldTime();
 	}
 
 	@Override
@@ -30,14 +35,20 @@ public class FoodEaten implements IPackable, ISaveable
 			itemStack.writeToNBT(nbtFood);
 		if (hungerRestored != 0)
 			nbtFood.setShort("Hunger", (short) hungerRestored);
+		if (worldTimeEaten != 0)
+			nbtFood.setLong("WorldTime", worldTimeEaten);
+		if (playerTimeEaten != 0)
+			nbtFood.setLong("PlayerTime", playerTimeEaten);
 	}
-	
+
 	@Override
 	public void readFromNBTData(NBTTagCompound nbtFood)
 	{
 		itemStack = ItemStack.loadItemStackFromNBT(nbtFood);
 		hungerRestored = nbtFood.getShort("Hunger");
 		foodGroup = FoodGroupRegistry.getFoodGroupForFood(itemStack);
+		worldTimeEaten = nbtFood.getLong("WorldTime");
+		playerTimeEaten = nbtFood.getLong("PlayerTime");
 	}
 
 	public static FoodEaten loadFromNBTData(NBTTagCompound nbtFood)
@@ -53,6 +64,8 @@ public class FoodEaten implements IPackable, ISaveable
 		data.writeShort(hungerRestored);
 		data.writeUTF(foodGroup != null ? foodGroup.identifier : "");
 		data.writeItemStack(itemStack);
+		data.writeLong(worldTimeEaten);
+		data.writeLong(playerTimeEaten);
 	}
 
 	@Override
@@ -61,5 +74,7 @@ public class FoodEaten implements IPackable, ISaveable
 		hungerRestored = data.readShort();
 		foodGroup = FoodGroupRegistry.getFoodGroup(data.readUTF());
 		itemStack = data.readItemStack();
+		worldTimeEaten = data.readLong();
+		playerTimeEaten = data.readLong();
 	}
 }

@@ -1,12 +1,9 @@
-package squeek.spiceoflife.foodtracker;
+package squeek.spiceoflife.foodtracker.foodqueue;
 
-import java.util.LinkedList;
-import squeek.spiceoflife.interfaces.IPackable;
-import squeek.spiceoflife.interfaces.ISaveable;
+import squeek.spiceoflife.foodtracker.FoodEaten;
 
-public abstract class FixedSizeQueue<E> extends LinkedList<E> implements IPackable, ISaveable
+public class FixedSizeQueue extends FoodQueue
 {
-
 	private static final long serialVersionUID = 2666900280639735575L;
 	protected int limit;
 
@@ -16,7 +13,7 @@ public abstract class FixedSizeQueue<E> extends LinkedList<E> implements IPackab
 	}
 
 	@Override
-	public boolean add(E o)
+	public boolean add(FoodEaten o)
 	{
 		boolean added = super.add(o);
 		if (added)
