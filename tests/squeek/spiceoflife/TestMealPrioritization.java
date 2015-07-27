@@ -7,8 +7,9 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig.RoundingMode;
-import squeek.spiceoflife.foodtracker.FoodValues;
+import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.FoodInfoComparator;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.InventoryFoodInfo;
 
@@ -20,7 +21,7 @@ public class TestMealPrioritization
 		{
 			this.defaultFoodValues = defaultFoodValues;
 			this.diminishingReturnsModifier = modifier;
-			this.modifiedFoodValues = modifier != Float.NaN ? defaultFoodValues.getModified(modifier) : defaultFoodValues;
+			this.modifiedFoodValues = modifier != Float.NaN ? FoodModifier.getModifiedFoodValues(defaultFoodValues, modifier) : defaultFoodValues;
 		}
 
 		@Override
