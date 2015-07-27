@@ -22,7 +22,7 @@ public class InventoryHelper
 
 	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory)
 	{
-		return TileEntityHopper.func_145889_a(inventory, itemStack, ForgeDirection.DOWN.ordinal());
+		return TileEntityHopper.func_145889_a(inventory, itemStack, ForgeDirection.UNKNOWN.ordinal());
 	}
 
 	/**
@@ -37,7 +37,7 @@ public class InventoryHelper
 		{
 			try
 			{
-				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, ForgeDirection.DOWN.ordinal());
+				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, ForgeDirection.UNKNOWN.ordinal());
 			}
 			catch (Exception e)
 			{
