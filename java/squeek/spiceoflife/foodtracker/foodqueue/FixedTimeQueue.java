@@ -26,13 +26,13 @@ public class FixedTimeQueue extends FoodQueue
 
 	public boolean hasHeadExpired(long absoluteTime, long relativeTime)
 	{
-		if (size() <= 0)
+		if (peekFirst() == null)
 			return false;
 
 		if (ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF)
-			return absoluteTime >= get(0).worldTimeEaten + tickLimit;
+			return absoluteTime >= peekFirst().worldTimeEaten + tickLimit;
 		else
-			return relativeTime >= get(0).playerTimeEaten + tickLimit;
+			return relativeTime >= peekFirst().playerTimeEaten + tickLimit;
 	}
 
 	@Override
