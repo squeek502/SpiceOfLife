@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
+import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.compat.IByteIO;
@@ -50,7 +51,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		history = FoodHistory.getNewFoodQueue();
 		history.addAll(oldHistory);
 	}
-	
+
 	public static FoodQueue getNewFoodQueue()
 	{
 		if (ModConfig.USE_HUNGER_QUEUE)
@@ -111,6 +112,36 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * Note: the returned FoodValues is not a standard FoodValues.
+	 * The saturationModifier is set to the total, not to a modifier
+	 */
+	public FoodValues getTotalFoodValues(ItemStack food)
+	{
+		int totalHunger = 0;
+		float totalSaturation = 0f;
+		FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
+
+		for (FoodEaten foodEaten : history)
+		{
+			if (foodEaten.itemStack == null)
+				continue;
+
+			if (food.isItemEqual(foodEaten.itemStack)
+					||
+					(foodGroup != null && foodGroup.equals(foodEaten.foodGroup)))
+			{
+				totalHunger += foodEaten.foodValues.hunger;
+				totalSaturation += foodEaten.foodValues.getSaturationIncrement();
+			}
+		}
+
+		if (totalHunger == 0)
+			return new FoodValues(0, 0f);
+		else
+			return new FoodValues(totalHunger, totalSaturation);
 	}
 
 	public FoodQueue getHistory()

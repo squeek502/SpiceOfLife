@@ -209,6 +209,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 					+ "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
 					+ "Available variables:\n"
 					+ "\tcount : The number of times the food (or its food group) has been eaten within the food history\n"
+					+ "\thunger_count : The total amount of hunger that the food (or its food group) has restored within the food history (1 hunger unit = 1/2 hunger bar)\n"
+					+ "\tsaturation_count : The total amount of saturation that the food (or its food group) has restored within the food history (1 saturation unit = 1/2 saturation bar)\n"
 					+ "\tmax_history_length : The maximum length of the food history (see " + FOOD_HISTORY_LENGTH_NAME + ")\n"
 					+ "\tcur_history_length : The current length of the food history (<= max_history_length)\n"
 					+ "\tfood_hunger_value : The default amount of hunger the food would restore in hunger units (1 hunger unit = 1/2 hunger bar)\n"

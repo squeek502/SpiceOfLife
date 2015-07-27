@@ -99,6 +99,7 @@ public class FoodModifier
 		int historySize = foodHistory.getHistoryLengthInRelevantUnits();
 		FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
 		FoodModifier effectiveFoodModifier = foodGroup != null ? foodGroup.getFoodModifier() : FoodModifier.GLOBAL;
+		FoodValues totalFoodValues = foodHistory.getTotalFoodValues(food);
 
 		BigDecimal result = effectiveFoodModifier.expression.with("count", new BigDecimal(count))
 				.and("cur_history_length", new BigDecimal(historySize))
@@ -108,6 +109,8 @@ public class FoodModifier
 				.and("cur_saturation", new BigDecimal(player.getFoodStats().getSaturationLevel()))
 				.and("total_food_eaten", new BigDecimal(totalFoodsEaten))
 				.and("max_history_length", new BigDecimal(ModConfig.FOOD_HISTORY_LENGTH))
+				.and("hunger_count", new BigDecimal(totalFoodValues.hunger))
+				.and("saturation_count", new BigDecimal(totalFoodValues.saturationModifier))
 				.eval();
 
 		return result.floatValue();
