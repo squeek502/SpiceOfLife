@@ -29,7 +29,7 @@ public class WidgetFoodEaten extends Gui
 
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		
+
 		// truncate name if necessary
 		String displayName = foodEaten.itemStack.getDisplayName();
 		boolean truncated = false;
@@ -42,11 +42,11 @@ public class WidgetFoodEaten extends Gui
 			displayName += "...";
 
 		FoodValues defaultFoodValues = FoodValues.get(foodEaten.itemStack);
-		
+
 		if (defaultFoodValues == null)
 			return;
 
-		mc.fontRenderer.drawString(displayName, x, y, ColorHelper.getRelativeColorInt(foodEaten.hungerRestored, 0, defaultFoodValues.hunger));
+		mc.fontRenderer.drawString(displayName, x, y, ColorHelper.getRelativeColorInt(foodEaten.foodValues.hunger, 0, defaultFoodValues.hunger));
 
 		int barsNeeded = (int) Math.max(1, Math.ceil(Math.abs(defaultFoodValues.hunger) / 2f));
 
@@ -57,22 +57,22 @@ public class WidgetFoodEaten extends Gui
 		{
 			this.drawTexturedModalRect(x, y, 16, 27, 9, 9);
 
-			if (foodEaten.hungerRestored < 0)
+			if (foodEaten.foodValues.hunger < 0)
 				drawTexturedModalRect(x, y, 34, 27, 9, 9);
-			else if (foodEaten.hungerRestored > i + 1 || defaultFoodValues.hunger ==foodEaten.hungerRestored)
+			else if (foodEaten.foodValues.hunger > i + 1 || defaultFoodValues.hunger == foodEaten.foodValues.hunger)
 				drawTexturedModalRect(x, y, 16, 27, 9, 9);
-			else if (foodEaten.hungerRestored == i + 1)
+			else if (foodEaten.foodValues.hunger == i + 1)
 				drawTexturedModalRect(x, y, 124, 27, 9, 9);
 			else
 				drawTexturedModalRect(x, y, 34, 27, 9, 9);
 
 			GL11.glEnable(GL11.GL_BLEND);
-	        GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_ONE_MINUS_DST_COLOR);
+			GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_ONE_MINUS_DST_COLOR);
 			drawTexturedModalRect(x, y, defaultFoodValues.hunger - 1 == i ? 115 : 106, 27, 9, 9);
 			GL11.glDisable(GL11.GL_BLEND);
 
-			if (foodEaten.hungerRestored > i)
-				drawTexturedModalRect(x, y, foodEaten.hungerRestored - 1 == i ? 61 : 52, 27, 9, 9);
+			if (foodEaten.foodValues.hunger > i)
+				drawTexturedModalRect(x, y, foodEaten.foodValues.hunger - 1 == i ? 61 : 52, 27, 9, 9);
 
 			x += 9;
 		}

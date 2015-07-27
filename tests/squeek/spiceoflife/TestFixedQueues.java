@@ -2,6 +2,7 @@ package squeek.spiceoflife;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.foodqueue.FixedHungerQueue;
 import squeek.spiceoflife.foodtracker.foodqueue.FixedSizeQueue;
@@ -20,7 +21,7 @@ public class TestFixedQueues
 		for (int i=1; i<30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
-			foodEaten.hungerRestored = i;
+			foodEaten.foodValues = new FoodValues(i, 0f);
 			hungerQueue.add(foodEaten);
 			assertTrue(hungerQueue.hunger() <= 12);
 		}
@@ -32,7 +33,7 @@ public class TestFixedQueues
 		for (int i=1; i<30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
-			foodEaten.hungerRestored = i;
+			foodEaten.foodValues = new FoodValues(i, 0f);
 			fixedQueue.add(foodEaten);
 			assertTrue(fixedQueue.size() <= 12);
 		}
@@ -46,7 +47,7 @@ public class TestFixedQueues
 		for (int i=1; i<30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
-			foodEaten.hungerRestored = i;
+			foodEaten.foodValues = new FoodValues(i, 0f);
 			timeQueue.add(foodEaten);
 			assertTrue(timeQueue.size() == i);
 		}
@@ -63,7 +64,7 @@ public class TestFixedQueues
 		for (int i=1; i<30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
-			foodEaten.hungerRestored = i;
+			foodEaten.foodValues = new FoodValues(i, 0f);
 			timeQueue.add(foodEaten);
 			assertTrue(timeQueue.size() == i);
 		}

@@ -34,7 +34,7 @@ public class FoodTracker
 			return;
 
 		FoodEaten foodEaten = new FoodEaten(event.food, event.player);
-		foodEaten.hungerRestored = event.foodValues.hunger;
+		foodEaten.foodValues = event.foodValues;
 		foodEaten.foodGroup = FoodGroupRegistry.getFoodGroupForFood(event.food);
 
 		FoodTracker.addFoodEatenByPlayer(foodEaten, event.player);

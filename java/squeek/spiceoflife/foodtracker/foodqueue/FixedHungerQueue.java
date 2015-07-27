@@ -19,7 +19,7 @@ public class FixedHungerQueue extends FixedSizeQueue
 		boolean added = super.add(foodEaten);
 		if (added)
 		{
-			hunger += foodEaten.hungerRestored;
+			hunger += foodEaten.foodValues.hunger;
 			trimToMaxSize();
 		}
 		return added;
@@ -45,9 +45,9 @@ public class FixedHungerQueue extends FixedSizeQueue
 			hunger -= 1;
 			hungerOverflow += 1;
 
-			while (hungerOverflow >= peekFirst().hungerRestored)
+			while (hungerOverflow >= peekFirst().foodValues.hunger)
 			{
-				hungerOverflow -= removeFirst().hungerRestored;
+				hungerOverflow -= removeFirst().foodValues.hunger;
 			}
 		}
 	}
