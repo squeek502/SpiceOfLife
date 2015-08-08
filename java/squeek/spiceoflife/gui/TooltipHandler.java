@@ -34,8 +34,9 @@ public class TooltipHandler
 			float foodModifier = 1f;
 			List<String> toolTipStringsToAdd = new ArrayList<String>();
 			FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(event.itemStack);
+			boolean canDiminish = foodGroup == null || !foodGroup.blacklist;
 
-			if (foodGroup != null && !foodGroup.hidden)
+			if (canDiminish && foodGroup != null && !foodGroup.hidden)
 			{
 				toolTipStringsToAdd.add(StatCollector.translateToLocal("spiceoflife.tooltip.food.group") + EnumChatFormatting.ITALIC + foodGroup.getLocalizedName());
 			}
@@ -51,7 +52,7 @@ public class TooltipHandler
 				foodModifier = FoodModifier.getFoodModifier(event.entityPlayer, event.itemStack, FoodValues.get(event.itemStack));
 				FoodValues foodValues = FoodValues.get(event.itemStack, event.entityPlayer);
 
-				if (count > 0 || foodModifier != 1)
+				if (canDiminish && (count > 0 || foodModifier != 1))
 					toolTipStringsToAdd.add(0, EnumChatFormatting.GRAY + StatCollector.translateToLocal("spiceoflife.tooltip.nutritional.value") + ColorHelper.getRelativeColor(foodModifier, 0D, 1D) + df.format(foodModifier * 100f) + "%" + (foodValues.hunger == 0 && foodModifier != 0f ? EnumChatFormatting.DARK_RED + " (" + foodValues.hunger + " " + StatCollector.translateToLocal("spiceoflife.tooltip.hunger") + ")" : ""));
 
 				if (count > 0)

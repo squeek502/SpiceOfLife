@@ -89,6 +89,9 @@ public class FoodModifier
 		if (!ModConfig.FOOD_MODIFIER_ENABLED)
 			return 1f;
 
+		if (!FoodHelper.canFoodDiminish(food))
+			return 1f;
+
 		FoodHistory foodHistory = FoodHistory.get(player);
 		int totalFoodsEaten = foodHistory.totalFoodsEatenAllTime;
 

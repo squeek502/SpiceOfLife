@@ -11,7 +11,7 @@ public class FoodHelper
 {
 	public static boolean isValidFood(ItemStack itemStack)
 	{
-		return isFood(itemStack) && !isFoodContainer(itemStack) && canFoodDiminish(itemStack);
+		return isFood(itemStack) && !isFoodContainer(itemStack);
 	}
 
 	public static boolean canFoodDiminish(ItemStack itemStack)
