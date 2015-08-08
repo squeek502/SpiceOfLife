@@ -6,14 +6,15 @@ import java.util.UUID;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,13 +24,20 @@ import squeek.applecore.api.food.FoodValues;
 import squeek.applecore.api.food.IEdible;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.helpers.*;
+import squeek.spiceoflife.helpers.FoodHelper;
+import squeek.spiceoflife.helpers.GuiHelper;
+import squeek.spiceoflife.helpers.InventoryHelper;
+import squeek.spiceoflife.helpers.MealPrioritizationHelper;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.InventoryFoodInfo;
+import squeek.spiceoflife.helpers.MiscHelper;
+import squeek.spiceoflife.helpers.MovementHelper;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.inventory.INBTInventoryHaver;
 import squeek.spiceoflife.inventory.NBTInventory;
 import squeek.spiceoflife.network.NetworkHelper;
+import squeek.spiceoflife.network.PacketHandler;
+import squeek.spiceoflife.network.PacketToggleFoodContainer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -301,6 +309,18 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	}
 
 	@Override
+	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack)
+	{
+		if (entityLiving.worldObj.isRemote && ModConfig.LEFT_CLICK_OPENS_FOOD_CONTAINERS && MiscHelper.isMouseOverNothing())
+		{
+			PacketHandler.channel.sendToServer(new PacketToggleFoodContainer());
+			return true;
+		}
+
+		return super.onEntitySwing(entityLiving, stack);
+	}
+
+	@Override
 	public int getMaxItemUseDuration(ItemStack itemStack)
 	{
 		return 32;
@@ -399,7 +419,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	// necessary to stop food containers themselves being modified
 	// for example, HO's modFoodDivider was being applied to the values
 	// shown in the tooltips/overlay
-	@SubscribeEvent(priority=EventPriority.LOWEST)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void getFoodValues(FoodEvent.GetFoodValues event)
 	{
 		if (FoodHelper.isFoodContainer(event.food))

@@ -246,6 +246,19 @@ public class ModConfig implements IPackable, IPacketProcessor
 			"The maximum stacksize per slot in a food container";
 
 	/*
+	 * CLIENT
+	 */
+	private static final String CATEGORY_CLIENT = "client";
+	private static final String CATEGORY_CLIENT_COMMENT =
+			"These config settings are client-side only";
+
+	public static boolean LEFT_CLICK_OPENS_FOOD_CONTAINERS = ModConfig.LEFT_CLICK_OPENS_FOOD_CONTAINERS_DEFAULT;
+	private static final String LEFT_CLICK_OPENS_FOOD_CONTAINERS_NAME = "left.click.opens.food.containers";
+	private static final boolean LEFT_CLICK_OPENS_FOOD_CONTAINERS_DEFAULT = false;
+	private static final String LEFT_CLICK_OPENS_FOOD_CONTAINERS_COMMENT =
+			"If true, left clicking the air while holding a food container will open it (so that it can be eaten from)";
+
+	/*
 	 * ITEMS
 	 */
 
@@ -271,8 +284,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	/*
 	 * OBSOLETED
 	 */
-	@Deprecated
-	private static final String CATEGORY_CLIENT = "client";
+	// nothing here
 
 	public static void init(File file)
 	{
@@ -326,6 +338,13 @@ public class ModConfig implements IPackable, IPacketProcessor
 		setRoundingMode();
 
 		/*
+		 * CLIENT
+		 */
+		config.getCategory(CATEGORY_CLIENT).setComment(CATEGORY_CLIENT_COMMENT);
+
+		LEFT_CLICK_OPENS_FOOD_CONTAINERS = config.get(CATEGORY_CLIENT, LEFT_CLICK_OPENS_FOOD_CONTAINERS_NAME, LEFT_CLICK_OPENS_FOOD_CONTAINERS_DEFAULT, LEFT_CLICK_OPENS_FOOD_CONTAINERS_COMMENT).getBoolean(LEFT_CLICK_OPENS_FOOD_CONTAINERS_DEFAULT);
+
+		/*
 		 * FOOD GROUPS
 		 */
 		config.getCategory(CATEGORY_FOODGROUPS).setComment(CATEGORY_FOODGROUPS_COMMENT);
@@ -334,7 +353,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 		// remove obsolete config options
 		config.getCategory(CATEGORY_SERVER).remove("use.food.groups");
 		config.getCategory(CATEGORY_FOODGROUPS).clear();
-		config.removeCategory(config.getCategory(CATEGORY_CLIENT));
 
 		// temporarily disable chance to drop food, needs a better implementation
 		FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD = 0;

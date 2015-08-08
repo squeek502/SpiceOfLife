@@ -10,7 +10,7 @@ public class NetworkHelper
 {
 	public static EntityPlayer getSidedPlayer(MessageContext ctx)
 	{
-		return ctx.side == Side.SERVER ? ctx.getServerHandler().playerEntity : FMLClientHandler.instance().getClientPlayerEntity();
+		return ctx.side == Side.SERVER ? ctx.getServerHandler().playerEntity : getClientPlayer();
 	}
 
 	@SideOnly(Side.CLIENT)
