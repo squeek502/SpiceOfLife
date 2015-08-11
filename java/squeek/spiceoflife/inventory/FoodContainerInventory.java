@@ -36,7 +36,7 @@ public class FoodContainerInventory extends NBTInventory
 
 		super.onInventoryChanged();
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	public void findMatchingClientItemStack()
 	{

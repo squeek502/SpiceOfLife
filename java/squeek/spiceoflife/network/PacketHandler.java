@@ -9,7 +9,7 @@ import cpw.mods.fml.relauncher.Side;
 public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 {
 	public static final BetterSimpleNetworkWrapper channel = new BetterSimpleNetworkWrapper(ModInfo.NETCHANNEL);
-	
+
 	public static enum PacketType
 	{
 		ConfigSync(PacketConfigSync.class),
@@ -18,13 +18,13 @@ public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 		ToggleFoodContainer(PacketToggleFoodContainer.class, Side.SERVER),
 		FoodGroup(PacketFoodGroup.class);
 
-		public Class<? extends PacketBase> packet = null;
+		public final Class<? extends PacketBase> packet;
 
 		PacketType(Class<? extends PacketBase> clazz)
 		{
 			this(clazz, Side.CLIENT);
 		}
-		
+
 		PacketType(Class<? extends PacketBase> clazz, Side side)
 		{
 			packet = clazz;

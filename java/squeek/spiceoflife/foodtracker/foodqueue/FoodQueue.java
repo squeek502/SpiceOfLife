@@ -33,10 +33,9 @@ public abstract class FoodQueue extends LinkedList<FoodEaten> implements IPackab
 		NBTTagList nbtHistory = data.getTagList("Foods", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < nbtHistory.tagCount(); i++)
 		{
-			NBTTagCompound nbtFood = (NBTTagCompound) nbtHistory.getCompoundTagAt(i);
+			NBTTagCompound nbtFood = nbtHistory.getCompoundTagAt(i);
 			FoodEaten foodEaten = FoodEaten.loadFromNBTData(nbtFood);
-			if (foodEaten != null)
-				add(foodEaten);
+			add(foodEaten);
 		}
 	}
 

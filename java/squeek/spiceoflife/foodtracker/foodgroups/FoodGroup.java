@@ -58,7 +58,7 @@ public class FoodGroup implements IPackable
 			}
 		}
 	}
-	
+
 	public void init()
 	{
 		for (FoodGroupMember foodMember : foods)
@@ -105,12 +105,12 @@ public class FoodGroup implements IPackable
 	{
 		addFood(itemStack, exactMetadata, false);
 	}
-	
+
 	public void addFood(ItemStack itemStack, boolean exactMetadata, boolean baseItemForRecipes)
 	{
 		addFood(new FoodGroupMember(itemStack, exactMetadata, baseItemForRecipes));
 	}
-	
+
 	public void addFood(FoodGroupMember foodMember)
 	{
 		foods.add(foodMember);
@@ -129,7 +129,7 @@ public class FoodGroup implements IPackable
 			Item item = GameRegistry.findItem(itemStringParts[0], itemStringParts[1]);
 			if (item != null)
 			{
-				boolean exactMetadata = itemStringParts.length > 2 && itemStringParts[2] != "*";
+				boolean exactMetadata = itemStringParts.length > 2 && !itemStringParts[2].equals("*");
 				int metadata = itemStringParts.length > 2 && exactMetadata ? Integer.parseInt(itemStringParts[2]) : 0;
 				addFood(new ItemStack(item, 1, metadata), exactMetadata, isBaseItem);
 			}
@@ -166,7 +166,7 @@ public class FoodGroup implements IPackable
 		hidden = data.readBoolean();
 		int size = data.readShort();
 
-		for (int i=0; i<size; i++)
+		for (int i = 0; i < size; i++)
 		{
 			FoodGroupMember foodMember = new FoodGroupMember();
 			foodMember.unpack(data);
@@ -183,5 +183,11 @@ public class FoodGroup implements IPackable
 			return ((FoodGroup) obj).identifier.equals(identifier);
 
 		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return identifier.hashCode();
 	}
 }

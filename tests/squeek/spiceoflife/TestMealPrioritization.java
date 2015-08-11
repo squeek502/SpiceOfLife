@@ -21,7 +21,7 @@ public class TestMealPrioritization
 		{
 			this.defaultFoodValues = defaultFoodValues;
 			this.diminishingReturnsModifier = modifier;
-			this.modifiedFoodValues = modifier != Float.NaN ? FoodModifier.getModifiedFoodValues(defaultFoodValues, modifier) : defaultFoodValues;
+			this.modifiedFoodValues = !Float.isNaN(modifier) ? FoodModifier.getModifiedFoodValues(defaultFoodValues, modifier) : defaultFoodValues;
 		}
 
 		@Override

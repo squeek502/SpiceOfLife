@@ -13,7 +13,7 @@ public class PacketFoodGroup extends PacketBase
 	public PacketFoodGroup()
 	{
 	}
-	
+
 	public PacketFoodGroup(FoodGroup foodGroup)
 	{
 		this.foodGroup = foodGroup;
@@ -24,7 +24,7 @@ public class PacketFoodGroup extends PacketBase
 	{
 		if (foodGroup == null)
 			return;
-		
+
 		foodGroup.pack(data);
 	}
 

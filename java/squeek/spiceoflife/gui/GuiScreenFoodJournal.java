@@ -33,10 +33,10 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 	protected List<WidgetFoodEaten> foodEatenWidgets = new ArrayList<WidgetFoodEaten>();
 	protected int pageNum = 0;
-	protected final int numPerPage = 5;
+	protected static final int numPerPage = 5;
 	protected int numPages;
 	public ItemStack hoveredStack = null;
-	
+
 	protected GuiButton buttonNextPage;
 	protected GuiButton buttonPrevPage;
 	protected WidgetButtonSortDirection buttonSortDirection;
@@ -76,17 +76,17 @@ public class GuiScreenFoodJournal extends GuiContainer
 				foodEatenWidgets.add(new WidgetFoodEaten(foodEaten));
 			}
 		}
-		
-		numPages = (int) Math.max(1, Math.ceil((float)foodEatenWidgets.size()/numPerPage));
-		
+
+		numPages = (int) Math.max(1, Math.ceil((float) foodEatenWidgets.size() / numPerPage));
+
 		updateButtons();
 	}
 
-    private void updateButtons()
-    {
-        this.buttonNextPage.visible = this.pageNum < this.numPages - 1;
-        this.buttonPrevPage.visible = this.pageNum > 0;
-    }
+	private void updateButtons()
+	{
+		this.buttonNextPage.visible = this.pageNum < this.numPages - 1;
+		this.buttonPrevPage.visible = this.pageNum > 0;
+	}
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3)
@@ -111,7 +111,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 		{
 			((GuiButton) objButton).drawButton(mc, par1, par2);
 		}
-		
+
 		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || FoodHistory.get(mc.thePlayer).totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
 		{
 			if (foodEatenWidgets.size() > 0)
@@ -128,43 +128,43 @@ public class GuiScreenFoodJournal extends GuiContainer
 					foodEatenWidget.draw(localX, localY);
 					if (foodEatenWidget.foodEaten.itemStack != null)
 						drawItemStack(foodEatenWidget.foodEaten.itemStack, localX, localY);
-		
+
 					foodEatenIndex++;
 				}
 				GL11.glPopMatrix();
-		
+
 				hoveredStack = null;
 				foodEatenIndex = startIndex;
 				while (foodEatenIndex < foodEatenWidgets.size() && foodEatenIndex < endIndex)
 				{
 					WidgetFoodEaten foodEatenWidget = foodEatenWidgets.get(foodEatenIndex);
-		
+
 					int localX = x + 36;
 					int localY = y + 32 + (int) ((foodEatenIndex - startIndex) * fontRendererObj.FONT_HEIGHT * 2.5f);
-		
+
 					if (par1 >= localX && par1 < localX + 16 && par2 >= localY && par2 < localY + 16)
 					{
 						hoveredStack = foodEatenWidget.foodEaten.itemStack;
 						if (hoveredStack != null)
 							this.renderToolTip(hoveredStack, par1, par2);
 					}
-		
+
 					foodEatenIndex++;
 				}
 			}
 			else
 			{
-	            this.fontRendererObj.drawSplitString(StatCollector.translateToLocal("spiceoflife.gui.no.recent.food.eaten"), x + 36, y + 16 + 16, 116, 0x404040);
+				this.fontRendererObj.drawSplitString(StatCollector.translateToLocal("spiceoflife.gui.no.recent.food.eaten"), x + 36, y + 16 + 16, 116, 0x404040);
 			}
 		}
 		else
 		{
-            this.fontRendererObj.drawSplitString(StatCollector.translateToLocal("spiceoflife.gui.no.food.history.yet"), x + 36, y + 16 + 16, 116, 0x404040);
+			this.fontRendererObj.drawSplitString(StatCollector.translateToLocal("spiceoflife.gui.no.food.history.yet"), x + 36, y + 16 + 16, 116, 0x404040);
 		}
 
-		if (par1 >= allTimeX && par2 >= allTimeY && par1 < allTimeX+allTimeW && par2 < allTimeY+fontRendererObj.FONT_HEIGHT)
+		if (par1 >= allTimeX && par2 >= allTimeY && par1 < allTimeX + allTimeW && par2 < allTimeY + fontRendererObj.FONT_HEIGHT)
 		{
-			this.drawHoveringText(Arrays.asList(new String[] {StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")}), par1, par2, fontRendererObj);
+			this.drawHoveringText(Arrays.asList(new String[]{StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")}), par1, par2, fontRendererObj);
 		}
 
 		GL11.glDisable(GL11.GL_LIGHTING);

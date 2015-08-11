@@ -18,7 +18,7 @@ public class FoodEaten implements IPackable, ISaveable
 	public long worldTimeEaten = 0;
 	public long playerTimeEaten = 0;
 
-	public static FoodValues dummyFoodValues = new FoodValues(0, 0.0f);
+	public static final FoodValues dummyFoodValues = new FoodValues(0, 0.0f);
 
 	public FoodEaten()
 	{

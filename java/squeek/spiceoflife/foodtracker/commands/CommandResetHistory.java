@@ -38,7 +38,7 @@ public class CommandResetHistory extends CommandBase
 				foodHistoryToReset.reset();
 				FoodTracker.syncFoodHistory(foodHistoryToReset);
 				func_152374_a(commandSender, this, 0,
-						"Reset all 'The Spice of Life' mod data for " + playerToReset.getDisplayName());
+								"Reset all 'The Spice of Life' mod data for " + playerToReset.getDisplayName());
 				return;
 			}
 		}
@@ -50,7 +50,7 @@ public class CommandResetHistory extends CommandBase
 	public List addTabCompletionOptions(ICommandSender commandSender, String[] curArgs)
 	{
 		if (curArgs.length == 1)
-			return Arrays.asList(new String[] {"reset"});
+			return Arrays.asList(new String[]{"reset"});
 		else if (curArgs.length == 2)
 			return getListOfStringsMatchingLastWord(curArgs, MinecraftServer.getServer().getAllUsernames());
 		else
@@ -64,5 +64,17 @@ public class CommandResetHistory extends CommandBase
 			return super.compareTo((ICommand) obj);
 		else
 			return 0;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		return super.equals(obj) || obj instanceof ICommand && compareTo(obj) == 0;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return getCommandName().hashCode();
 	}
 }

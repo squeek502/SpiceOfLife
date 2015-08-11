@@ -39,6 +39,10 @@ public class InventoryHelper
 			{
 				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, ForgeDirection.UNKNOWN.ordinal());
 			}
+			catch (RuntimeException e)
+			{
+				throw e;
+			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
@@ -55,7 +59,7 @@ public class InventoryHelper
 
 		return itemStack;
 	}
-	
+
 	public static List<Integer> getNonEmptySlotsInInventory(IInventory inventory)
 	{
 		List<Integer> nonEmptySlotIndexes = new ArrayList<Integer>();

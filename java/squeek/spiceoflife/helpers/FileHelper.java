@@ -36,13 +36,13 @@ public class FileHelper
 		if (destFile.exists())
 		{
 			if (overwrite)
-				destFile.delete();
+				assert destFile.delete();
 			else
 				return;
 		}
 		else
 		{
-			destFile.createNewFile();
+			assert destFile.createNewFile();
 		}
 
 		FileOutputStream destOutput = null;

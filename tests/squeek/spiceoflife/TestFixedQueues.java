@@ -18,7 +18,7 @@ public class TestFixedQueues
 	@Test
 	public void testFixedHungerQueue()
 	{
-		for (int i=1; i<30; i++)
+		for (int i = 1; i < 30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
 			foodEaten.foodValues = new FoodValues(i, 0f);
@@ -30,7 +30,7 @@ public class TestFixedQueues
 	@Test
 	public void testFixedSizeQueue()
 	{
-		for (int i=1; i<30; i++)
+		for (int i = 1; i < 30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
 			foodEaten.foodValues = new FoodValues(i, 0f);
@@ -43,25 +43,25 @@ public class TestFixedQueues
 	public void testFixedTimeQueue()
 	{
 		ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF = false;
-		
-		for (int i=1; i<30; i++)
+
+		for (int i = 1; i < 30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
 			foodEaten.foodValues = new FoodValues(i, 0f);
 			timeQueue.add(foodEaten);
 			assertTrue(timeQueue.size() == i);
 		}
-		
-		timeQueue.prune(0,0);
+
+		timeQueue.prune(0, 0);
 		assertEquals(29, timeQueue.size());
-		timeQueue.prune(12*MiscHelper.TICKS_PER_DAY,0);
+		timeQueue.prune(12 * MiscHelper.TICKS_PER_DAY, 0);
 		assertEquals(29, timeQueue.size());
-		timeQueue.prune(0,12*MiscHelper.TICKS_PER_DAY);
+		timeQueue.prune(0, 12 * MiscHelper.TICKS_PER_DAY);
 		assertEquals(0, timeQueue.size());
 
 		ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF = true;
-		
-		for (int i=1; i<30; i++)
+
+		for (int i = 1; i < 30; i++)
 		{
 			FoodEaten foodEaten = new FoodEaten();
 			foodEaten.foodValues = new FoodValues(i, 0f);
@@ -69,11 +69,11 @@ public class TestFixedQueues
 			assertTrue(timeQueue.size() == i);
 		}
 
-		timeQueue.prune(0,0);
+		timeQueue.prune(0, 0);
 		assertEquals(29, timeQueue.size());
-		timeQueue.prune(0,12*MiscHelper.TICKS_PER_DAY);
+		timeQueue.prune(0, 12 * MiscHelper.TICKS_PER_DAY);
 		assertEquals(29, timeQueue.size());
-		timeQueue.prune(12*MiscHelper.TICKS_PER_DAY,0);
+		timeQueue.prune(12 * MiscHelper.TICKS_PER_DAY, 0);
 		assertEquals(0, timeQueue.size());
 	}
 

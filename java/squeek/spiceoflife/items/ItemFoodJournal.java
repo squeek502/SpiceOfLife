@@ -1,5 +1,6 @@
 package squeek.spiceoflife.items;
 
+import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
@@ -21,8 +22,8 @@ public class ItemFoodJournal extends Item
 	{
 		super();
 		setMaxStackSize(1);
-		setTextureName(ModInfo.MODID.toLowerCase() + ":" + ModConfig.ITEM_FOOD_JOURNAL_NAME);
-		setUnlocalizedName(ModInfo.MODID.toLowerCase() + "." + ModConfig.ITEM_FOOD_JOURNAL_NAME);
+		setTextureName(ModInfo.MODID.toLowerCase(Locale.ROOT) + ":" + ModConfig.ITEM_FOOD_JOURNAL_NAME);
+		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + "." + ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setCreativeTab(CreativeTabs.tabMisc);
 	}
 

@@ -1,7 +1,8 @@
 package squeek.spiceoflife;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;import net.minecraft.item.ItemStack;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.items.ItemFoodJournal;
 import squeek.spiceoflife.items.ItemFoodContainer;
 import cpw.mods.fml.common.registry.GameRegistry;

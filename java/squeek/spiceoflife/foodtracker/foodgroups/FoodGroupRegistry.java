@@ -59,7 +59,7 @@ public class FoodGroupRegistry
 			PacketDispatcher.get().sendTo(new PacketFoodGroup(foodGroup), player);
 		}
 	}
-	
+
 	public static void serverInit()
 	{
 		for (FoodGroup foodGroup : foodGroups.values())
@@ -67,7 +67,7 @@ public class FoodGroupRegistry
 			foodGroup.init();
 		}
 	}
-	
+
 	public static void clear()
 	{
 		foodGroups.clear();

@@ -1,5 +1,7 @@
 package squeek.spiceoflife.helpers;
 
+import java.io.Closeable;
+import java.io.IOException;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MovingObjectPosition;
@@ -28,5 +30,18 @@ public class MiscHelper
 			return mc.theWorld.getBlock(x, y, z).getMaterial() == Material.air;
 		}
 		return false;
+	}
+
+	public static void tryCloseStream(Closeable stream)
+	{
+		try
+		{
+			if (stream != null)
+				stream.close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

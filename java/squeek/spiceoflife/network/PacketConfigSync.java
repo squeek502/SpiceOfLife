@@ -6,7 +6,7 @@ import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.compat.IByteIO;
 
 public class PacketConfigSync extends PacketBase
-{	
+{
 	public PacketConfigSync()
 	{
 	}

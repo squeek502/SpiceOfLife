@@ -1,5 +1,6 @@
 package squeek.spiceoflife.gui;
 
+import java.util.Locale;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -15,7 +16,7 @@ public class GuiFoodContainer extends GuiContainer
 {
 	protected IInventory playerInventory = null;
 	protected IInventory inventory = null;
-	public static final ResourceLocation guiTexture = new ResourceLocation(ModInfo.MODID.toLowerCase(), "textures/gui/foodcontainer.png");
+	public static final ResourceLocation guiTexture = new ResourceLocation(ModInfo.MODID.toLowerCase(Locale.ROOT), "textures/gui/foodcontainer.png");
 	public int xStart;
 	public int yStart;
 

@@ -1,5 +1,6 @@
 package squeek.spiceoflife.items;
 
+import java.util.Locale;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -62,8 +63,8 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		this.itemName = itemName;
 		this.numSlots = numSlots;
 		setMaxStackSize(1);
-		setTextureName(ModInfo.MODID.toLowerCase() + ":" + itemName);
-		setUnlocalizedName(ModInfo.MODID.toLowerCase() + "." + itemName);
+		setTextureName(ModInfo.MODID.toLowerCase(Locale.ROOT) + ":" + this.itemName);
+		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + "." + this.itemName);
 		setCreativeTab(CreativeTabs.tabMisc);
 
 		// for ItemTossEvent

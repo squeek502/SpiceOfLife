@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.io.Serializable;
 import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,8 +30,8 @@ public class MealPrioritizationHelper
 		{
 			this.itemStack = itemStack;
 			this.slotNum = slotNum;
-			this.defaultFoodValues = FoodValues.get(itemStack);
-			if (FoodHelper.canFoodDiminish(itemStack))
+			this.defaultFoodValues = FoodValues.get(this.itemStack);
+			if (FoodHelper.canFoodDiminish(this.itemStack))
 			{
 				this.diminishingReturnsModifier = FoodModifier.getFoodModifier(player, itemStack, defaultFoodValues);
 				this.modifiedFoodValues = FoodModifier.getModifiedFoodValues(defaultFoodValues, diminishingReturnsModifier);
@@ -67,8 +68,9 @@ public class MealPrioritizationHelper
 		}
 	};
 
-	public static class FoodInfoComparator implements Comparator<InventoryFoodInfo>
+	public static class FoodInfoComparator implements Comparator<InventoryFoodInfo>, Serializable
 	{
+		private static final long serialVersionUID = -2142369827782900207L;
 		public int maxHungerRestored;
 		public boolean ignoreHungerRemainder = false;
 

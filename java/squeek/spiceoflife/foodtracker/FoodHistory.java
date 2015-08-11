@@ -57,7 +57,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		if (ModConfig.USE_HUNGER_QUEUE)
 			return new FixedHungerQueue(ModConfig.FOOD_HISTORY_LENGTH);
 		else if (ModConfig.USE_TIME_QUEUE)
-			return new FixedTimeQueue(ModConfig.FOOD_HISTORY_LENGTH * MiscHelper.TICKS_PER_DAY);
+			return new FixedTimeQueue((long) ModConfig.FOOD_HISTORY_LENGTH * MiscHelper.TICKS_PER_DAY);
 		else
 			return new FixedSizeQueue(ModConfig.FOOD_HISTORY_LENGTH);
 	}

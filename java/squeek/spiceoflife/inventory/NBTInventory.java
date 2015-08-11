@@ -12,7 +12,6 @@ public class NBTInventory implements ISaveable, IInventory
 {
 	protected ItemStack[] inventoryItems;
 	protected INBTInventoryHaver inventoryHaver = null;
-	protected NBTTagCompound nbt = null;
 
 	public NBTInventory()
 	{
@@ -232,7 +231,7 @@ public class NBTInventory implements ISaveable, IInventory
 		NBTTagList items = data.getTagList("Items", Constants.NBT.TAG_COMPOUND);
 		for (int slotNum = 0; slotNum < items.tagCount(); slotNum++)
 		{
-			NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(slotNum);
+			NBTTagCompound item = items.getCompoundTagAt(slotNum);
 			int slot = item.getByte("Slot");
 
 			if (slot >= 0 && slot < getSizeInventory())

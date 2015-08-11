@@ -1,6 +1,7 @@
 package squeek.spiceoflife;
 
 import java.io.File;
+import java.util.Locale;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.config.Configuration;
@@ -121,7 +122,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			}
 		};
 
-		public String id;
+		public final String id;
 
 		private RoundingMode(String id)
 		{
@@ -264,13 +265,9 @@ public class ModConfig implements IPackable, IPacketProcessor
 
 	public static final String ITEM_FOOD_JOURNAL_NAME = "bookfoodjournal";
 
-	public static int ITEM_LUNCH_BOX_ID = ModConfig.ITEM_LUNCH_BOX_ID_DEFAULT;
 	public static final String ITEM_LUNCH_BOX_NAME = "lunchbox";
-	public static final int ITEM_LUNCH_BOX_ID_DEFAULT = 6851;
 
-	public static int ITEM_LUNCH_BAG_ID = ModConfig.ITEM_LUNCH_BAG_ID_DEFAULT;
 	public static final String ITEM_LUNCH_BAG_NAME = "lunchbag";
-	public static final int ITEM_LUNCH_BAG_ID_DEFAULT = 6852;
 
 	/*
 	 * FOOD GROUPS
@@ -364,7 +361,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	{
 		for (RoundingMode roundingMode : RoundingMode.values())
 		{
-			if (roundingMode.id.equals(FOOD_HUNGER_ROUNDING_MODE_STRING.toLowerCase()))
+			if (roundingMode.id.equals(FOOD_HUNGER_ROUNDING_MODE_STRING.toLowerCase(Locale.ROOT)))
 			{
 				FOOD_HUNGER_ROUNDING_MODE = roundingMode;
 				break;
@@ -448,7 +445,6 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FoodHistory.get(player).onHistoryTypeChanged();
 			FoodGroupRegistry.clear();
 		}
-
 
 		return null;
 	}
