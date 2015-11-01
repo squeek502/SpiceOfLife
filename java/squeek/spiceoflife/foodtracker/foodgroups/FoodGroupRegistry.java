@@ -1,20 +1,40 @@
 package squeek.spiceoflife.foodtracker.foodgroups;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.compat.PacketDispatcher;
+import squeek.spiceoflife.helpers.OreDictionaryHelper;
 import squeek.spiceoflife.network.PacketFoodGroup;
 
 public class FoodGroupRegistry
 {
-	private static HashMap<String, FoodGroup> foodGroups = new HashMap<String, FoodGroup>();
+	private static Map<String, FoodGroup> foodGroups = new HashMap<String, FoodGroup>();
+	/**
+	 * Does not deal with food group exclusions; that must be handled separately
+	 * See {@link #getFoodGroupsForFood(ItemStack)}
+	 */
+	private static Map<Integer, Set<FoodGroup>> foodToIncludedFoodGroups = new HashMap<Integer, Set<FoodGroup>>();
 	private static boolean hasBlacklist = false;
 
 	public static FoodGroup getFoodGroup(String identifier)
 	{
 		return foodGroups.get(identifier);
+	}
+
+	public static Collection<FoodGroup> getFoodGroups()
+	{
+		return foodGroups.values();
+	}
+
+	public static int numFoodGroups()
+	{
+		return getFoodGroups().size();
 	}
 
 	public static void addFoodGroup(FoodGroup foodGroup)
@@ -30,17 +50,40 @@ public class FoodGroupRegistry
 		return foodGroups.containsKey(identifier);
 	}
 
-	public static FoodGroup getFoodGroupForFood(ItemStack food)
+	public static Set<FoodGroup> getFoodGroupsForFood(ItemStack food)
 	{
-		FoodGroup highestPriorityFoodGroup = null;
-		for (FoodGroup foodGroup : foodGroups.values())
+		Set<FoodGroup> wildCardFoodGroups = foodToIncludedFoodGroups.get(OreDictionaryHelper.getWildCardItemStackHash(food));
+		Set<FoodGroup> exactFoodGroups = foodToIncludedFoodGroups.get(OreDictionaryHelper.getItemStackHash(food));
+		Set<FoodGroup> allFoodGroups = new HashSet<FoodGroup>();
+
+		if (wildCardFoodGroups != null)
 		{
-			if ((highestPriorityFoodGroup == null || foodGroup.priority > highestPriorityFoodGroup.priority) && foodGroup.isFoodIncluded(food))
+			for (FoodGroup foodGroup : wildCardFoodGroups)
 			{
-				highestPriorityFoodGroup = foodGroup;
+				if (!foodGroup.isFoodExcluded(food))
+					allFoodGroups.add(foodGroup);
 			}
 		}
-		return highestPriorityFoodGroup;
+		if (exactFoodGroups != null)
+		{
+			for (FoodGroup foodGroup : exactFoodGroups)
+			{
+				if (!foodGroup.isFoodExcluded(food))
+					allFoodGroups.add(foodGroup);
+			}
+		}
+
+		return allFoodGroups;
+	}
+
+	private static boolean isAnyFoodGroupBlacklist(Collection<FoodGroup> foodGroups)
+	{
+		for (FoodGroup foodGroup : foodGroups)
+		{
+			if (foodGroup.blacklist)
+				return true;
+		}
+		return false;
 	}
 
 	public static boolean isFoodBlacklisted(ItemStack food)
@@ -48,8 +91,10 @@ public class FoodGroupRegistry
 		if (!hasBlacklist && !ModConfig.USE_FOOD_GROUPS_AS_WHITELISTS)
 			return false;
 
-		FoodGroup foodGroup = getFoodGroupForFood(food);
-		return (ModConfig.USE_FOOD_GROUPS_AS_WHITELISTS && foodGroup == null) || (foodGroup != null && foodGroup.blacklist);
+		Set<FoodGroup> foodGroups = getFoodGroupsForFood(food);
+		boolean isInAnyFoodGroups = !foodGroups.isEmpty();
+		boolean isInBlacklistFoodGroup = isInAnyFoodGroups && isAnyFoodGroupBlacklist(foodGroups);
+		return (ModConfig.USE_FOOD_GROUPS_AS_WHITELISTS && !isInAnyFoodGroups) || isInBlacklistFoodGroup;
 	}
 
 	public static void sync(EntityPlayerMP player)
@@ -60,16 +105,29 @@ public class FoodGroupRegistry
 		}
 	}
 
-	public static void serverInit()
+	public static void setInStone()
 	{
-		for (FoodGroup foodGroup : foodGroups.values())
+		foodToIncludedFoodGroups.clear();
+
+		for (FoodGroup foodGroup : getFoodGroups())
 		{
 			foodGroup.init();
+			for (Integer itemHash : foodGroup.getMatchingItemStackHashes())
+			{
+				if (foodToIncludedFoodGroups.get(itemHash) == null)
+				{
+					foodToIncludedFoodGroups.put(itemHash, new HashSet<FoodGroup>());
+				}
+				foodToIncludedFoodGroups.get(itemHash).add(foodGroup);
+			}
 		}
 	}
 
 	public static void clear()
 	{
 		foodGroups.clear();
+		foodToIncludedFoodGroups.clear();
+		hasBlacklist = false;
+		PacketFoodGroup.resetCount();
 	}
 }

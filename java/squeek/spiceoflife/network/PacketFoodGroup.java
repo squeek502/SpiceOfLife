@@ -9,6 +9,13 @@ import cpw.mods.fml.relauncher.Side;
 public class PacketFoodGroup extends PacketBase
 {
 	private FoodGroup foodGroup = null;
+	private int totalFoodGroups = 0;
+	public static int foodGroupsRecieved = 0;
+
+	public static void resetCount()
+	{
+		foodGroupsRecieved = 0;
+	}
 
 	public PacketFoodGroup()
 	{
@@ -25,12 +32,14 @@ public class PacketFoodGroup extends PacketBase
 		if (foodGroup == null)
 			return;
 
+		data.writeInt(FoodGroupRegistry.numFoodGroups());
 		foodGroup.pack(data);
 	}
 
 	@Override
 	public void unpack(IByteIO data)
 	{
+		totalFoodGroups = data.readInt();
 		foodGroup = new FoodGroup();
 		foodGroup.unpack(data);
 	}
@@ -38,8 +47,14 @@ public class PacketFoodGroup extends PacketBase
 	@Override
 	public PacketBase processAndReply(Side side, EntityPlayer player)
 	{
-		foodGroup.init();
+		if (++foodGroupsRecieved > totalFoodGroups)
+			throw new RuntimeException("Recieved more food groups than should exist (recieved: " + foodGroupsRecieved + ", total: " + totalFoodGroups + ")");
+
 		FoodGroupRegistry.addFoodGroup(foodGroup);
+
+		if (foodGroupsRecieved == totalFoodGroups)
+			FoodGroupRegistry.setInStone();
+
 		return null;
 	}
 }

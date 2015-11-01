@@ -35,7 +35,6 @@ public class FoodTracker
 
 		FoodEaten foodEaten = new FoodEaten(event.food, event.player);
 		foodEaten.foodValues = event.foodValues;
-		foodEaten.foodGroup = FoodGroupRegistry.getFoodGroupForFood(event.food);
 
 		FoodTracker.addFoodEatenByPlayer(foodEaten, event.player);
 	}
@@ -162,16 +161,6 @@ public class FoodTracker
 			PacketDispatcher.get().sendTo(new PacketFoodHistory(foodEaten), (EntityPlayerMP) player);
 
 		return FoodHistory.get(player).addFood(foodEaten);
-	}
-
-	public static int getFoodHistoryCountOf(ItemStack food, EntityPlayer player)
-	{
-		return FoodHistory.get(player).getFoodCount(food);
-	}
-
-	public static int getFoodHistoryCountOfLastEatenBy(EntityPlayer player)
-	{
-		return FoodHistory.get(player).getFoodCount(getFoodLastEatenBy(player));
 	}
 
 	public static int getFoodHistoryLengthInRelevantUnits(EntityPlayer player)

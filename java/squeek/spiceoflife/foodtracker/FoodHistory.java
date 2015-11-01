@@ -2,6 +2,7 @@ package squeek.spiceoflife.foodtracker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -94,19 +95,21 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		return history.add(foodEaten);
 	}
 
-	public int getFoodCount(ItemStack food)
+	public int getFoodCountIgnoringFoodGroups(ItemStack food)
+	{
+		return getFoodCountForFoodGroup(food, null);
+	}
+
+	public int getFoodCountForFoodGroup(ItemStack food, FoodGroup foodGroup)
 	{
 		int count = 0;
-		FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
 
 		for (FoodEaten foodEaten : history)
 		{
 			if (foodEaten.itemStack == null)
 				continue;
 
-			if (food.isItemEqual(foodEaten.itemStack)
-					||
-					(foodGroup != null && foodGroup.equals(foodEaten.foodGroup)))
+			if (food.isItemEqual(foodEaten.itemStack) || foodEaten.getFoodGroups().contains(foodGroup))
 			{
 				count += 1;
 			}
@@ -114,24 +117,45 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		return count;
 	}
 
+	public boolean containsFoodOrItsFoodGroups(ItemStack food)
+	{
+		Set<FoodGroup> foodGroups = FoodGroupRegistry.getFoodGroupsForFood(food);
+		for (FoodEaten foodEaten : history)
+		{
+			if (foodEaten.itemStack == null)
+				continue;
+
+			if (food.isItemEqual(foodEaten.itemStack) || MiscHelper.collectionsOverlap(foodGroups, foodEaten.getFoodGroups()))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * See {@link #getTotalFoodValuesForFoodGroup}
+	 */
+	public FoodValues getTotalFoodValuesIgnoringFoodGroups(ItemStack food)
+	{
+		return getTotalFoodValuesForFoodGroup(food, null);
+	}
+
 	/**
 	 * Note: the returned FoodValues is not a standard FoodValues.
 	 * The saturationModifier is set to the total, not to a modifier
 	 */
-	public FoodValues getTotalFoodValues(ItemStack food)
+	public FoodValues getTotalFoodValuesForFoodGroup(ItemStack food, FoodGroup foodGroup)
 	{
 		int totalHunger = 0;
 		float totalSaturation = 0f;
-		FoodGroup foodGroup = FoodGroupRegistry.getFoodGroupForFood(food);
 
 		for (FoodEaten foodEaten : history)
 		{
 			if (foodEaten.itemStack == null)
 				continue;
 
-			if (food.isItemEqual(foodEaten.itemStack)
-					||
-					(foodGroup != null && foodGroup.equals(foodEaten.foodGroup)))
+			if (food.isItemEqual(foodEaten.itemStack) || foodEaten.getFoodGroups().contains(foodGroup))
 			{
 				totalHunger += foodEaten.foodValues.hunger;
 				totalSaturation += foodEaten.foodValues.getSaturationIncrement();

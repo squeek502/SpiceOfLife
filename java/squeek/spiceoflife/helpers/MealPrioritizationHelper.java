@@ -33,7 +33,7 @@ public class MealPrioritizationHelper
 			this.defaultFoodValues = FoodValues.get(this.itemStack);
 			if (FoodHelper.canFoodDiminish(this.itemStack))
 			{
-				this.diminishingReturnsModifier = FoodModifier.getFoodModifier(player, itemStack, defaultFoodValues);
+				this.diminishingReturnsModifier = FoodModifier.getFoodModifier(player, itemStack);
 				this.modifiedFoodValues = FoodModifier.getModifiedFoodValues(defaultFoodValues, diminishingReturnsModifier);
 			}
 			else

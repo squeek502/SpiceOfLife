@@ -2,6 +2,8 @@ package squeek.spiceoflife.helpers;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MovingObjectPosition;
@@ -43,5 +45,10 @@ public class MiscHelper
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public static boolean collectionsOverlap(Collection<?> a, Collection<?> b)
+	{
+		return !Collections.disjoint(a, b);
 	}
 }
