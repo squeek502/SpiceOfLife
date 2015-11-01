@@ -53,6 +53,16 @@ public class TooltipHandler
 		return visibleFoodGroups;
 	}
 
+	public static String joinFoodGroupsForDisplay(Set<FoodGroup> foodGroups, String delimiter, String resetFormatting)
+	{
+		List<String> stringsToJoin = new ArrayList<String>();
+		for (FoodGroup foodGroup : foodGroups)
+		{
+			stringsToJoin.add(foodGroup.formatString(EnumChatFormatting.ITALIC.toString() + foodGroup) + resetFormatting);
+		}
+		return StringHelper.join(stringsToJoin, delimiter);
+	}
+
 	public String getNutritionalValueString(float foodModifier)
 	{
 		return ColorHelper.getRelativeColor(foodModifier, 0D, 1D) + df.format(foodModifier * 100f) + "%";
@@ -61,7 +71,7 @@ public class TooltipHandler
 	public String getEatenRecentlyTooltip(FoodHistory foodHistory, ItemStack itemStack, FoodGroup foodGroup, boolean shouldShowNutritionalValue)
 	{
 		int count = foodHistory.getFoodCountForFoodGroup(itemStack, foodGroup);
-		String prefix = EnumChatFormatting.ITALIC + (foodGroup != null ? foodGroup.getLocalizedName() + " " : "") + EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC;
+		String prefix = (foodGroup != null ? foodGroup.formatString(EnumChatFormatting.ITALIC.toString() + foodGroup) + " " : "") + EnumChatFormatting.RESET.toString() + EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC;
 		String eatenRecently;
 		String nutritionalValue = shouldShowNutritionalValue ? EnumChatFormatting.DARK_GRAY + " [" + getNutritionalValueString(FoodModifier.getFoodGroupModifier(foodHistory, itemStack, foodGroup)) + EnumChatFormatting.DARK_GRAY + "]" : "";
 		if (count > 0)
@@ -83,10 +93,10 @@ public class TooltipHandler
 			Set<FoodGroup> visibleFoodGroups = getFoodGroupsForDisplay(foodGroups);
 			boolean canDiminish = FoodHelper.canFoodDiminish(event.itemStack);
 
-			if (canDiminish && !visibleFoodGroups.isEmpty())
+			if (!visibleFoodGroups.isEmpty())
 			{
 				String foodGroupString = visibleFoodGroups.size() > 1 ? StatCollector.translateToLocal("spiceoflife.tooltip.food.groups") : StatCollector.translateToLocal("spiceoflife.tooltip.food.group");
-				String joinedFoodGroups = StringHelper.join(visibleFoodGroups, ", ");
+				String joinedFoodGroups = joinFoodGroupsForDisplay(visibleFoodGroups, ", ", EnumChatFormatting.GRAY.toString());
 				toolTipStringsToAdd.add(EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC + foodGroupString + EnumChatFormatting.GRAY + EnumChatFormatting.ITALIC + joinedFoodGroups);
 			}
 			if (ModConfig.FOOD_EATEN_THRESHOLD > 0 && totalFoodEaten < ModConfig.FOOD_EATEN_THRESHOLD)

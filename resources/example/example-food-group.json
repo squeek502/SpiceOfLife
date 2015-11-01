@@ -49,5 +49,13 @@
 	// instead of the main diminishing returns formula 
 	// See the food.modifier.formula config option in the main SpiceOfLife.cfg for documentation
 	// Optional; default if not defined: food.modifier.formula from SpiceOfLife.cfg
-	"formula": "MAX(0, 1 - count/2)"
+	"formula": "MAX(0, 1 - count/2)",
+
+	// Used to set the style of the food group name in tooltips, etc
+	// Valid values: 
+	//   black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold,
+	//   gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white,
+	//   obfuscated, bold, strikethrough, underline, italic
+	// Optional; default if not defined: gray
+	"color": "gold"
 }

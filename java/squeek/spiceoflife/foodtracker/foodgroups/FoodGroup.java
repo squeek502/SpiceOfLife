@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.oredict.OreDictionary;
 import squeek.spiceoflife.compat.IByteIO;
@@ -24,12 +25,15 @@ public class FoodGroup implements IPackable
 	transient private Set<Integer> matchingItemHashes = new HashSet<Integer>();
 	transient private Set<Integer> excludedItemHashes = new HashSet<Integer>();
 	transient private FoodModifier foodModifier;
+	transient static final EnumChatFormatting DEFAULT_FORMATTING = EnumChatFormatting.GRAY;
+	transient public EnumChatFormatting formatting;
 
 	public boolean enabled = true;
 	public String name = null;
 	public boolean blacklist = false;
 	private boolean hidden = false;
 	public String formula = null;
+	public String color = DEFAULT_FORMATTING.getFriendlyName();
 	@SerializedName("food")
 	public Map<String, List<String>> foodStringsByType;
 	@SerializedName("exclude")
@@ -49,6 +53,10 @@ public class FoodGroup implements IPackable
 	{
 		if (foodStringsByType == null)
 			throw new RuntimeException(toString() + " food group (" + identifier + ".json) missing required \"food\" property");
+
+		formatting = EnumChatFormatting.getValueByName(color);
+		if (formatting == null)
+			formatting = DEFAULT_FORMATTING;
 
 		List<String> oredictStrings = foodStringsByType.get("oredict");
 		if (oredictStrings != null)
@@ -131,6 +139,16 @@ public class FoodGroup implements IPackable
 		return matchingItemHashes;
 	}
 
+	public String formatString(String string)
+	{
+		return formatting + string;
+	}
+
+	public String getFormattedName()
+	{
+		return formatString(getLocalizedName());
+	}
+
 	public String getLocalizedName()
 	{
 		if (name != null)
@@ -203,6 +221,7 @@ public class FoodGroup implements IPackable
 		data.writeUTF(formula != null ? formula : "");
 		data.writeBoolean(blacklist);
 		data.writeBoolean(hidden);
+		data.writeByte(formatting != null ? formatting.ordinal() : DEFAULT_FORMATTING.ordinal());
 		data.writeShort(included.size());
 
 		for (FoodGroupMember foodMember : included)
@@ -228,6 +247,7 @@ public class FoodGroup implements IPackable
 		formula = !formula.equals("") ? formula : null;
 		blacklist = data.readBoolean();
 		hidden = data.readBoolean();
+		formatting = EnumChatFormatting.values()[data.readByte()];
 		int size = data.readShort();
 
 		for (int i = 0; i < size; i++)
