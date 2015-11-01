@@ -102,6 +102,9 @@ public class FoodModifier
 				.and("max_history_length", new BigDecimal(ModConfig.FOOD_HISTORY_LENGTH))
 				.and("hunger_count", new BigDecimal(totalFoodValues.hunger))
 				.and("saturation_count", new BigDecimal(totalFoodValues.saturationModifier))
+				.and("food_group_count", new BigDecimal(FoodGroupRegistry.getFoodGroupsForFood(food).size()))
+				.and("food_groups_eaten", new BigDecimal(foodHistory.getDistinctFoodGroups().size()))
+				.and("total_food_groups", new BigDecimal(FoodGroupRegistry.numFoodGroups()))
 				.eval();
 
 		return result.floatValue();

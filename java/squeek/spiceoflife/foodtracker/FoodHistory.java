@@ -1,6 +1,7 @@
 package squeek.spiceoflife.foodtracker;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.entity.Entity;
@@ -181,6 +182,19 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	public FoodEaten getLastEatenFood()
 	{
 		return history.peekLast();
+	}
+
+	public Set<FoodGroup> getDistinctFoodGroups()
+	{
+		Set<FoodGroup> distinctFoodGroups = new HashSet<FoodGroup>();
+		for (FoodEaten foodEaten : history)
+		{
+			if (foodEaten.itemStack == null)
+				continue;
+
+			distinctFoodGroups.addAll(foodEaten.getFoodGroups());
+		}
+		return distinctFoodGroups;
 	}
 
 	public void reset()
