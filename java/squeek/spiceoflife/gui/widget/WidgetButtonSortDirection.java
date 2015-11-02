@@ -15,7 +15,7 @@ public class WidgetButtonSortDirection extends GuiButton
 	private static final ResourceLocation modIcons = new ResourceLocation(ModInfo.MODID.toLowerCase(Locale.ROOT), "textures/icons.png");
 
 	/**
-	 * True for pointing right (next page), false for pointing left (previous page).
+	 * True for sorted descending (newest first), false for sorted ascending (oldest first).
 	 */
 	public boolean sortDesc;
 

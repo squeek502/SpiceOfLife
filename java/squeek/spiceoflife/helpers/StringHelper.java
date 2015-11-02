@@ -1,5 +1,6 @@
 package squeek.spiceoflife.helpers;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Locale;
 import net.minecraft.util.StatCollector;
@@ -47,5 +48,12 @@ public class StringHelper
 		String langCode = parts[0];
 		String regionCode = parts.length > 1 ? parts[1] : null;
 		return regionCode != null ? new Locale(langCode, regionCode) : new Locale(langCode);
+	}
+
+	public static DecimalFormat df = new DecimalFormat("#.#");
+
+	public static String hungerHistoryLength(int length)
+	{
+		return df.format(length / 2f);
 	}
 }

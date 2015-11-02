@@ -1,6 +1,5 @@
 package squeek.spiceoflife.foodtracker.foodqueue;
 
-import squeek.spiceoflife.ModConfig;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class FixedTimeQueue extends FoodQueue
@@ -29,10 +28,12 @@ public class FixedTimeQueue extends FoodQueue
 		if (peekFirst() == null)
 			return false;
 
-		if (ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF)
-			return absoluteTime >= peekFirst().worldTimeEaten + tickLimit;
-		else
-			return relativeTime >= peekFirst().playerTimeEaten + tickLimit;
+		return peekFirst().elapsedTime(absoluteTime, relativeTime) >= getMaxTime();
+	}
+
+	public long getMaxTime()
+	{
+		return tickLimit;
 	}
 
 	@Override

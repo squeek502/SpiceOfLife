@@ -37,6 +37,24 @@ public class FixedHungerQueue extends FixedSizeQueue
 		return hunger;
 	}
 
+	public int totalHunger()
+	{
+		return hunger + hungerOverflow;
+	}
+
+	public FixedHungerQueue sliceUntil(FoodEaten target)
+	{
+		FixedHungerQueue slice = new FixedHungerQueue(limit);
+		for (FoodEaten foodEaten : this)
+		{
+			if (target.equals(foodEaten))
+				break;
+
+			slice.add(foodEaten);
+		}
+		return slice;
+	}
+
 	@Override
 	protected void trimToMaxSize()
 	{

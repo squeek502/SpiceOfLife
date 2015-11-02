@@ -75,7 +75,7 @@ public class TooltipHandler
 		String eatenRecently;
 		String nutritionalValue = shouldShowNutritionalValue ? EnumChatFormatting.DARK_GRAY + " [" + getNutritionalValueString(FoodModifier.getFoodGroupModifier(foodHistory, itemStack, foodGroup)) + EnumChatFormatting.DARK_GRAY + "]" : "";
 		if (count > 0)
-			eatenRecently = StatCollector.translateToLocalFormatted("spiceoflife.tooltip.eaten.recently" + (ModConfig.USE_TIME_QUEUE ? ".time" : (ModConfig.USE_HUNGER_QUEUE ? ".hunger" : "")), StringHelper.getQuantityDescriptor(count), ModConfig.USE_HUNGER_QUEUE ? df.format(ModConfig.FOOD_HISTORY_LENGTH / 2f) : ModConfig.FOOD_HISTORY_LENGTH);
+			eatenRecently = StatCollector.translateToLocalFormatted("spiceoflife.tooltip.eaten.recently" + (ModConfig.USE_HUNGER_QUEUE ? ".hunger" : (ModConfig.USE_TIME_QUEUE ? ".time" : "")), StringHelper.getQuantityDescriptor(count), ModConfig.USE_HUNGER_QUEUE ? StringHelper.hungerHistoryLength(ModConfig.FOOD_HISTORY_LENGTH) : ModConfig.FOOD_HISTORY_LENGTH);
 		else
 			eatenRecently = StatCollector.translateToLocal("spiceoflife.tooltip.not.eaten.recently");
 		return prefix + (foodGroup != null ? StringHelper.decapitalize(eatenRecently, StringHelper.getMinecraftLocale()) : eatenRecently) + nutritionalValue;

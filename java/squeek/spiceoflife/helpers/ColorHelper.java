@@ -44,6 +44,9 @@ public class ColorHelper
 		if (min == max)
 			return 0x000000;
 
+		if (val > max)
+			return 0x1ED6B1;
+
 		double full, f1, f2;
 		full = max - min;
 		f1 = (max - val) / full;

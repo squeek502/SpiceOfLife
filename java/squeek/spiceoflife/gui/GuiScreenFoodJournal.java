@@ -1,25 +1,32 @@
 package squeek.spiceoflife.gui;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.FoodHistory;
+import squeek.spiceoflife.foodtracker.foodqueue.FixedHungerQueue;
+import squeek.spiceoflife.foodtracker.foodqueue.FixedSizeQueue;
+import squeek.spiceoflife.foodtracker.foodqueue.FixedTimeQueue;
 import squeek.spiceoflife.gui.widget.WidgetButtonNextPage;
 import squeek.spiceoflife.gui.widget.WidgetButtonSortDirection;
 import squeek.spiceoflife.gui.widget.WidgetFoodEaten;
+import squeek.spiceoflife.helpers.MiscHelper;
+import squeek.spiceoflife.helpers.StringHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -27,6 +34,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class GuiScreenFoodJournal extends GuiContainer
 {
 	private static final ResourceLocation bookGuiTextures = new ResourceLocation("textures/gui/book.png");
+	public static final DecimalFormat dfOne = new DecimalFormat("#.#");
 
 	private int bookImageWidth = 192;
 	private int bookImageHeight = 192;
@@ -88,8 +96,62 @@ public class GuiScreenFoodJournal extends GuiContainer
 		this.buttonPrevPage.visible = this.pageNum > 0;
 	}
 
+	public static String getTimeEatenString(FoodEaten foodEaten)
+	{
+		Minecraft mc = Minecraft.getMinecraft();
+		long elapsedTime = foodEaten.elapsedTime(mc.theWorld.getTotalWorldTime(), FoodHistory.get(mc.thePlayer).ticksActive);
+		double daysElapsed = elapsedTime / (double) MiscHelper.TICKS_PER_DAY;
+		String numDays = dfOne.format(daysElapsed);
+		String singularOrPlural = numDays.equals("1") ? "spiceoflife.gui.x.day" : "spiceoflife.gui.x.days";
+		String daysAgo = StatCollector.translateToLocalFormatted(singularOrPlural, numDays);
+		return StatCollector.translateToLocalFormatted("spiceoflife.gui.time.elapsed.since.food.eaten", daysAgo);
+	}
+
+	public static String getExpiresInString(FoodEaten foodEaten)
+	{
+		Minecraft mc = Minecraft.getMinecraft();
+		FoodHistory foodHistory = FoodHistory.get(mc.thePlayer);
+
+		if (ModConfig.USE_HUNGER_QUEUE)
+		{
+			FixedHungerQueue queue = (FixedHungerQueue) foodHistory.getHistory();
+			FixedHungerQueue slice = queue.sliceUntil(foodEaten);
+			int hungerOverflow = queue.totalHunger() - queue.hunger();
+			int hungerNeededIfThisWereFirst = foodEaten.foodValues.hunger - hungerOverflow;
+			int spaceInQueue = queue.getMaxSize() - queue.hunger();
+			int sliceHunger = slice.totalHunger();
+			int hungerUntilExpire = Math.max(1, spaceInQueue + hungerNeededIfThisWereFirst + sliceHunger);
+			return StatCollector.translateToLocalFormatted("spiceoflife.gui.expires.in.hunger", StringHelper.hungerHistoryLength(hungerUntilExpire));
+		}
+		else if (ModConfig.USE_TIME_QUEUE)
+		{
+			FixedTimeQueue queue = (FixedTimeQueue) foodHistory.getHistory();
+			long elapsedTime = foodEaten.elapsedTime(mc.theWorld.getTotalWorldTime(), foodHistory.ticksActive);
+			long maxTime = queue.getMaxTime();
+			long timeUntilExpire = maxTime - elapsedTime;
+			double daysUntilExpire = timeUntilExpire / (double) MiscHelper.TICKS_PER_DAY;
+			String numDays = dfOne.format(daysUntilExpire);
+			String singularOrPlural = numDays.equals("1") ? "spiceoflife.gui.x.day" : "spiceoflife.gui.x.days";
+			String value = StatCollector.translateToLocalFormatted(singularOrPlural, numDays);
+			return StatCollector.translateToLocalFormatted("spiceoflife.gui.expires.in.time", value);
+		}
+		else
+		{
+			FixedSizeQueue queue = (FixedSizeQueue) foodHistory.getHistory();
+			int spaceInQueue = queue.getMaxSize() - queue.size();
+			int foodsUntilExpire = spaceInQueue + queue.indexOf(foodEaten) + 1;
+			String singularOrPlural = foodsUntilExpire == 1 ? StatCollector.translateToLocal("spiceoflife.tooltip.times.singular") : StatCollector.translateToLocal("spiceoflife.tooltip.times.plural");
+			return StatCollector.translateToLocalFormatted("spiceoflife.gui.expires.in.food", dfOne.format(foodsUntilExpire), singularOrPlural);
+		}
+	}
+
+	public static boolean isMouseInsideBox(int mouseX, int mouseY, int x, int y, int w, int h)
+	{
+		return mouseX >= x && mouseY >= y && mouseX < x + w && mouseY < y + h;
+	}
+
 	@Override
-	public void drawScreen(int par1, int par2, float par3)
+	public void drawScreen(int mouseX, int mouseY, float f)
 	{
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(bookGuiTextures);
@@ -97,8 +159,17 @@ public class GuiScreenFoodJournal extends GuiContainer
 		int y = 2;
 		this.drawTexturedModalRect(x, y, 0, 0, this.bookImageWidth, this.bookImageHeight);
 
-		String pageIndicator = I18n.format("book.pageIndicator", new Object[]{Integer.valueOf(pageNum + 1), Integer.valueOf(numPages)});
-		fontRendererObj.drawString(pageIndicator, x + this.bookImageWidth - this.fontRendererObj.getStringWidth(pageIndicator) - 44, y + 16, 0);
+		boolean sortedDescending = buttonSortDirection.sortDesc;
+		int startIndex = Math.max(0, pageNum * numPerPage);
+		int endIndex = startIndex + numPerPage;
+		int totalNum = foodEatenWidgets.size();
+		if (totalNum > 0)
+		{
+			int firstItemNum = sortedDescending ? totalNum - startIndex : startIndex + 1;
+			int lastItemNum = sortedDescending ? Math.max(1, totalNum - endIndex + 1) : Math.min(totalNum, endIndex);
+			String pageIndicator = StatCollector.translateToLocalFormatted("spiceoflife.gui.items.on.page", firstItemNum, lastItemNum, totalNum);
+			fontRendererObj.drawString(pageIndicator, x + this.bookImageWidth - this.fontRendererObj.getStringWidth(pageIndicator) - 44, y + 16, 0);
+		}
 
 		String numFoodsEatenAllTime = Integer.toString(FoodHistory.get(mc.thePlayer).totalFoodsEatenAllTime);
 		int allTimeW = fontRendererObj.getStringWidth(numFoodsEatenAllTime);
@@ -109,7 +180,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 		GL11.glDisable(GL11.GL_LIGHTING);
 		for (Object objButton : this.buttonList)
 		{
-			((GuiButton) objButton).drawButton(mc, par1, par2);
+			((GuiButton) objButton).drawButton(mc, mouseX, mouseY);
 		}
 
 		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || FoodHistory.get(mc.thePlayer).totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
@@ -117,8 +188,6 @@ public class GuiScreenFoodJournal extends GuiContainer
 			if (foodEatenWidgets.size() > 0)
 			{
 				GL11.glPushMatrix();
-				int startIndex = Math.max(0, pageNum * numPerPage);
-				int endIndex = startIndex + numPerPage;
 				int foodEatenIndex = startIndex;
 				while (foodEatenIndex < foodEatenWidgets.size() && foodEatenIndex < endIndex)
 				{
@@ -142,11 +211,22 @@ public class GuiScreenFoodJournal extends GuiContainer
 					int localX = x + 36;
 					int localY = y + 32 + (int) ((foodEatenIndex - startIndex) * fontRendererObj.FONT_HEIGHT * 2.5f);
 
-					if (par1 >= localX && par1 < localX + 16 && par2 >= localY && par2 < localY + 16)
+					if (isMouseInsideBox(mouseX, mouseY, localX, localY, 16, 16))
 					{
 						hoveredStack = foodEatenWidget.foodEaten.itemStack;
 						if (hoveredStack != null)
-							this.renderToolTip(hoveredStack, par1, par2);
+							this.renderToolTip(hoveredStack, mouseX, mouseY);
+					}
+					else if (isMouseInsideBox(mouseX, mouseY, localX + WidgetFoodEaten.PADDING_LEFT, localY, foodEatenWidget.width(), 16))
+					{
+						List<String> toolTipStrings = new ArrayList<String>();
+						int foodIndex = sortedDescending ? Math.max(1, totalNum - foodEatenIndex) : foodEatenIndex + 1;
+						toolTipStrings.add(StatCollector.translateToLocalFormatted("spiceoflife.gui.food.num", foodIndex));
+						toolTipStrings.add(EnumChatFormatting.GRAY + getTimeEatenString(foodEatenWidget.foodEaten));
+						@SuppressWarnings("unchecked")
+						List<String> splitExpiresIn = fontRendererObj.listFormattedStringToWidth(EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC + getExpiresInString(foodEatenWidget.foodEaten), 150);
+						toolTipStrings.addAll(splitExpiresIn);
+						this.drawHoveringText(toolTipStrings, mouseX, mouseY, fontRendererObj);
 					}
 
 					foodEatenIndex++;
@@ -162,9 +242,9 @@ public class GuiScreenFoodJournal extends GuiContainer
 			this.fontRendererObj.drawSplitString(StatCollector.translateToLocal("spiceoflife.gui.no.food.history.yet"), x + 36, y + 16 + 16, 116, 0x404040);
 		}
 
-		if (par1 >= allTimeX && par2 >= allTimeY && par1 < allTimeX + allTimeW && par2 < allTimeY + fontRendererObj.FONT_HEIGHT)
+		if (isMouseInsideBox(mouseX, mouseY, allTimeX, allTimeY, allTimeW, fontRendererObj.FONT_HEIGHT))
 		{
-			this.drawHoveringText(Arrays.asList(new String[]{StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")}), par1, par2, fontRendererObj);
+			this.drawHoveringText(Arrays.asList(new String[]{StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")}), mouseX, mouseY, fontRendererObj);
 		}
 
 		GL11.glDisable(GL11.GL_LIGHTING);

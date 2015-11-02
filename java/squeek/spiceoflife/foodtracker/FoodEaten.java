@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import squeek.applecore.api.food.FoodValues;
+import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
@@ -34,6 +35,14 @@ public class FoodEaten implements IPackable, ISaveable
 	public Set<FoodGroup> getFoodGroups()
 	{
 		return FoodGroupRegistry.getFoodGroupsForFood(itemStack);
+	}
+
+	public long elapsedTime(long absoluteTime, long relativeTime)
+	{
+		if (ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF)
+			return absoluteTime - worldTimeEaten;
+		else
+			return relativeTime - playerTimeEaten;
 	}
 
 	@Override
