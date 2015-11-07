@@ -220,7 +220,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 					+ "\tcur_saturation : The current saturation value of the player\n"
 					+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n"
 					+ "\tfood_group_count : The number of food groups that the food belongs to\n"
-					+ "\tfood_groups_eaten : The number of distinct food groups in the player's current food history\n"
+					+ "\tdistinct_food_groups_eaten : The number of distinct food groups in the player's current food history\n"
 					+ "\ttotal_food_groups : The total number of enabled food groups\n";
 
 	public static boolean GIVE_FOOD_JOURNAL_ON_START = ModConfig.GIVE_FOOD_JOURNAL_ON_START_DEFAULT;
