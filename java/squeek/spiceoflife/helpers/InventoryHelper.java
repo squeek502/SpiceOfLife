@@ -22,14 +22,24 @@ public class InventoryHelper
 
 	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory)
 	{
-		return TileEntityHopper.func_145889_a(inventory, itemStack, ForgeDirection.UNKNOWN.ordinal());
+		return insertStackIntoInventory(itemStack, inventory, ForgeDirection.UP);
+	}
+
+	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory, ForgeDirection direction)
+	{
+		return TileEntityHopper.func_145889_a(inventory, itemStack, direction.ordinal());
+	}
+
+	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory)
+	{
+		return insertStackIntoInventoryOnce(itemStack, inventory, ForgeDirection.UP);
 	}
 
 	/**
 	 * Only fill a maximum of one slot
 	 * @return The remainder
 	 */
-	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory)
+	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory, ForgeDirection direction)
 	{
 		int originalStackSize = itemStack.stackSize;
 
@@ -37,7 +47,7 @@ public class InventoryHelper
 		{
 			try
 			{
-				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, ForgeDirection.UNKNOWN.ordinal());
+				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, direction.ordinal());
 			}
 			catch (RuntimeException e)
 			{
