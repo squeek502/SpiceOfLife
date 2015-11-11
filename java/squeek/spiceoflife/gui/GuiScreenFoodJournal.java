@@ -76,6 +76,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 		this.buttonList.add(buttonSortDirection = new WidgetButtonSortDirection(3, this.width / 2 - 55, 2 + 16, false));
 
+		foodEatenWidgets.clear();
 		FoodHistory foodHistory = FoodHistory.get(mc.thePlayer);
 		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || foodHistory.totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
 		{
