@@ -1,8 +1,8 @@
 # Tooltip strings
 spiceoflife.tooltip.nutritional.value=营养值: 
-spiceoflife.tooltip.eaten.recently=之前食用的%d个食物中,吃它占%s
-spiceoflife.tooltip.eaten.recently.hunger=之前补充的%s点饱腹度中，吃它占%s
-spiceoflife.tooltip.not.eaten.recently=最近未曾食用
+spiceoflife.tooltip.eaten.recently=之前 %s 次进食中已食用 %d
+spiceoflife.tooltip.eaten.recently.hunger=之前补充的%s点饱腹度中它占%s
+spiceoflife.tooltip.not.eaten.recently=最近未食用
 spiceoflife.tooltip.food.until.enabled.1=恢复效果衰退次数为:
 spiceoflife.tooltip.food.until.enabled.2=摄入%d食物超过%s
 spiceoflife.tooltip.times.singular=次
