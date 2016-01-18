@@ -26,7 +26,7 @@ public class ItemFoodJournal extends Item
 		super();
 		setMaxStackSize(1);
 		setRegistryName(ModConfig.ITEM_FOOD_JOURNAL_NAME);
-		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + "." + ModConfig.ITEM_FOOD_JOURNAL_NAME);
+		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + '.' + ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setCreativeTab(CreativeTabs.tabMisc);
 
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)

@@ -52,7 +52,7 @@ public class TooltipHandler
 
 	public static String joinFoodGroupsForDisplay(Set<FoodGroup> foodGroups, String delimiter, String resetFormatting)
 	{
-		List<String> stringsToJoin = new ArrayList<String>();
+		List<String> stringsToJoin = new ArrayList<String>(foodGroups.size());
 		for (FoodGroup foodGroup : foodGroups)
 		{
 			stringsToJoin.add(foodGroup.formatString(EnumChatFormatting.ITALIC.toString() + foodGroup) + resetFormatting);
@@ -62,15 +62,15 @@ public class TooltipHandler
 
 	public String getNutritionalValueString(float foodModifier)
 	{
-		return ColorHelper.getRelativeColor(foodModifier, 0D, 1D) + df.format(foodModifier * 100f) + "%";
+		return ColorHelper.getRelativeColor(foodModifier, 0D, 1D) + df.format(foodModifier * 100f) + '%';
 	}
 
 	public String getEatenRecentlyTooltip(FoodHistory foodHistory, ItemStack itemStack, FoodGroup foodGroup, boolean shouldShowNutritionalValue)
 	{
 		int count = foodHistory.getFoodCountForFoodGroup(itemStack, foodGroup);
-		String prefix = (foodGroup != null ? foodGroup.formatString(EnumChatFormatting.ITALIC.toString() + foodGroup) + " " : "") + EnumChatFormatting.RESET.toString() + EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC;
+		String prefix = (foodGroup != null ? foodGroup.formatString(EnumChatFormatting.ITALIC.toString() + foodGroup) + ' ' : "") + EnumChatFormatting.RESET.toString() + EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC;
 		String eatenRecently;
-		String nutritionalValue = shouldShowNutritionalValue ? EnumChatFormatting.DARK_GRAY + " [" + getNutritionalValueString(FoodModifier.getFoodGroupModifier(foodHistory, itemStack, foodGroup)) + EnumChatFormatting.DARK_GRAY + "]" : "";
+		String nutritionalValue = shouldShowNutritionalValue ? EnumChatFormatting.DARK_GRAY + " [" + getNutritionalValueString(FoodModifier.getFoodGroupModifier(foodHistory, itemStack, foodGroup)) + EnumChatFormatting.DARK_GRAY + ']' : "";
 		if (count > 0)
 			eatenRecently = StatCollector.translateToLocalFormatted("spiceoflife.tooltip.eaten.recently" + (ModConfig.USE_HUNGER_QUEUE ? ".hunger" : (ModConfig.USE_TIME_QUEUE ? ".time" : "")), StringHelper.getQuantityDescriptor(count), ModConfig.USE_HUNGER_QUEUE ? StringHelper.hungerHistoryLength(ModConfig.FOOD_HISTORY_LENGTH) : ModConfig.FOOD_HISTORY_LENGTH);
 		else
@@ -84,7 +84,6 @@ public class TooltipHandler
 		if (ModConfig.FOOD_MODIFIER_ENABLED && event.itemStack != null && FoodHelper.isValidFood(event.itemStack))
 		{
 			int totalFoodEaten = FoodHistory.get(event.entityPlayer).totalFoodsEatenAllTime;
-			float foodModifier = 1f;
 			List<String> toolTipStringsToAdd = new ArrayList<String>();
 			Set<FoodGroup> foodGroups = FoodGroupRegistry.getFoodGroupsForFood(event.itemStack);
 			Set<FoodGroup> visibleFoodGroups = getFoodGroupsForDisplay(foodGroups);
@@ -105,12 +104,12 @@ public class TooltipHandler
 			else
 			{
 				FoodHistory foodHistory = FoodHistory.get(event.entityPlayer);
-				foodModifier = FoodModifier.getFoodModifier(foodHistory, event.itemStack);
+				float foodModifier = FoodModifier.getFoodModifier(foodHistory, event.itemStack);
 				FoodValues foodValues = FoodValues.get(event.itemStack, event.entityPlayer);
 				boolean foodOrItsFoodGroupsEatenRecently = foodHistory.containsFoodOrItsFoodGroups(event.itemStack);
 
 				if (canDiminish && (foodOrItsFoodGroupsEatenRecently || foodModifier != 1))
-					toolTipStringsToAdd.add(0, EnumChatFormatting.GRAY + StatCollector.translateToLocal("spiceoflife.tooltip.nutritional.value") + getNutritionalValueString(foodModifier) + (foodValues.hunger == 0 && foodModifier != 0f ? EnumChatFormatting.DARK_RED + " (" + foodValues.hunger + " " + StatCollector.translateToLocal("spiceoflife.tooltip.hunger") + ")" : ""));
+					toolTipStringsToAdd.add(0, EnumChatFormatting.GRAY + StatCollector.translateToLocal("spiceoflife.tooltip.nutritional.value") + getNutritionalValueString(foodModifier) + (foodValues.hunger == 0 && foodModifier != 0f ? EnumChatFormatting.DARK_RED + " (" + foodValues.hunger + ' ' + StatCollector.translateToLocal("spiceoflife.tooltip.hunger") + ')' : ""));
 
 				boolean shouldShowPressShift = visibleFoodGroups.size() > 1 && !KeyHelper.isShiftKeyDown();
 				boolean shouldShowFoodGroupDetails = visibleFoodGroups.size() <= 1 || KeyHelper.isShiftKeyDown();

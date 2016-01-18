@@ -262,7 +262,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		NBTTagCompound nonPersistentCompound = new NBTTagCompound();
 		NBTTagCompound persistentCompound = new NBTTagCompound();
 
-		if (history.size() > 0)
+		if (!history.isEmpty())
 		{
 			if (data != null || ModConfig.FOOD_HISTORY_PERSISTS_THROUGH_DEATH)
 			{

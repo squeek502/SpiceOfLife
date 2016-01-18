@@ -16,6 +16,7 @@ import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 public class FoodModifier
 {
@@ -126,10 +127,11 @@ public class FoodModifier
 		if (ModConfig.FOOD_EATEN_THRESHOLD > 0 && foodHistory.totalFoodsEatenAllTime < ModConfig.FOOD_EATEN_THRESHOLD)
 			return 1f;
 
-		// if this food has mutliple food groups, calculate the modifier for each individually
+		// if this food has multiple food groups, calculate the modifier for each individually
 		// and then take the average
 		// for foods with <= 1 food group, this just means dividing the modifier by 1
-		FoodGroup[] foodGroups = FoodGroupRegistry.getFoodGroupsForFood(food).toArray(new FoodGroup[0]);
+		Set<FoodGroup> foodGroupsSet = FoodGroupRegistry.getFoodGroupsForFood(food);
+		FoodGroup[] foodGroups = foodGroupsSet.toArray(new FoodGroup[foodGroupsSet.size()]);
 		int numIterations = Math.max(1, foodGroups.length);
 		float modifierSum = 0f;
 

@@ -74,7 +74,7 @@ public class InventoryHelper
 
 	public static List<Integer> getNonEmptySlotsInInventory(IInventory inventory)
 	{
-		List<Integer> nonEmptySlotIndexes = new ArrayList<Integer>();
+		List<Integer> nonEmptySlotIndexes = new ArrayList<Integer>(inventory.getSizeInventory());
 		for (int slotNum = 0; slotNum < inventory.getSizeInventory(); slotNum++)
 		{
 			if (inventory.getStackInSlot(slotNum) != null)
@@ -87,7 +87,7 @@ public class InventoryHelper
 	{
 		List<Integer> nonEmptySlots = getNonEmptySlotsInInventory(inventory);
 
-		if (nonEmptySlots.size() > 0)
+		if (!nonEmptySlots.isEmpty())
 			return nonEmptySlots.get(random.nextInt(nonEmptySlots.size()));
 		else
 			return 0;

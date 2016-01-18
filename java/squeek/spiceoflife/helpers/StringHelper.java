@@ -18,11 +18,11 @@ public class StringHelper
 
 	public static String join(Collection<?> values, String delimiter)
 	{
-		if (values == null || values.size() == 0)
+		if (values == null || values.isEmpty())
 			return "";
 
 		boolean first = true;
-		StringBuffer strbuf = new StringBuffer();
+		StringBuilder strbuf = new StringBuilder();
 		for (Object value : values)
 		{
 			if (value == null)

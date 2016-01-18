@@ -89,7 +89,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		this.numSlots = numSlots;
 		setMaxStackSize(1);
 		setRegistryName(this.itemName);
-		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + "." + this.itemName);
+		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + '.' + this.itemName);
 		setCreativeTab(CreativeTabs.tabMisc);
 
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
@@ -196,7 +196,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	public void tryPullFoodFrom(ItemStack itemStack, IInventory inventory, EntityPlayer player)
 	{
 		List<InventoryFoodInfo> foodsToPull = MealPrioritizationHelper.findBestFoodsForPlayerAccountingForVariety(player, inventory);
-		if (foodsToPull.size() > 0)
+		if (!foodsToPull.isEmpty())
 		{
 			FoodContainerInventory foodContainerInventory = getInventory(itemStack);
 			for (InventoryFoodInfo foodToPull : foodsToPull)

@@ -79,7 +79,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final String CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_NAME = "clear.history.after.food.eaten.threshold.reached";
 	private static final boolean CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_DEFAULT = false;
 	private static final String CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD_COMMENT =
-		"If true, a player's food history will be empty once they pass the " + FOOD_EATEN_THRESHOLD_NAME + "\n"
+		"If true, a player's food history will be empty once they pass the " + FOOD_EATEN_THRESHOLD_NAME + '\n'
 			+ "If false, any food eaten before the threshold is passed will also count after it is passed";
 
 	public static boolean USE_FOOD_GROUPS_AS_WHITELISTS = ModConfig.USE_FOOD_GROUPS_AS_WHITELISTS_DEFAULT;
@@ -175,7 +175,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final String FOOD_EATING_DURATION_MAX_NAME = "food.eating.duration.max";
 	private static final int FOOD_EATING_DURATION_MAX_DEFAULT = 0;
 	private static final String FOOD_EATING_DURATION_MAX_COMMENT =
-		"The maximum time it takes to eat a food after being modified by " + ModConfig.FOOD_EATING_SPEED_MODIFIER_NAME + "\n"
+		"The maximum time it takes to eat a food after being modified by " + ModConfig.FOOD_EATING_SPEED_MODIFIER_NAME + '\n'
 			+ "The default eating duration is 32. Set this to 0 to remove the limit on eating speed.\n"
 			+ "Note: If this is set to 0 and " + ModConfig.FOOD_EATING_SPEED_MODIFIER_NAME + " is > 0, a food with 0% nutrtional value will take nearly infinite time to eat";
 

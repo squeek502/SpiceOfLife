@@ -111,7 +111,7 @@ public class MealPrioritizationHelper
 		List<InventoryFoodInfo> allFoodInfo = getFoodInfoFromInventoryForPlayer(player, inventory);
 		InventoryFoodInfo bestFoodInfo = null;
 
-		if (allFoodInfo.size() > 0)
+		if (!allFoodInfo.isEmpty())
 		{
 			int hungerMissingFromPlayer = 20 - player.getFoodStats().getFoodLevel();
 			Collections.sort(allFoodInfo, new FoodInfoComparator(hungerMissingFromPlayer));
@@ -139,7 +139,7 @@ public class MealPrioritizationHelper
 	public static List<List<InventoryFoodInfo>> stratifyFoodsByHunger(List<InventoryFoodInfo> allFoods)
 	{
 		List<List<InventoryFoodInfo>> stratifiedFoods = new ArrayList<List<InventoryFoodInfo>>();
-		if (allFoods.size() > 0)
+		if (!allFoods.isEmpty())
 		{
 			Collections.sort(allFoods, hungerComparator);
 			int strataHunger = allFoods.get(0).modifiedFoodValues.hunger;

@@ -28,7 +28,6 @@ import squeek.spiceoflife.helpers.StringHelper;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,7 +66,6 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui()
 	{
@@ -187,7 +185,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || FoodHistory.get(mc.thePlayer).totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
 		{
-			if (foodEatenWidgets.size() > 0)
+			if (!foodEatenWidgets.isEmpty())
 			{
 				GlStateManager.pushMatrix();
 				RenderHelper.enableGUIStandardItemLighting();
@@ -226,7 +224,6 @@ public class GuiScreenFoodJournal extends GuiContainer
 						int foodIndex = sortedDescending ? Math.max(1, totalNum - foodEatenIndex) : foodEatenIndex + 1;
 						toolTipStrings.add(StatCollector.translateToLocalFormatted("spiceoflife.gui.food.num", foodIndex));
 						toolTipStrings.add(EnumChatFormatting.GRAY + getTimeEatenString(foodEatenWidget.foodEaten));
-						@SuppressWarnings("unchecked")
 						List<String> splitExpiresIn = fontRendererObj.listFormattedStringToWidth(EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC + getExpiresInString(foodEatenWidget.foodEaten), 150);
 						toolTipStrings.addAll(splitExpiresIn);
 						this.drawHoveringText(toolTipStrings, mouseX, mouseY, fontRendererObj);
@@ -247,7 +244,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 		if (isMouseInsideBox(mouseX, mouseY, allTimeX, allTimeY, allTimeW, fontRendererObj.FONT_HEIGHT))
 		{
-			this.drawHoveringText(Arrays.asList(StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")), mouseX, mouseY, fontRendererObj);
+			this.drawHoveringText(Collections.singletonList(StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")), mouseX, mouseY, fontRendererObj);
 		}
 
 		GlStateManager.disableLighting();

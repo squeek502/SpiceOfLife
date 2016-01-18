@@ -1,7 +1,5 @@
 package squeek.spiceoflife.foodtracker.foodqueue;
 
-import net.minecraft.nbt.NBTTagCompound;
-
 public class FixedTimeQueue extends FoodQueue
 {
 	private static final long serialVersionUID = 4071948082682614961L;
@@ -36,15 +34,4 @@ public class FixedTimeQueue extends FoodQueue
 		return tickLimit;
 	}
 
-	@Override
-	public void readFromNBTData(NBTTagCompound data)
-	{
-		super.readFromNBTData(data);
-	}
-
-	@Override
-	public void writeToNBTData(NBTTagCompound data)
-	{
-		super.writeToNBTData(data);
-	}
 }

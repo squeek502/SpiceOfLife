@@ -10,7 +10,7 @@ import net.minecraft.util.BlockPos;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 import squeek.spiceoflife.foodtracker.FoodTracker;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CommandResetHistory extends CommandBase
@@ -46,12 +46,11 @@ public class CommandResetHistory extends CommandBase
 		throw new WrongUsageException(getCommandName() + " reset [player]");
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public List<String> addTabCompletionOptions(ICommandSender commandSender, String[] curArgs, BlockPos pos)
 	{
 		if (curArgs.length == 1)
-			return Arrays.asList("reset");
+			return Collections.singletonList("reset");
 		else if (curArgs.length == 2)
 			return getListOfStringsMatchingLastWord(curArgs, MinecraftServer.getServer().getAllUsernames());
 		else

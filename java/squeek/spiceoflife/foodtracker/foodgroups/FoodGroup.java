@@ -239,9 +239,9 @@ public class FoodGroup implements IPackable
 	{
 		identifier = data.readUTF();
 		name = data.readUTF();
-		name = !name.equals("") ? name : null;
+		name = !name.isEmpty() ? name : null;
 		formula = data.readUTF();
-		formula = !formula.equals("") ? formula : null;
+		formula = !formula.isEmpty() ? formula : null;
 		blacklist = data.readBoolean();
 		hidden = data.readBoolean();
 		formatting = EnumChatFormatting.values()[data.readByte()];

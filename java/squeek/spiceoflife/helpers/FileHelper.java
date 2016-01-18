@@ -45,7 +45,7 @@ public class FileHelper
 		try
 		{
 			destOutput = new FileOutputStream(destFile);
-			int readBytes = 0;
+			int readBytes;
 			byte[] buffer = new byte[4096];
 			while ((readBytes = sourceInput.read(buffer)) > 0)
 			{

@@ -29,20 +29,20 @@ public class TestMealPrioritization
 		@Override
 		public String toString()
 		{
-			return "(" + defaultFoodValues.hunger + ":" + defaultFoodValues.saturationModifier + ")" +
-				"*" + diminishingReturnsModifier + "=" +
-				"(" + modifiedFoodValues.hunger + ":" + modifiedFoodValues.saturationModifier + ")";
+			return "(" + defaultFoodValues.hunger + ':' + defaultFoodValues.saturationModifier + ')' +
+					'*' + diminishingReturnsModifier + '=' +
+					'(' + modifiedFoodValues.hunger + ':' + modifiedFoodValues.saturationModifier + ')';
 		}
 	}
 
 	@Before
-	public void setUp() throws Exception
+	public void setUp()
 	{
 		ModConfig.FOOD_HUNGER_ROUNDING_MODE = RoundingMode.ROUND;
 	}
 
 	@After
-	public void tearDown() throws Exception
+	public void tearDown()
 	{
 		ModConfig.FOOD_HUNGER_ROUNDING_MODE = null;
 	}
