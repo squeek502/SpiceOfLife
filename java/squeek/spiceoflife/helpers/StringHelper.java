@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Locale;
 import net.minecraft.util.StatCollector;
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class StringHelper
 {

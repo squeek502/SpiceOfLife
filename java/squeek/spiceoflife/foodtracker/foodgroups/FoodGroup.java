@@ -15,7 +15,7 @@ import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.helpers.OreDictionaryHelper;
 import squeek.spiceoflife.interfaces.IPackable;
 import com.google.gson.annotations.SerializedName;
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class FoodGroup implements IPackable
 {

@@ -67,11 +67,7 @@ public class FoodGroupConfig
 		{
 			exampleFoodGroupReader = new BufferedReader(new InputStreamReader(exampleFoodGroupStream, "UTF8"));
 			String firstLine = exampleFoodGroupReader.readLine();
-			return firstLine == null || !firstLine.equals("// Mod Version: " + ModInfo.VERSION);
-		}
-		catch (IOException e)
-		{
-			throw e;
+			return !("// Mod Version: " + ModInfo.VERSION).equals(firstLine);
 		}
 		finally
 		{

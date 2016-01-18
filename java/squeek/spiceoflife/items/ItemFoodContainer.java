@@ -4,7 +4,8 @@ import java.util.Locale;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,10 +15,12 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import squeek.applecore.api.food.FoodEvent;
@@ -39,16 +42,42 @@ import squeek.spiceoflife.inventory.NBTInventory;
 import squeek.spiceoflife.network.NetworkHelper;
 import squeek.spiceoflife.network.PacketHandler;
 import squeek.spiceoflife.network.PacketToggleFoodContainer;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdible
 {
-	private IIcon iconOpenEmpty;
-	private IIcon iconOpenFull;
+	/*
+	@Override
+	public IIcon getIconIndex(ItemStack itemStack)
+	{
+		if (isOpen(itemStack))
+		{
+			return isEmpty(itemStack) ? iconOpenEmpty : iconOpenFull;
+		}
+		return super.getIconIndex(itemStack);
+	}
+
+	@Override
+	public IIcon getIcon(ItemStack itemStack, int renderPass)
+	{
+		return getIconIndex(itemStack);
+	}
+	*/
+	/*
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		super.registerIcons(iconRegister);
+		iconOpenEmpty = iconRegister.registerIcon(getIconString() + "_open_empty");
+		iconOpenFull = iconRegister.registerIcon(getIconString() + "_open_full");
+	}
+	*/
+
 	public int numSlots;
 	public String itemName;
 	public static final Random random = new Random();
@@ -63,12 +92,40 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		this.itemName = itemName;
 		this.numSlots = numSlots;
 		setMaxStackSize(1);
-		setTextureName(ModInfo.MODID.toLowerCase(Locale.ROOT) + ":" + this.itemName);
+		setRegistryName(this.itemName);
 		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + "." + this.itemName);
 		setCreativeTab(CreativeTabs.tabMisc);
 
+		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+		{
+			registerModels();
+		}
+
 		// for ItemTossEvent
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void registerModels()
+	{
+		final ModelResourceLocation closed = new ModelResourceLocation(getRegistryName(), "inventory");
+		final ModelResourceLocation openEmpty = new ModelResourceLocation(getRegistryName() + "_open_empty", "inventory");
+		final ModelResourceLocation openFull = new ModelResourceLocation(getRegistryName() + "_open_full", "inventory");
+
+		ModelLoader.registerItemVariants(this, closed, openEmpty, openFull);
+
+		ModelLoader.setCustomMeshDefinition(this, new ItemMeshDefinition()
+		{
+			@Override
+			public ModelResourceLocation getModelLocation(ItemStack itemStack)
+			{
+				if (isOpen(itemStack))
+				{
+					return isEmpty(itemStack) ? openEmpty : openFull;
+				}
+				return closed;
+			}
+		});
 	}
 
 	public boolean isEmpty(ItemStack itemStack)
@@ -83,7 +140,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 
 	public boolean isOpen(ItemStack itemStack)
 	{
-		return itemStack.hasTagCompound() ? itemStack.getTagCompound().getBoolean(TAG_KEY_OPEN) : false;
+		return itemStack.hasTagCompound() && itemStack.getTagCompound().getBoolean(TAG_KEY_OPEN);
 	}
 
 	public void setIsOpen(ItemStack itemStack, boolean isOpen)
@@ -249,27 +306,11 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	}
 
 	@Override
-	public IIcon getIconIndex(ItemStack itemStack)
-	{
-		if (isOpen(itemStack))
-		{
-			return isEmpty(itemStack) ? iconOpenEmpty : iconOpenFull;
-		}
-		return super.getIconIndex(itemStack);
-	}
-
-	@Override
-	public IIcon getIcon(ItemStack itemStack, int renderPass)
-	{
-		return getIconIndex(itemStack);
-	}
-
-	@Override
-	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
+	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		if (!world.isRemote && isOpen(itemStack))
 		{
-			IInventory inventoryHit = InventoryHelper.getInventoryAtLocation(world, x, y, z);
+			IInventory inventoryHit = InventoryHelper.getInventoryAtLocation(world, pos.getX(), pos.getY(), pos.getZ());
 			if (inventoryHit != null && inventoryHit.isUseableByPlayer(player))
 			{
 				tryDumpFoodInto(itemStack, inventoryHit, player);
@@ -278,16 +319,16 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 				return true;
 			}
 		}
-		return super.onItemUseFirst(itemStack, player, world, x, y, z, side, hitX, hitY, hitZ);
+		return super.onItemUseFirst(itemStack, player, world, pos, side, hitX, hitY, hitZ);
 	}
 
 	@Override
 	public EnumAction getItemUseAction(ItemStack itemStack)
 	{
 		if (canBeEatenFrom(itemStack))
-			return EnumAction.eat;
+			return EnumAction.EAT;
 		else
-			return EnumAction.none;
+			return EnumAction.NONE;
 	}
 
 	@Override
@@ -328,38 +369,28 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	}
 
 	@Override
-	public ItemStack onEaten(ItemStack itemStack, World world, EntityPlayer player)
+	public ItemStack onItemUseFinish(ItemStack itemStack, World world, EntityPlayer player)
 	{
 		IInventory inventory = getInventory(itemStack);
 		int slotWithBestFood = MealPrioritizationHelper.findBestFoodForPlayerToEat(player, inventory);
 		ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
 		if (foodToEat != null)
 		{
-			foodToEat.onFoodEaten(world, player);
+			foodToEat.onItemUseFinish(world, player);
 
 			if (foodToEat.stackSize <= 0)
 				foodToEat = null;
 
 			inventory.setInventorySlotContents(slotWithBestFood, foodToEat);
 		}
-		return super.onEaten(itemStack, world, player);
+		return super.onItemUseFinish(itemStack, world, player);
 	}
 
 	public ItemStack getBestFoodForPlayerToEat(ItemStack itemStack, EntityPlayer player)
 	{
 		IInventory inventory = getInventory(itemStack);
 		int slotWithBestFood = MealPrioritizationHelper.findBestFoodForPlayerToEat(player, inventory);
-		ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
-		return foodToEat;
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		super.registerIcons(iconRegister);
-		iconOpenEmpty = iconRegister.registerIcon(getIconString() + "_open_empty");
-		iconOpenFull = iconRegister.registerIcon(getIconString() + "_open_full");
+		return inventory.getStackInSlot(slotWithBestFood);
 	}
 
 	@Override
@@ -371,11 +402,11 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	@Override
 	public String getInvName(NBTInventory inventory)
 	{
-		return this.getItemStackDisplayName(null);
+		return this.getUnlocalizedName() + ".name";
 	}
 
 	@Override
-	public boolean isInvNameLocalized(NBTInventory inventory)
+	public boolean hasCustomName(NBTInventory inventory)
 	{
 		return false;
 	}

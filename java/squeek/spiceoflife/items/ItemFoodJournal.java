@@ -2,6 +2,7 @@ package squeek.spiceoflife.items;
 
 import java.util.Locale;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,19 +13,31 @@ import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModContent;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.gui.GuiScreenFoodJournal;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemFoodJournal extends Item
 {
-
 	public ItemFoodJournal()
 	{
 		super();
 		setMaxStackSize(1);
-		setTextureName(ModInfo.MODID.toLowerCase(Locale.ROOT) + ":" + ModConfig.ITEM_FOOD_JOURNAL_NAME);
+		setRegistryName(ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + "." + ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setCreativeTab(CreativeTabs.tabMisc);
+
+		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+		{
+			registerModels();
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void registerModels()
+	{
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -49,5 +62,4 @@ public class ItemFoodJournal extends Item
 			}
 		}
 	}
-
 }

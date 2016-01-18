@@ -4,15 +4,15 @@ import net.minecraft.item.ItemStack;
 
 public interface INBTInventoryHaver
 {
-	public int getSizeInventory();
+	int getSizeInventory();
 
-	public String getInvName(NBTInventory inventory);
+	String getInvName(NBTInventory inventory);
 
-	public boolean isInvNameLocalized(NBTInventory inventory);
+	boolean hasCustomName(NBTInventory inventory);
 
-	public int getInventoryStackLimit(NBTInventory inventory);
+	int getInventoryStackLimit(NBTInventory inventory);
 
-	public void onInventoryChanged(NBTInventory inventory);
+	void onInventoryChanged(NBTInventory inventory);
 
-	public boolean isItemValidForSlot(NBTInventory inventory, int slotNum, ItemStack itemStack);
+	boolean isItemValidForSlot(NBTInventory inventory, int slotNum, ItemStack itemStack);
 }

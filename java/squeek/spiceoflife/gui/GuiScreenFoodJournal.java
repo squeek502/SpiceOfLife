@@ -1,21 +1,22 @@
 package squeek.spiceoflife.gui;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-import org.lwjgl.opengl.GL11;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.FoodHistory;
@@ -27,8 +28,8 @@ import squeek.spiceoflife.gui.widget.WidgetButtonSortDirection;
 import squeek.spiceoflife.gui.widget.WidgetFoodEaten;
 import squeek.spiceoflife.helpers.MiscHelper;
 import squeek.spiceoflife.helpers.StringHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiScreenFoodJournal extends GuiContainer
@@ -154,7 +155,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float f)
 	{
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(bookGuiTextures);
 		int x = (this.width - this.bookImageWidth) / 2;
 		int y = 2;
@@ -178,7 +179,6 @@ public class GuiScreenFoodJournal extends GuiContainer
 		int allTimeY = y + 158;
 		fontRendererObj.drawString(numFoodsEatenAllTime, allTimeX, allTimeY, 0xa0a0a0);
 
-		GL11.glDisable(GL11.GL_LIGHTING);
 		for (Object objButton : this.buttonList)
 		{
 			((GuiButton) objButton).drawButton(mc, mouseX, mouseY);
@@ -188,7 +188,8 @@ public class GuiScreenFoodJournal extends GuiContainer
 		{
 			if (foodEatenWidgets.size() > 0)
 			{
-				GL11.glPushMatrix();
+				GlStateManager.pushMatrix();
+				RenderHelper.enableGUIStandardItemLighting();
 				int foodEatenIndex = startIndex;
 				while (foodEatenIndex < foodEatenWidgets.size() && foodEatenIndex < endIndex)
 				{
@@ -201,7 +202,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 					foodEatenIndex++;
 				}
-				GL11.glPopMatrix();
+				GlStateManager.popMatrix();
 
 				hoveredStack = null;
 				foodEatenIndex = startIndex;
@@ -247,27 +248,21 @@ public class GuiScreenFoodJournal extends GuiContainer
 		{
 			this.drawHoveringText(Arrays.asList(new String[]{StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")}), mouseX, mouseY, fontRendererObj);
 		}
-
-		GL11.glDisable(GL11.GL_LIGHTING);
+		
+		GlStateManager.disableLighting();
 	}
 
-	protected void drawItemStack(ItemStack par1ItemStack, int par2, int par3)
+	protected void drawItemStack(ItemStack stack, int x, int y)
 	{
-		GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-		this.zLevel = 200.0F;
-		itemRender.zLevel = 200.0F;
-		FontRenderer font = null;
-		if (par1ItemStack != null)
-			font = par1ItemStack.getItem().getFontRenderer(par1ItemStack);
-		if (font == null)
-			font = fontRendererObj;
-		itemRender.renderItemAndEffectIntoGUI(font, this.mc.getTextureManager(), par1ItemStack, par2, par3);
-		this.zLevel = 0.0F;
+		zLevel = 100.0F;
+		itemRender.zLevel = 100.0F;
+		itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+		zLevel = 0.0F;
 		itemRender.zLevel = 0.0F;
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton button)
+	protected void actionPerformed(GuiButton button) throws IOException
 	{
 		super.actionPerformed(button);
 

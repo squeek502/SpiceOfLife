@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import squeek.spiceoflife.compat.PacketDispatcher.PacketTarget;
 import squeek.spiceoflife.network.PacketBase;
 import squeek.spiceoflife.network.PacketHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class PacketDispatcherNetty implements IPacketDispatcher
 {

@@ -16,9 +16,9 @@ import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.IPacketProcessor;
 import squeek.spiceoflife.network.PacketBase;
 import squeek.spiceoflife.network.PacketConfigSync;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModConfig implements IPackable, IPacketProcessor
 {
@@ -95,7 +95,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 			"Rounding mode used on the hunger value of foods\n"
 					+ "Valid options: 'round', 'floor', 'ceiling'";
 
-	public static enum RoundingMode
+	public enum RoundingMode
 	{
 		ROUND("round")
 		{
@@ -124,7 +124,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 
 		public final String id;
 
-		private RoundingMode(String id)
+		RoundingMode(String id)
 		{
 			this.id = id;
 		}

@@ -7,39 +7,39 @@ import java.util.Random;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class InventoryHelper
 {
-	public static final Method hopperInsertIntoInventory = ReflectionHelper.findMethod(TileEntityHopper.class, null, new String[]{"func_145899_c", "c"}, IInventory.class, ItemStack.class, int.class, int.class);
+	public static final Method hopperInsertIntoInventory = ReflectionHelper.findMethod(TileEntityHopper.class, null, new String[]{"insertStack", "func_174916_c", "c"}, IInventory.class, ItemStack.class, int.class, EnumFacing.class);
 
 	public static IInventory getInventoryAtLocation(World world, int x, int y, int z)
 	{
-		return TileEntityHopper.func_145893_b(world, x, y, z);
+		return TileEntityHopper.getInventoryAtPosition(world, x, y, z);
 	}
 
 	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory)
 	{
-		return insertStackIntoInventory(itemStack, inventory, ForgeDirection.UP);
+		return insertStackIntoInventory(itemStack, inventory, EnumFacing.UP);
 	}
 
-	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory, ForgeDirection direction)
+	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory, EnumFacing direction)
 	{
-		return TileEntityHopper.func_145889_a(inventory, itemStack, direction.ordinal());
+		return TileEntityHopper.putStackInInventoryAllSlots(inventory, itemStack, direction);
 	}
 
 	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory)
 	{
-		return insertStackIntoInventoryOnce(itemStack, inventory, ForgeDirection.UP);
+		return insertStackIntoInventoryOnce(itemStack, inventory, EnumFacing.UP);
 	}
 
 	/**
 	 * Only fill a maximum of one slot
 	 * @return The remainder
 	 */
-	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory, ForgeDirection direction)
+	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory, EnumFacing direction)
 	{
 		int originalStackSize = itemStack.stackSize;
 
@@ -47,7 +47,7 @@ public class InventoryHelper
 		{
 			try
 			{
-				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, direction.ordinal());
+				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, direction);
 			}
 			catch (RuntimeException e)
 			{

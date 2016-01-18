@@ -111,12 +111,11 @@ public abstract class ContainerGeneric extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotNum)
 	{
-		Slot slot = (Slot) this.inventorySlots.get(slotNum);
+		Slot slot = this.inventorySlots.get(slotNum);
 
 		if (slot != null && slot.getHasStack())
 		{
-			ItemStack stackInSlot = slot.getStack();
-			ItemStack stackToTransfer = stackInSlot;
+			ItemStack stackToTransfer = slot.getStack();
 
 			// transferring from the container to the player inventory
 			if (slotNum < this.inventory.getSizeInventory())
@@ -179,7 +178,7 @@ public abstract class ContainerGeneric extends Container
 		{
 			while (itemStack.stackSize > 0 && (!checkBackwards && k < endSlotNum || checkBackwards && k >= startSlotNum))
 			{
-				slot = (Slot) this.inventorySlots.get(k);
+				slot = this.inventorySlots.get(k);
 				itemstack1 = slot.getStack();
 
 				if (itemstack1 != null && itemstack1.getItem() == itemStack.getItem() && (!itemStack.getHasSubtypes() || itemStack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(itemStack, itemstack1) && slot.isItemValid(itemStack))
@@ -229,7 +228,7 @@ public abstract class ContainerGeneric extends Container
 
 			while (!checkBackwards && k < endSlotNum || checkBackwards && k >= startSlotNum)
 			{
-				slot = (Slot) this.inventorySlots.get(k);
+				slot = this.inventorySlots.get(k);
 				itemstack1 = slot.getStack();
 
 				if (itemstack1 == null && slot.isItemValid(itemStack))
@@ -257,12 +256,6 @@ public abstract class ContainerGeneric extends Container
 		}
 
 		return didMerge;
-	}
-
-	@Override
-	public ItemStack slotClick(int slotNum, int mouseButton, int modifier, EntityPlayer player)
-	{
-		return super.slotClick(slotNum, mouseButton, modifier, player);
 	}
 
 	@Override

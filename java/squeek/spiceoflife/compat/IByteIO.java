@@ -6,83 +6,80 @@ import net.minecraft.nbt.NBTTagCompound;
 public interface IByteIO
 {
 
-	public abstract boolean readBoolean();
+	boolean readBoolean();
 
-	public abstract byte readByte();
+	byte readByte();
 
-	public abstract short readUnsignedByte();
+	short readUnsignedByte();
 
-	public abstract short readShort();
+	short readShort();
 
-	public abstract int readUnsignedShort();
+	int readUnsignedShort();
 
-	public abstract int readMedium();
+	int readMedium();
 
-	public abstract int readUnsignedMedium();
+	int readUnsignedMedium();
 
-	public abstract int readInt();
+	int readInt();
 
-	public abstract long readUnsignedInt();
+	long readUnsignedInt();
 
-	public abstract long readLong();
+	long readLong();
 
-	public abstract char readChar();
+	char readChar();
 
-	public abstract float readFloat();
+	float readFloat();
 
-	public abstract double readDouble();
+	double readDouble();
 
-	public abstract ItemStack readItemStack();
+	ItemStack readItemStack();
 
-	public abstract NBTTagCompound readTag();
+	NBTTagCompound readTag();
 
-	public abstract String readUTF();
+	String readUTF();
 
-	public abstract IByteIO writeBoolean(boolean value);
+	IByteIO writeBoolean(boolean value);
 
-	public abstract IByteIO writeByte(int value);
+	IByteIO writeByte(int value);
 
-	public abstract IByteIO writeShort(int value);
+	IByteIO writeShort(int value);
 
-	public abstract IByteIO writeMedium(int value);
+	IByteIO writeMedium(int value);
 
-	public abstract IByteIO writeInt(int value);
+	IByteIO writeInt(int value);
 
-	public abstract IByteIO writeLong(long value);
+	IByteIO writeLong(long value);
 
-	public abstract IByteIO writeChar(int value);
+	IByteIO writeChar(int value);
 
-	public abstract IByteIO writeFloat(float value);
+	IByteIO writeFloat(float value);
 
-	public abstract IByteIO writeDouble(double value);
+	IByteIO writeDouble(double value);
 
-	public abstract IByteIO writeBytes(byte[] src);
+	IByteIO writeBytes(byte[] src);
 
-	public abstract IByteIO writeZero(int length);
+	IByteIO writeZero(int length);
 
-	public abstract IByteIO writeItemStack(ItemStack itemStack);
+	IByteIO writeItemStack(ItemStack itemStack);
 
-	public abstract IByteIO writeTag(NBTTagCompound tag);
+	IByteIO writeTag(NBTTagCompound tag);
 
-	public abstract IByteIO writeUTF(String str);
+	IByteIO writeUTF(String str);
 
-	public abstract byte[] bytes();
+	byte[] bytes();
 
-	public abstract int readableSize();
+	int readableSize();
 
-	public abstract int writableSize();
+	int writableSize();
 
-	public abstract IByteIO skipBytes(int length);
+	IByteIO skipBytes(int length);
 
-	public abstract IByteIO clear();
+	IByteIO clear();
 
-	@Override
-	public abstract int hashCode();
+	@Override int hashCode();
 
-	@Override
-	public abstract boolean equals(Object obj);
+	@Override boolean equals(Object obj);
 
-	@Override
-	public abstract String toString();
+	@Override String toString();
 
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "spiceoflife:item/item",
+  "textures": {
+    "layer0": "spiceoflife:items/lunchbag_open_empty"
+  }
+}

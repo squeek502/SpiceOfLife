@@ -1,21 +1,19 @@
 package squeek.spiceoflife.helpers;
 
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.gui.GuiFoodContainer;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.items.ItemFoodContainer;
-import cpw.mods.fml.common.network.IGuiHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class GuiHelper implements IGuiHandler
 {
-	public static enum GuiIds
+	public enum GuiIds
 	{
 		FOOD_CONTAINER
 	}
@@ -71,18 +69,5 @@ public class GuiHelper implements IGuiHandler
 				break;
 		}
 		return null;
-	}
-
-	public static void drawTexturedModelRectFromIcon(int x, int y, IIcon icon, int width, int height, float zLevel)
-	{
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		double uOffset = (icon.getMaxU() - icon.getMinU()) * width / 16f;
-		double vOffset = (icon.getMaxV() - icon.getMinV()) * height / 16f;
-		tessellator.addVertexWithUV(x + 0, y + height, zLevel, icon.getMinU(), icon.getMinV() + vOffset);
-		tessellator.addVertexWithUV(x + width, y + height, zLevel, icon.getMinU() + uOffset, icon.getMinV() + vOffset);
-		tessellator.addVertexWithUV(x + width, y + 0, zLevel, icon.getMinU() + uOffset, icon.getMinV());
-		tessellator.addVertexWithUV(x + 0, y + 0, zLevel, icon.getMinU(), icon.getMinV());
-		tessellator.draw();
 	}
 }

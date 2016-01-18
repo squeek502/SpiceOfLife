@@ -13,16 +13,15 @@ import squeek.spiceoflife.gui.TooltipHandler;
 import squeek.spiceoflife.helpers.GuiHelper;
 import squeek.spiceoflife.helpers.MovementHelper;
 import squeek.spiceoflife.network.PacketHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "required-after:AppleCore")
 public class ModSpiceOfLife
@@ -48,7 +47,6 @@ public class ModSpiceOfLife
 		GuiHelper.init();
 		MovementHelper.init();
 		FoodTracker foodTracker = new FoodTracker();
-		FMLCommonHandler.instance().bus().register(foodTracker);
 		MinecraftForge.EVENT_BUS.register(foodTracker);
 		MinecraftForge.EVENT_BUS.register(new FoodModifier());
 

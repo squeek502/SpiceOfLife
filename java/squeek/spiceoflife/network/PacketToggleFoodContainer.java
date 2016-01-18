@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketToggleFoodContainer extends PacketBase
 {

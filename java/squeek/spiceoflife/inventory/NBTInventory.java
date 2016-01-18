@@ -5,6 +5,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 import squeek.spiceoflife.interfaces.ISaveable;
 
@@ -118,7 +121,7 @@ public class NBTInventory implements ISaveable, IInventory
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int slotNum)
+	public ItemStack removeStackFromSlot(int slotNum)
 	{
 		ItemStack item = getStackInSlot(slotNum);
 		setInventorySlotContents(slotNum, null);
@@ -146,21 +149,27 @@ public class NBTInventory implements ISaveable, IInventory
 	}
 
 	@Override
-	public String getInventoryName()
+	public String getName()
 	{
 		if (inventoryHaver != null)
 			return inventoryHaver.getInvName(this);
 		else
-			return null;
+			return "unnamed";
 	}
 
 	@Override
-	public boolean hasCustomInventoryName()
+	public boolean hasCustomName()
 	{
 		if (inventoryHaver != null)
-			return inventoryHaver.isInvNameLocalized(this);
+			return inventoryHaver.hasCustomName(this);
 		else
 			return false;
+	}
+
+	@Override
+	public IChatComponent getDisplayName()
+	{
+        return this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName());
 	}
 
 	@Override
@@ -197,12 +206,12 @@ public class NBTInventory implements ISaveable, IInventory
 	}
 
 	@Override
-	public void openInventory()
+	public void openInventory(EntityPlayer player)
 	{
 	}
 
 	@Override
-	public void closeInventory()
+	public void closeInventory(EntityPlayer player)
 	{
 	}
 
@@ -239,5 +248,27 @@ public class NBTInventory implements ISaveable, IInventory
 				setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(item));
 			}
 		}
+	}
+
+	@Override
+	public int getField(int id)
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value)
+	{
+	}
+
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void clear()
+	{
 	}
 }

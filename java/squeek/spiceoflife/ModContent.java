@@ -5,7 +5,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.items.ItemFoodJournal;
 import squeek.spiceoflife.items.ItemFoodContainer;
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModContent
 {
@@ -16,13 +16,13 @@ public class ModContent
 	public static void registerItems()
 	{
 		foodJournal = new ItemFoodJournal();
-		GameRegistry.registerItem(foodJournal, ModConfig.ITEM_FOOD_JOURNAL_NAME);
+		GameRegistry.registerItem(foodJournal);
 
 		lunchBox = new ItemFoodContainer(ModConfig.ITEM_LUNCH_BOX_NAME, 6);
-		GameRegistry.registerItem(lunchBox, ModConfig.ITEM_LUNCH_BOX_NAME);
+		GameRegistry.registerItem(lunchBox);
 
 		lunchBag = new ItemFoodContainer(ModConfig.ITEM_LUNCH_BAG_NAME, 3);
-		GameRegistry.registerItem(lunchBag, ModConfig.ITEM_LUNCH_BAG_NAME);
+		GameRegistry.registerItem(lunchBag);
 	}
 
 	public static void registerRecipes()

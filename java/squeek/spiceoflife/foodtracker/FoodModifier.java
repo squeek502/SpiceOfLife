@@ -13,8 +13,8 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
 import com.udojava.evalex.Expression;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class FoodModifier
 {
@@ -32,9 +32,8 @@ public class FoodModifier
 			}
 
 			float modifier = FoodModifier.getFoodModifier(event.player, actualFood);
-			FoodValues modifiedFoodValues = FoodModifier.getModifiedFoodValues(event.foodValues, modifier);
 
-			event.foodValues = modifiedFoodValues;
+			event.foodValues = FoodModifier.getModifiedFoodValues(event.foodValues, modifier);
 		}
 	}
 

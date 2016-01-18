@@ -4,7 +4,7 @@ import squeek.spiceoflife.compat.IByteIO;
 
 public interface IPackable
 {
-	public abstract void pack(IByteIO data);
+	void pack(IByteIO data);
 
-	public abstract void unpack(IByteIO data);
+	void unpack(IByteIO data);
 }

@@ -6,9 +6,10 @@ import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class MiscHelper
 {
@@ -25,11 +26,8 @@ public class MiscHelper
 			return true;
 		else if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
 		{
-			int x = mc.objectMouseOver.blockX;
-			int y = mc.objectMouseOver.blockY;
-			int z = mc.objectMouseOver.blockZ;
-
-			return mc.theWorld.getBlock(x, y, z).getMaterial() == Material.air;
+			BlockPos pos = mc.objectMouseOver.getBlockPos();
+			return mc.theWorld.getBlockState(pos).getBlock().getMaterial() == Material.air;
 		}
 		return false;
 	}
