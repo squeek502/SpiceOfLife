@@ -169,7 +169,7 @@ public class NBTInventory implements ISaveable, IInventory
 	@Override
 	public IChatComponent getDisplayName()
 	{
-        return this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName());
+		return this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName());
 	}
 
 	@Override

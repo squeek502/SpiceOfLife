@@ -1,12 +1,10 @@
 package squeek.spiceoflife.network.simpleimpl;
 
+import com.google.common.base.Throwables;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import java.lang.reflect.Constructor;
 import net.minecraft.network.INetHandler;
-import org.apache.logging.log4j.Level;
-import com.google.common.base.Throwables;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -14,6 +12,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.Level;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Exact copy of FML's SimpleChannelHandlerWrapper implementation with added support for message handlers handling multiple message types
@@ -39,6 +40,7 @@ public class BetterSimpleChannelHandlerWrapper<REQ extends IMessage, REPLY exten
 	}
 
 	protected static Constructor<MessageContext> messageContextConstructor = null;
+
 	static
 	{
 		try

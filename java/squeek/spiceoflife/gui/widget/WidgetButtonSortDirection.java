@@ -1,6 +1,5 @@
 package squeek.spiceoflife.gui.widget;
 
-import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -8,6 +7,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import squeek.spiceoflife.ModInfo;
+
+import java.util.Locale;
 
 @SideOnly(Side.CLIENT)
 public class WidgetButtonSortDirection extends GuiButton

@@ -1,21 +1,18 @@
 package squeek.spiceoflife.foodtracker.foodgroups;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.gson.annotations.SerializedName;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.helpers.OreDictionaryHelper;
 import squeek.spiceoflife.interfaces.IPackable;
-import com.google.gson.annotations.SerializedName;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import java.util.*;
 
 public class FoodGroup implements IPackable
 {

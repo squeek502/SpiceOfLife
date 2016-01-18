@@ -2,11 +2,11 @@ package squeek.spiceoflife.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import squeek.spiceoflife.items.ItemFoodContainer;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import squeek.spiceoflife.items.ItemFoodContainer;
 
 public class FoodContainerInventory extends NBTInventory
 {

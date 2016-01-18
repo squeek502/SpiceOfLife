@@ -1,6 +1,5 @@
 package squeek.spiceoflife.items;
 
-import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -9,14 +8,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import squeek.spiceoflife.ModConfig;
-import squeek.spiceoflife.ModContent;
-import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.gui.GuiScreenFoodJournal;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import squeek.spiceoflife.ModConfig;
+import squeek.spiceoflife.ModContent;
+import squeek.spiceoflife.ModInfo;
+import squeek.spiceoflife.gui.GuiScreenFoodJournal;
+
+import java.util.Locale;
 
 public class ItemFoodJournal extends Item
 {

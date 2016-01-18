@@ -46,7 +46,7 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
         include 'example/**.json'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
     from(sourceSets.main.resources.srcDirs) {
         exclude '**/*.info'

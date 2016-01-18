@@ -1,11 +1,5 @@
 package squeek.spiceoflife.gui;
 
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -17,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.FoodHistory;
@@ -28,8 +24,13 @@ import squeek.spiceoflife.gui.widget.WidgetButtonSortDirection;
 import squeek.spiceoflife.gui.widget.WidgetFoodEaten;
 import squeek.spiceoflife.helpers.MiscHelper;
 import squeek.spiceoflife.helpers.StringHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiScreenFoodJournal extends GuiContainer
@@ -246,9 +247,9 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 		if (isMouseInsideBox(mouseX, mouseY, allTimeX, allTimeY, allTimeW, fontRendererObj.FONT_HEIGHT))
 		{
-			this.drawHoveringText(Arrays.asList(new String[]{StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")}), mouseX, mouseY, fontRendererObj);
+			this.drawHoveringText(Arrays.asList(StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")), mouseX, mouseY, fontRendererObj);
 		}
-		
+
 		GlStateManager.disableLighting();
 	}
 

@@ -1,6 +1,5 @@
 package squeek.spiceoflife.foodtracker;
 
-import java.util.Set;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,6 +10,8 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
+
+import java.util.Set;
 
 public class FoodEaten implements IPackable, ISaveable
 {

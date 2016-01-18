@@ -1,10 +1,6 @@
 package squeek.spiceoflife.helpers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class FileHelper
 {
@@ -13,7 +9,7 @@ public class FileHelper
 		copyFile(sourceFile, destFile, false);
 	}
 
-	public static void copyFile(File sourceFile, File destFile, final boolean overwrite) throws IOException
+	public static void copyFile(File sourceFile, File destFile, boolean overwrite) throws IOException
 	{
 		InputStream sourceInput = null;
 		try
@@ -31,7 +27,7 @@ public class FileHelper
 
 	}
 
-	public static void copyFile(InputStream sourceInput, File destFile, final boolean overwrite) throws IOException
+	public static void copyFile(InputStream sourceInput, File destFile, boolean overwrite) throws IOException
 	{
 		if (destFile.exists())
 		{

@@ -2,10 +2,10 @@ package squeek.spiceoflife.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.Packet;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import squeek.spiceoflife.compat.ByteIO;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.IPacketProcessor;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public abstract class PacketBase implements IMessage, IPackable, IPacketProcessor
 {

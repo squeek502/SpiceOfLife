@@ -1,7 +1,5 @@
 package squeek.spiceoflife.foodtracker.commands;
 
-import java.util.Arrays;
-import java.util.List;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -11,6 +9,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 import squeek.spiceoflife.foodtracker.FoodTracker;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class CommandResetHistory extends CommandBase
 {
@@ -50,7 +51,7 @@ public class CommandResetHistory extends CommandBase
 	public List<String> addTabCompletionOptions(ICommandSender commandSender, String[] curArgs, BlockPos pos)
 	{
 		if (curArgs.length == 1)
-			return Arrays.asList(new String[]{"reset"});
+			return Arrays.asList("reset");
 		else if (curArgs.length == 2)
 			return getListOfStringsMatchingLastWord(curArgs, MinecraftServer.getServer().getAllUsernames());
 		else

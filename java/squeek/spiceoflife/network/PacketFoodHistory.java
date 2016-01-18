@@ -1,10 +1,10 @@
 package squeek.spiceoflife.network;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.relauncher.Side;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.foodtracker.FoodHistory;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketFoodHistory extends PacketBase
 {

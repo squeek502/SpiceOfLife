@@ -1,15 +1,16 @@
 package squeek.spiceoflife.helpers;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class InventoryHelper
 {
@@ -37,6 +38,7 @@ public class InventoryHelper
 
 	/**
 	 * Only fill a maximum of one slot
+	 *
 	 * @return The remainder
 	 */
 	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory, EnumFacing direction)

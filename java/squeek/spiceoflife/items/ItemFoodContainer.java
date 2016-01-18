@@ -1,9 +1,5 @@
 package squeek.spiceoflife.items;
 
-import java.util.Locale;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -23,18 +19,18 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
 import squeek.applecore.api.food.IEdible;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.helpers.FoodHelper;
-import squeek.spiceoflife.helpers.GuiHelper;
-import squeek.spiceoflife.helpers.InventoryHelper;
-import squeek.spiceoflife.helpers.MealPrioritizationHelper;
+import squeek.spiceoflife.helpers.*;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.InventoryFoodInfo;
-import squeek.spiceoflife.helpers.MiscHelper;
-import squeek.spiceoflife.helpers.MovementHelper;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.inventory.INBTInventoryHaver;
@@ -42,11 +38,11 @@ import squeek.spiceoflife.inventory.NBTInventory;
 import squeek.spiceoflife.network.NetworkHelper;
 import squeek.spiceoflife.network.PacketHandler;
 import squeek.spiceoflife.network.PacketToggleFoodContainer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.UUID;
 
 public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdible
 {

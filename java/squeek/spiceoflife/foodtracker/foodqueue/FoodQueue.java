@@ -1,6 +1,5 @@
 package squeek.spiceoflife.foodtracker.foodqueue;
 
-import java.util.LinkedList;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
@@ -8,6 +7,8 @@ import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.FoodEaten;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
+
+import java.util.LinkedList;
 
 public abstract class FoodQueue extends LinkedList<FoodEaten> implements IPackable, ISaveable
 {

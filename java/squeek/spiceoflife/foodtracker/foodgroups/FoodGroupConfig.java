@@ -1,13 +1,14 @@
 package squeek.spiceoflife.foodtracker.foodgroups;
 
-import java.io.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FilenameUtils;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.helpers.FileHelper;
 import squeek.spiceoflife.helpers.MiscHelper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
+import java.io.*;
 
 public class FoodGroupConfig
 {
@@ -26,8 +27,8 @@ public class FoodGroupConfig
 
 	public static void writeExampleFoodGroup(File configDirectory)
 	{
-		final String exampleFoodGroupFileName = "example-food-group.json";
-		final String exampleFoodGroupRelativePath = "example/" + exampleFoodGroupFileName;
+		String exampleFoodGroupFileName = "example-food-group.json";
+		String exampleFoodGroupRelativePath = "example/" + exampleFoodGroupFileName;
 		File exampleFoodGroupDest = new File(configDirectory, exampleFoodGroupFileName);
 
 		try

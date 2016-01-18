@@ -1,8 +1,8 @@
 package squeek.spiceoflife.compat;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import squeek.spiceoflife.compat.PacketDispatcher.PacketTarget;
 import squeek.spiceoflife.network.PacketBase;
-import net.minecraft.entity.player.EntityPlayerMP;
 
 public interface IPacketDispatcher
 {

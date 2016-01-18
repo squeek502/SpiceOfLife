@@ -1,9 +1,11 @@
 package squeek.spiceoflife.foodtracker;
 
-import java.math.BigDecimal;
+import com.udojava.evalex.Expression;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import squeek.applecore.api.AppleCoreAPI;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
@@ -12,9 +14,8 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
-import com.udojava.evalex.Expression;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.math.BigDecimal;
 
 public class FoodModifier
 {
@@ -92,19 +93,19 @@ public class FoodModifier
 		FoodValues foodValues = FoodValues.get(food);
 
 		BigDecimal result = effectiveFoodModifier.expression.with("count", new BigDecimal(count))
-				.and("cur_history_length", new BigDecimal(historySize))
-				.and("food_hunger_value", new BigDecimal(foodValues.hunger))
-				.and("food_saturation_mod", new BigDecimal(foodValues.saturationModifier))
-				.and("cur_hunger", new BigDecimal(foodHistory.player.getFoodStats().getFoodLevel()))
-				.and("cur_saturation", new BigDecimal(foodHistory.player.getFoodStats().getSaturationLevel()))
-				.and("total_food_eaten", new BigDecimal(foodHistory.totalFoodsEatenAllTime))
-				.and("max_history_length", new BigDecimal(ModConfig.FOOD_HISTORY_LENGTH))
-				.and("hunger_count", new BigDecimal(totalFoodValues.hunger))
-				.and("saturation_count", new BigDecimal(totalFoodValues.saturationModifier))
-				.and("food_group_count", new BigDecimal(FoodGroupRegistry.getFoodGroupsForFood(food).size()))
-				.and("distinct_food_groups_eaten", new BigDecimal(foodHistory.getDistinctFoodGroups().size()))
-				.and("total_food_groups", new BigDecimal(FoodGroupRegistry.numFoodGroups()))
-				.eval();
+			.and("cur_history_length", new BigDecimal(historySize))
+			.and("food_hunger_value", new BigDecimal(foodValues.hunger))
+			.and("food_saturation_mod", new BigDecimal(foodValues.saturationModifier))
+			.and("cur_hunger", new BigDecimal(foodHistory.player.getFoodStats().getFoodLevel()))
+			.and("cur_saturation", new BigDecimal(foodHistory.player.getFoodStats().getSaturationLevel()))
+			.and("total_food_eaten", new BigDecimal(foodHistory.totalFoodsEatenAllTime))
+			.and("max_history_length", new BigDecimal(ModConfig.FOOD_HISTORY_LENGTH))
+			.and("hunger_count", new BigDecimal(totalFoodValues.hunger))
+			.and("saturation_count", new BigDecimal(totalFoodValues.saturationModifier))
+			.and("food_group_count", new BigDecimal(FoodGroupRegistry.getFoodGroupsForFood(food).size()))
+			.and("distinct_food_groups_eaten", new BigDecimal(foodHistory.getDistinctFoodGroups().size()))
+			.and("total_food_groups", new BigDecimal(FoodGroupRegistry.numFoodGroups()))
+			.eval();
 
 		return result.floatValue();
 	}

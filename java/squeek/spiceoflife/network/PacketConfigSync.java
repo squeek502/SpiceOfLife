@@ -1,7 +1,7 @@
 package squeek.spiceoflife.network;
 
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.relauncher.Side;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.compat.IByteIO;
 

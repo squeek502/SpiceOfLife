@@ -1,6 +1,5 @@
 package squeek.spiceoflife;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.foodtracker.FoodEaten;
@@ -8,6 +7,9 @@ import squeek.spiceoflife.foodtracker.foodqueue.FixedHungerQueue;
 import squeek.spiceoflife.foodtracker.foodqueue.FixedSizeQueue;
 import squeek.spiceoflife.foodtracker.foodqueue.FixedTimeQueue;
 import squeek.spiceoflife.helpers.MiscHelper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestFixedQueues
 {

@@ -1,18 +1,19 @@
 package squeek.spiceoflife.helpers;
 
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Locale;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class StringHelper
 {
 	public static String getQuantityDescriptor(int quantity)
 	{
 		return quantity == 1 ? StatCollector.translateToLocal("spiceoflife.quantity.one.time")
-				: (quantity == 2 ? StatCollector.translateToLocalFormatted("spiceoflife.quantity.two.times", quantity)
-						: StatCollector.translateToLocalFormatted("spiceoflife.quantity.x.times", quantity));
+			: (quantity == 2 ? StatCollector.translateToLocalFormatted("spiceoflife.quantity.two.times", quantity)
+			: StatCollector.translateToLocalFormatted("spiceoflife.quantity.x.times", quantity));
 	}
 
 	public static String join(Collection<?> values, String delimiter)
@@ -34,7 +35,7 @@ public class StringHelper
 		return strbuf.toString();
 	}
 
-	public static String decapitalize(final String string, final Locale locale)
+	public static String decapitalize(String string, Locale locale)
 	{
 		if (string == null || string.isEmpty())
 			return string;

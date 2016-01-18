@@ -1,16 +1,13 @@
 package squeek.spiceoflife.helpers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
-import java.io.Serializable;
-import squeek.applecore.api.food.FoodValues;
-import squeek.spiceoflife.foodtracker.FoodModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import squeek.applecore.api.food.FoodValues;
+import squeek.spiceoflife.foodtracker.FoodModifier;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class MealPrioritizationHelper
 {

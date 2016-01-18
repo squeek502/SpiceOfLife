@@ -3,13 +3,13 @@ package squeek.spiceoflife.helpers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import squeek.spiceoflife.ModSpiceOfLife;
 import squeek.spiceoflife.gui.GuiFoodContainer;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.items.ItemFoodContainer;
-import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class GuiHelper implements IGuiHandler
 {

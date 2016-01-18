@@ -1,9 +1,5 @@
 package squeek.spiceoflife.foodtracker;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -25,6 +21,11 @@ import squeek.spiceoflife.helpers.MiscHelper;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
 import squeek.spiceoflife.items.ItemFoodJournal;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPackable
 {

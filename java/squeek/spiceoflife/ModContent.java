@@ -3,9 +3,9 @@ package squeek.spiceoflife;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import squeek.spiceoflife.items.ItemFoodJournal;
-import squeek.spiceoflife.items.ItemFoodContainer;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import squeek.spiceoflife.items.ItemFoodContainer;
+import squeek.spiceoflife.items.ItemFoodJournal;
 
 public class ModContent
 {

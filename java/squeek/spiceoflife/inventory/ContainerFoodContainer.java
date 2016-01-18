@@ -1,12 +1,13 @@
 package squeek.spiceoflife.inventory;
 
-import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.helpers.GuiHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
+
+import java.util.UUID;
 
 public class ContainerFoodContainer extends ContainerGeneric
 {

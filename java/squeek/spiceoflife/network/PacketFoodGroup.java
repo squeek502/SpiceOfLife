@@ -1,10 +1,10 @@
 package squeek.spiceoflife.network;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.relauncher.Side;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketFoodGroup extends PacketBase
 {

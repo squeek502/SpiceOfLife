@@ -1,6 +1,5 @@
 package squeek.spiceoflife.gui;
 
-import java.util.Locale;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,6 +9,8 @@ import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.helpers.GuiHelper;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
+
+import java.util.Locale;
 
 public class GuiFoodContainer extends GuiContainer
 {

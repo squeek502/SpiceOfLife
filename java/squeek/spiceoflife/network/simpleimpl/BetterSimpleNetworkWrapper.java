@@ -1,7 +1,6 @@
 package squeek.spiceoflife.network.simpleimpl;
 
 import io.netty.channel.ChannelFutureListener;
-import java.util.EnumMap;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
@@ -13,6 +12,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleIndexedCodec;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.EnumMap;
 
 /**
  * Exact copy of FML's SimpleNetworkWrapper implementation with added support for message handlers handling multiple message types

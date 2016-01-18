@@ -1,9 +1,5 @@
 package squeek.spiceoflife;
 
-import static org.junit.Assert.assertEquals;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +8,12 @@ import squeek.spiceoflife.ModConfig.RoundingMode;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.FoodInfoComparator;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.InventoryFoodInfo;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestMealPrioritization
 {
@@ -28,8 +30,8 @@ public class TestMealPrioritization
 		public String toString()
 		{
 			return "(" + defaultFoodValues.hunger + ":" + defaultFoodValues.saturationModifier + ")" +
-					"*" + diminishingReturnsModifier + "=" +
-					"(" + modifiedFoodValues.hunger + ":" + modifiedFoodValues.saturationModifier + ")";
+				"*" + diminishingReturnsModifier + "=" +
+				"(" + modifiedFoodValues.hunger + ":" + modifiedFoodValues.saturationModifier + ")";
 		}
 	}
 
@@ -53,9 +55,7 @@ public class TestMealPrioritization
 		InventoryFoodInfo diminishedFood = new TestInventoryFoodInfo(new FoodValues(3, 0.5f), 0.75f);
 		InventoryFoodInfo undiminishableFood = new TestInventoryFoodInfo(new FoodValues(1, 0.5f), Float.NaN);
 
-		List<InventoryFoodInfo> testDiminished = Arrays.asList(new InventoryFoodInfo[]{
-		nonDiminishedFood, highHungerDiminishedFood, diminishedFood, undiminishableFood
-		});
+		List<InventoryFoodInfo> testDiminished = Arrays.asList(nonDiminishedFood, highHungerDiminishedFood, diminishedFood, undiminishableFood);
 		Collections.sort(testDiminished, new FoodInfoComparator(0));
 
 		assertEquals(undiminishableFood, testDiminished.get(0));
@@ -73,9 +73,7 @@ public class TestMealPrioritization
 		InventoryFoodInfo tooLowBy1 = new TestInventoryFoodInfo(new FoodValues(4, 0.5f), 1f);
 		InventoryFoodInfo underkill = new TestInventoryFoodInfo(new FoodValues(3, 0.5f), 1f);
 
-		List<InventoryFoodInfo> testHunger = Arrays.asList(new InventoryFoodInfo[]{
-		overkill, justRight, underkill, tooHighBy1, tooLowBy1
-		});
+		List<InventoryFoodInfo> testHunger = Arrays.asList(overkill, justRight, underkill, tooHighBy1, tooLowBy1);
 		Collections.sort(testHunger, new FoodInfoComparator(5));
 
 		assertEquals(justRight, testHunger.get(0));
@@ -94,9 +92,7 @@ public class TestMealPrioritization
 		InventoryFoodInfo wayTooGood = new TestInventoryFoodInfo(new FoodValues(12, 1f), 1f);
 		InventoryFoodInfo wayTooGoodButWorse = new TestInventoryFoodInfo(new FoodValues(12, 0.5f), 1f);
 
-		List<InventoryFoodInfo> testSaturation = Arrays.asList(new InventoryFoodInfo[]{
-		good, best, bad, wayTooGood, wayTooGoodButWorse
-		});
+		List<InventoryFoodInfo> testSaturation = Arrays.asList(good, best, bad, wayTooGood, wayTooGoodButWorse);
 		Collections.sort(testSaturation, new FoodInfoComparator(5));
 
 		assertEquals(best, testSaturation.get(0));

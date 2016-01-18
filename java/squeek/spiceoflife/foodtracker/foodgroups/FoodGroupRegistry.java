@@ -1,16 +1,13 @@
 package squeek.spiceoflife.foodtracker.foodgroups;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.helpers.OreDictionaryHelper;
 import squeek.spiceoflife.network.PacketFoodGroup;
+
+import java.util.*;
 
 public class FoodGroupRegistry
 {
