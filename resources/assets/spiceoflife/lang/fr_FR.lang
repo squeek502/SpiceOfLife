@@ -1,14 +1,20 @@
 # Tooltip strings
-spiceoflife.tooltip.nutritional.value=Valeur nutrionelle: 
-spiceoflife.tooltip.eaten.recently=%s des %d dernières nourritures ont été consommées
-spiceoflife.tooltip.eaten.recently.hunger=A mangé %s des %s derniers gigots
-spiceoflife.tooltip.not.eaten.recently=Pas consommé récemment
-spiceoflife.tooltip.food.until.enabled.1=Les rendements décroisants commenceront après
-spiceoflife.tooltip.food.until.enabled.2=avoir mangé toute nourriture %d de plus que %s
+spiceoflife.tooltip.nutritional.value=Valeur nutritionelle: 
+spiceoflife.tooltip.eaten.recently=Mangé %s parmi les %d derniers repas
+spiceoflife.tooltip.eaten.recently.hunger=Mangé %s ces derniers %s gigots
+spiceoflife.tooltip.eaten.recently.time=Mangé %s ces %s derniers jours
+spiceoflife.tooltip.not.eaten.recently=Pas mangé récemment
+spiceoflife.tooltip.food.until.enabled.1=La diminution des rendements commencera
+spiceoflife.tooltip.food.until.enabled.2=dans %d repas
 spiceoflife.tooltip.times.singular=fois
 spiceoflife.tooltip.times.plural=fois
-spiceoflife.tooltip.hunger=gigots
-spiceoflife.tooltip.food.group=Groupe de Nourriture: 
+spiceoflife.tooltip.hunger=faim
+spiceoflife.tooltip.food.group=Catégorie de nourriture: 
+spiceoflife.tooltip.food.groups=Catégories de nourriture: 
+spiceoflife.tooltip.to.close.food.container=Utiliser en s'accroupissant pour fermer
+spiceoflife.tooltip.to.open.food.container=Utiliser en s'accroupissant pour ouvrir
+spiceoflife.tooltip.can.spill.food=La nourriture peut être renversé si laissé ouvert.
+spiceoflife.tooltip.hold.key.for.details=Maintenir %s pour les détails
 
 # Quantity descriptors
 spiceoflife.quantity.one.time=une fois
@@ -16,9 +22,19 @@ spiceoflife.quantity.two.times=deux fois
 spiceoflife.quantity.x.times=%d fois
 
 # Gui
-spiceoflife.gui.alltime.food.eaten=Nourriture tout le temps consommée
+spiceoflife.gui.alltime.food.eaten=Nourriture mangée depuis le commencement
 spiceoflife.gui.no.food.history.yet=L'historique de la nourriture ne sera chargé qu'une fois les rendements décroissants auront commencé.
-spiceoflife.gui.no.recent.food.eaten=Pas consommé récemment
+spiceoflife.gui.no.recent.food.eaten=Aucune nourriture mangée récemment
+spiceoflife.gui.time.elapsed.since.food.eaten=Mangé il y a %s
+spiceoflife.gui.x.day=%s jour
+spiceoflife.gui.x.days=%s jours
+spiceoflife.gui.expires.in.time=Expire dans %s
+spiceoflife.gui.expires.in.food=Expire après avoir mangé n'importe quoi %s %s de plus
+spiceoflife.gui.expires.in.hunger=Expire après avoir mangé l'équivalent de %s gigots de nourriture
+spiceoflife.gui.food.num=Nourriture #%d
+spiceoflife.gui.items.on.page=%d-%d of %d
 
 # Items
-item.spiceoflife.bookfoodjournal.name=Journal de Nourriture
+item.spiceoflife.bookfoodjournal.name=Compte-rendu Alimentaire
+item.spiceoflife.lunchbox.name=Boîte à Pic-Nique
+item.spiceoflife.lunchbag.name=Sac à Pic-Nique
