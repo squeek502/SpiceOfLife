@@ -46,34 +46,6 @@ import java.util.UUID;
 
 public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdible
 {
-	/*
-	@Override
-	public IIcon getIconIndex(ItemStack itemStack)
-	{
-		if (isOpen(itemStack))
-		{
-			return isEmpty(itemStack) ? iconOpenEmpty : iconOpenFull;
-		}
-		return super.getIconIndex(itemStack);
-	}
-
-	@Override
-	public IIcon getIcon(ItemStack itemStack, int renderPass)
-	{
-		return getIconIndex(itemStack);
-	}
-	*/
-	/*
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		super.registerIcons(iconRegister);
-		iconOpenEmpty = iconRegister.registerIcon(getIconString() + "_open_empty");
-		iconOpenFull = iconRegister.registerIcon(getIconString() + "_open_full");
-	}
-	*/
-
 	public int numSlots;
 	public String itemName;
 	public static final Random random = new Random();
