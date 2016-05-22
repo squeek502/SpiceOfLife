@@ -3,7 +3,7 @@ package squeek.spiceoflife.foodtracker;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -43,11 +43,11 @@ public class FoodTracker
 	 * Add relevant extended entity data whenever an entity comes into existence
 	 */
 	@SubscribeEvent
-	public void onEntityConstructing(EntityConstructing event)
+	public void onAttachCapability(AttachCapabilitiesEvent.Entity event)
 	{
-		if (event.entity instanceof EntityPlayer)
+		if (event.getEntity() instanceof EntityPlayer)
 		{
-			FoodHistory.get((EntityPlayer) event.entity);
+			event.addCapability(FoodHistory.CAPABILITY_ID, new FoodHistory((EntityPlayer) event.getEntity()));
 		}
 	}
 
@@ -58,16 +58,16 @@ public class FoodTracker
 	@SubscribeEvent
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event)
 	{
-		if (!(event.entityLiving instanceof EntityPlayer))
+		if (!(event.getEntityLiving() instanceof EntityPlayer))
 			return;
 
-		FoodHistory foodHistory = FoodHistory.get((EntityPlayer) event.entityLiving);
+		FoodHistory foodHistory = FoodHistory.get((EntityPlayer) event.getEntityLiving());
 		foodHistory.deltaTicksActive(1);
 
 		if (ModConfig.USE_TIME_QUEUE)
 		{
 			FixedTimeQueue timeQueue = (FixedTimeQueue) foodHistory.getHistory();
-			timeQueue.prune(event.entityLiving.worldObj.getTotalWorldTime(), foodHistory.ticksActive);
+			timeQueue.prune(event.getEntityLiving().worldObj.getTotalWorldTime(), foodHistory.ticksActive);
 		}
 	}
 
@@ -112,13 +112,13 @@ public class FoodTracker
 	@SubscribeEvent
 	public void onLivingDeathEvent(LivingDeathEvent event)
 	{
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.entity instanceof EntityPlayer))
+		if (FMLCommonHandler.instance().getEffectiveSide().isClient() || !(event.getEntity() instanceof EntityPlayer))
 			return;
 
-		EntityPlayer player = (EntityPlayer) event.entity;
+		EntityPlayer player = (EntityPlayer) event.getEntity();
 
 		FoodHistory foodHistory = FoodHistory.get(player);
-		foodHistory.saveNBTData(null);
+		foodHistory.writeToNBTData(null);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class FoodTracker
 
 		// load any persistent food history data
 		FoodHistory foodHistory = FoodHistory.get(event.player);
-		foodHistory.loadNBTData(null);
+		foodHistory.readFromNBTData(null);
 
 		// server needs to send any loaded data to the client
 		syncFoodHistory(foodHistory);

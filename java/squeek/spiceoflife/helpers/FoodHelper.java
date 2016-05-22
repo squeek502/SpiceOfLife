@@ -36,7 +36,7 @@ public class FoodHelper
 
 	public static boolean isDirectlyEdible(ItemStack itemStack)
 	{
-		return !(itemStack.getItem() == Items.cake || isFoodContainer(itemStack));
+		return !(itemStack.getItem() == Items.CAKE || isFoodContainer(itemStack));
 	}
 
 	public static float getMaxExhaustionLevel(EntityPlayer player)

@@ -8,9 +8,9 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import squeek.spiceoflife.ModConfig;
@@ -104,8 +104,8 @@ public class GuiScreenFoodJournal extends GuiContainer
 		double daysElapsed = elapsedTime / (double) MiscHelper.TICKS_PER_DAY;
 		String numDays = dfOne.format(daysElapsed);
 		String singularOrPlural = numDays.equals("1") ? "spiceoflife.gui.x.day" : "spiceoflife.gui.x.days";
-		String daysAgo = StatCollector.translateToLocalFormatted(singularOrPlural, numDays);
-		return StatCollector.translateToLocalFormatted("spiceoflife.gui.time.elapsed.since.food.eaten", daysAgo);
+		String daysAgo = I18n.format(singularOrPlural, numDays);
+		return I18n.format("spiceoflife.gui.time.elapsed.since.food.eaten", daysAgo);
 	}
 
 	public static String getExpiresInString(FoodEaten foodEaten)
@@ -122,7 +122,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 			int spaceInQueue = queue.getMaxSize() - queue.hunger();
 			int sliceHunger = slice.totalHunger();
 			int hungerUntilExpire = Math.max(1, spaceInQueue + hungerNeededIfThisWereFirst + sliceHunger);
-			return StatCollector.translateToLocalFormatted("spiceoflife.gui.expires.in.hunger", StringHelper.hungerHistoryLength(hungerUntilExpire));
+			return I18n.format("spiceoflife.gui.expires.in.hunger", StringHelper.hungerHistoryLength(hungerUntilExpire));
 		}
 		else if (ModConfig.USE_TIME_QUEUE)
 		{
@@ -133,16 +133,16 @@ public class GuiScreenFoodJournal extends GuiContainer
 			double daysUntilExpire = timeUntilExpire / (double) MiscHelper.TICKS_PER_DAY;
 			String numDays = dfOne.format(daysUntilExpire);
 			String singularOrPlural = numDays.equals("1") ? "spiceoflife.gui.x.day" : "spiceoflife.gui.x.days";
-			String value = StatCollector.translateToLocalFormatted(singularOrPlural, numDays);
-			return StatCollector.translateToLocalFormatted("spiceoflife.gui.expires.in.time", value);
+			String value = I18n.format(singularOrPlural, numDays);
+			return I18n.format("spiceoflife.gui.expires.in.time", value);
 		}
 		else
 		{
 			FixedSizeQueue queue = (FixedSizeQueue) foodHistory.getHistory();
 			int spaceInQueue = queue.getMaxSize() - queue.size();
 			int foodsUntilExpire = spaceInQueue + queue.indexOf(foodEaten) + 1;
-			String singularOrPlural = foodsUntilExpire == 1 ? StatCollector.translateToLocal("spiceoflife.tooltip.times.singular") : StatCollector.translateToLocal("spiceoflife.tooltip.times.plural");
-			return StatCollector.translateToLocalFormatted("spiceoflife.gui.expires.in.food", dfOne.format(foodsUntilExpire), singularOrPlural);
+			String singularOrPlural = foodsUntilExpire == 1 ? I18n.format("spiceoflife.tooltip.times.singular") : I18n.format("spiceoflife.tooltip.times.plural");
+			return I18n.format("spiceoflife.gui.expires.in.food", dfOne.format(foodsUntilExpire), singularOrPlural);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 		{
 			int firstItemNum = sortedDescending ? totalNum - startIndex : startIndex + 1;
 			int lastItemNum = sortedDescending ? Math.max(1, totalNum - endIndex + 1) : Math.min(totalNum, endIndex);
-			String pageIndicator = StatCollector.translateToLocalFormatted("spiceoflife.gui.items.on.page", firstItemNum, lastItemNum, totalNum);
+			String pageIndicator = I18n.format("spiceoflife.gui.items.on.page", firstItemNum, lastItemNum, totalNum);
 			fontRendererObj.drawString(pageIndicator, x + this.bookImageWidth - this.fontRendererObj.getStringWidth(pageIndicator) - 44, y + 16, 0);
 		}
 
@@ -222,9 +222,9 @@ public class GuiScreenFoodJournal extends GuiContainer
 					{
 						List<String> toolTipStrings = new ArrayList<String>();
 						int foodIndex = sortedDescending ? Math.max(1, totalNum - foodEatenIndex) : foodEatenIndex + 1;
-						toolTipStrings.add(StatCollector.translateToLocalFormatted("spiceoflife.gui.food.num", foodIndex));
-						toolTipStrings.add(EnumChatFormatting.GRAY + getTimeEatenString(foodEatenWidget.foodEaten));
-						List<String> splitExpiresIn = fontRendererObj.listFormattedStringToWidth(EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.ITALIC + getExpiresInString(foodEatenWidget.foodEaten), 150);
+						toolTipStrings.add(I18n.format("spiceoflife.gui.food.num", foodIndex));
+						toolTipStrings.add(TextFormatting.GRAY + getTimeEatenString(foodEatenWidget.foodEaten));
+						List<String> splitExpiresIn = fontRendererObj.listFormattedStringToWidth(TextFormatting.DARK_AQUA.toString() + TextFormatting.ITALIC + getExpiresInString(foodEatenWidget.foodEaten), 150);
 						toolTipStrings.addAll(splitExpiresIn);
 						this.drawHoveringText(toolTipStrings, mouseX, mouseY, fontRendererObj);
 					}
@@ -234,17 +234,17 @@ public class GuiScreenFoodJournal extends GuiContainer
 			}
 			else
 			{
-				this.fontRendererObj.drawSplitString(StatCollector.translateToLocal("spiceoflife.gui.no.recent.food.eaten"), x + 36, y + 16 + 16, 116, 0x404040);
+				this.fontRendererObj.drawSplitString(I18n.format("spiceoflife.gui.no.recent.food.eaten"), x + 36, y + 16 + 16, 116, 0x404040);
 			}
 		}
 		else
 		{
-			this.fontRendererObj.drawSplitString(StatCollector.translateToLocal("spiceoflife.gui.no.food.history.yet"), x + 36, y + 16 + 16, 116, 0x404040);
+			this.fontRendererObj.drawSplitString(I18n.format("spiceoflife.gui.no.food.history.yet"), x + 36, y + 16 + 16, 116, 0x404040);
 		}
 
 		if (isMouseInsideBox(mouseX, mouseY, allTimeX, allTimeY, allTimeW, fontRendererObj.FONT_HEIGHT))
 		{
-			this.drawHoveringText(Collections.singletonList(StatCollector.translateToLocal("spiceoflife.gui.alltime.food.eaten")), mouseX, mouseY, fontRendererObj);
+			this.drawHoveringText(Collections.singletonList(I18n.format("spiceoflife.gui.alltime.food.eaten")), mouseX, mouseY, fontRendererObj);
 		}
 
 		GlStateManager.disableLighting();

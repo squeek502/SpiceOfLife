@@ -1,7 +1,7 @@
 package squeek.spiceoflife.items;
 
 import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,10 +11,13 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.StatCollector;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -39,6 +42,7 @@ import squeek.spiceoflife.network.NetworkHelper;
 import squeek.spiceoflife.network.PacketHandler;
 import squeek.spiceoflife.network.PacketToggleFoodContainer;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -62,7 +66,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		setMaxStackSize(1);
 		setRegistryName(this.itemName);
 		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + '.' + this.itemName);
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(CreativeTabs.MISC);
 
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
 		{
@@ -188,9 +192,9 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	@SubscribeEvent
 	public void onItemToss(ItemTossEvent event)
 	{
-		if (event.entityItem.getEntityItem().getItem() instanceof ItemFoodContainer)
+		if (event.getEntityItem().getEntityItem().getItem() instanceof ItemFoodContainer)
 		{
-			onDroppedByPlayer(event.entityItem.getEntityItem(), event.player);
+			onDroppedByPlayer(event.getEntityItem().getEntityItem(), event.getPlayer());
 		}
 	}
 
@@ -247,7 +251,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 				if (chanceToDrop > 0 && random.nextFloat() <= chanceToDrop)
 				{
 					ItemStack itemToDrop = InventoryHelper.removeRandomSingleItemFromInventory(getInventory(itemStack), random);
-					player.dropPlayerItemWithRandomChoice(itemToDrop, true);
+					player.dropItem(itemToDrop, true);
 				}
 			}
 		}
@@ -261,20 +265,20 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	{
 		super.addInformation(itemStack, player, toolTip, isAdvanced);
 
-		String openCloseLineColor = EnumChatFormatting.GRAY.toString();
+		String openCloseLineColor = TextFormatting.GRAY.toString();
 		if (isOpen(itemStack))
 		{
-			toolTip.add(openCloseLineColor + StatCollector.translateToLocalFormatted("spiceoflife.tooltip.to.close.food.container"));
+			toolTip.add(openCloseLineColor + I18n.format("spiceoflife.tooltip.to.close.food.container"));
 
 			if (ModConfig.FOOD_CONTAINERS_CHANCE_TO_DROP_FOOD > 0)
-				toolTip.add(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.ITALIC + StatCollector.translateToLocal("spiceoflife.tooltip.can.spill.food"));
+				toolTip.add(TextFormatting.GOLD.toString() + TextFormatting.ITALIC + I18n.format("spiceoflife.tooltip.can.spill.food"));
 		}
 		else
-			toolTip.add(openCloseLineColor + StatCollector.translateToLocalFormatted("spiceoflife.tooltip.to.open.food.container"));
+			toolTip.add(openCloseLineColor + I18n.format("spiceoflife.tooltip.to.open.food.container"));
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
 	{
 		if (!world.isRemote && isOpen(itemStack))
 		{
@@ -284,10 +288,10 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 				tryDumpFoodInto(itemStack, inventoryHit, player);
 				tryPullFoodFrom(itemStack, inventoryHit, player);
 
-				return true;
+				return EnumActionResult.SUCCESS;
 			}
 		}
-		return super.onItemUseFirst(itemStack, player, world, pos, side, hitX, hitY, hitZ);
+		return super.onItemUseFirst(itemStack, player, world, pos, side, hitX, hitY, hitZ, hand);
 	}
 
 	@Override
@@ -300,22 +304,25 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
+	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
 	{
 		if (player.isSneaking())
 		{
 			setIsOpen(itemStack, !isOpen(itemStack));
+			return new ActionResult(EnumActionResult.SUCCESS, itemStack);
 		}
 		else if (canPlayerEatFrom(player, itemStack))
 		{
-			player.setItemInUse(itemStack, getMaxItemUseDuration(itemStack));
+			player.setActiveHand(hand);
+			return new ActionResult(EnumActionResult.SUCCESS, itemStack);
 		}
-		else if (!isOpen(itemStack))
+		else if (!isOpen(itemStack) && hand == EnumHand.MAIN_HAND)
 		{
 			GuiHelper.openGuiOfItemStack(player, itemStack);
 			setIsOpen(itemStack, true);
+			return new ActionResult(EnumActionResult.SUCCESS, itemStack);
 		}
-		return super.onItemRightClick(itemStack, world, player);
+		return super.onItemRightClick(itemStack, world, player, hand);
 	}
 
 	@Override
@@ -336,22 +343,28 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		return 32;
 	}
 
+	@Nullable
 	@Override
-	public ItemStack onItemUseFinish(ItemStack itemStack, World world, EntityPlayer player)
+	public ItemStack onItemUseFinish(ItemStack itemStack, World world, EntityLivingBase entityLiving)
 	{
-		IInventory inventory = getInventory(itemStack);
-		int slotWithBestFood = MealPrioritizationHelper.findBestFoodForPlayerToEat(player, inventory);
-		ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
-		if (foodToEat != null)
+		if (entityLiving instanceof EntityPlayer)
 		{
-			foodToEat.onItemUseFinish(world, player);
+			EntityPlayer player = (EntityPlayer) entityLiving;
+			IInventory inventory = getInventory(itemStack);
 
-			if (foodToEat.stackSize <= 0)
-				foodToEat = null;
+			int slotWithBestFood = MealPrioritizationHelper.findBestFoodForPlayerToEat(player, inventory);
+			ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
+			if (foodToEat != null)
+			{
+				foodToEat.onItemUseFinish(world, player);
 
-			inventory.setInventorySlotContents(slotWithBestFood, foodToEat);
+				if (foodToEat.stackSize <= 0)
+					foodToEat = null;
+
+				inventory.setInventorySlotContents(slotWithBestFood, foodToEat);
+			}
 		}
-		return super.onItemUseFinish(itemStack, world, player);
+		return super.onItemUseFinish(itemStack, world, entityLiving);
 	}
 
 	public ItemStack getBestFoodForPlayerToEat(ItemStack itemStack, EntityPlayer player)

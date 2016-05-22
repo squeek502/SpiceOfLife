@@ -2,6 +2,7 @@ package squeek.spiceoflife.helpers;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -58,7 +59,7 @@ public class GuiHelper implements IGuiHandler
 		switch (GuiIds.values()[guiId])
 		{
 			case FOOD_CONTAINER:
-				ItemStack heldItem = player.getHeldItem();
+				ItemStack heldItem = player.getHeldItemMainhand();
 				if (heldItem != null && heldItem.getItem() instanceof ItemFoodContainer)
 				{
 					FoodContainerInventory foodContainerInventory = ((ItemFoodContainer) heldItem.getItem()).getInventory(heldItem);

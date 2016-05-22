@@ -3,8 +3,9 @@ package squeek.spiceoflife.foodtracker.foodgroups;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import squeek.spiceoflife.compat.IByteIO;
@@ -22,8 +23,8 @@ public class FoodGroup implements IPackable
 	transient private Set<Integer> matchingItemHashes = new HashSet<Integer>();
 	transient private Set<Integer> excludedItemHashes = new HashSet<Integer>();
 	transient private FoodModifier foodModifier;
-	transient static final EnumChatFormatting DEFAULT_FORMATTING = EnumChatFormatting.GRAY;
-	transient public EnumChatFormatting formatting;
+	transient static final TextFormatting DEFAULT_FORMATTING = TextFormatting.GRAY;
+	transient public TextFormatting formatting;
 
 	public boolean enabled = true;
 	public String name = null;
@@ -51,7 +52,7 @@ public class FoodGroup implements IPackable
 		if (foodStringsByType == null)
 			throw new RuntimeException(toString() + " food group (" + identifier + ".json) missing required \"food\" property");
 
-		formatting = EnumChatFormatting.getValueByName(color);
+		formatting = TextFormatting.getValueByName(color);
 		if (formatting == null)
 			formatting = DEFAULT_FORMATTING;
 
@@ -149,9 +150,9 @@ public class FoodGroup implements IPackable
 	public String getLocalizedName()
 	{
 		if (name != null)
-			return StatCollector.translateToLocal(name);
+			return I18n.format(name);
 		else
-			return StatCollector.translateToLocal("spiceoflife.foodgroup." + identifier);
+			return I18n.format("spiceoflife.foodgroup." + identifier);
 	}
 
 	public FoodModifier getFoodModifier()
@@ -194,7 +195,7 @@ public class FoodGroup implements IPackable
 		String[] itemStringParts = itemString.split(":");
 		if (itemStringParts.length > 1)
 		{
-			Item item = GameRegistry.findItem(itemStringParts[0], itemStringParts[1]);
+			Item item = Item.REGISTRY.getObject(new ResourceLocation(itemStringParts[0], itemStringParts[1]));
 			if (item != null)
 			{
 				boolean exactMetadata = itemStringParts.length > 2 && !itemStringParts[2].equals("*");
@@ -244,7 +245,7 @@ public class FoodGroup implements IPackable
 		formula = !formula.isEmpty() ? formula : null;
 		blacklist = data.readBoolean();
 		hidden = data.readBoolean();
-		formatting = EnumChatFormatting.values()[data.readByte()];
+		formatting = TextFormatting.values()[data.readByte()];
 		int size = data.readShort();
 
 		for (int i = 0; i < size; i++)

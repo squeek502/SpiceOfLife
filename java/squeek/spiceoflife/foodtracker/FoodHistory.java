@@ -1,15 +1,18 @@
 package squeek.spiceoflife.foodtracker;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.common.IExtendedEntityProperties;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.compat.IByteIO;
+import squeek.spiceoflife.foodtracker.capability.IFoodHistory;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroup;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.foodtracker.foodqueue.FixedHungerQueue;
@@ -18,8 +21,6 @@ import squeek.spiceoflife.foodtracker.foodqueue.FixedTimeQueue;
 import squeek.spiceoflife.foodtracker.foodqueue.FoodQueue;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.MiscHelper;
-import squeek.spiceoflife.interfaces.IPackable;
-import squeek.spiceoflife.interfaces.ISaveable;
 import squeek.spiceoflife.items.ItemFoodJournal;
 
 import java.util.ArrayList;
@@ -27,9 +28,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPackable
+public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTagCompound>
 {
+	public static final ResourceLocation CAPABILITY_ID = new ResourceLocation(ModInfo.MODID, "History");
 	public static final String TAG_KEY = ModInfo.MODID + "History";
+
+	@CapabilityInject(IFoodHistory.class)
+	public static final Capability<IFoodHistory> CAPABILITY = null;
+
 	public final EntityPlayer player;
 	protected FoodQueue history = FoodHistory.getNewFoodQueue();
 	public int totalFoodsEatenAllTime = 0;
@@ -44,10 +50,9 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	public FoodHistory(EntityPlayer player)
 	{
 		this.player = player;
-		if (player != null)
-			player.registerExtendedProperties(FoodHistory.TAG_KEY, this);
 	}
 
+	@Override
 	public void onHistoryTypeChanged()
 	{
 		FoodQueue oldHistory = history;
@@ -65,16 +70,19 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 			return new FixedSizeQueue(ModConfig.FOOD_HISTORY_LENGTH);
 	}
 
+	@Override
 	public void deltaTicksActive(long delta)
 	{
 		this.ticksActive += delta;
 	}
 
+	@Override
 	public boolean addFood(FoodEaten foodEaten)
 	{
 		return addFood(foodEaten, true);
 	}
 
+	@Override
 	public boolean addFood(FoodEaten foodEaten, boolean countsTowardsAllTime)
 	{
 		if (countsTowardsAllTime)
@@ -97,11 +105,13 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		return history.add(foodEaten);
 	}
 
+	@Override
 	public int getFoodCountIgnoringFoodGroups(ItemStack food)
 	{
 		return getFoodCountForFoodGroup(food, null);
 	}
 
+	@Override
 	public int getFoodCountForFoodGroup(ItemStack food, FoodGroup foodGroup)
 	{
 		int count = 0;
@@ -119,6 +129,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		return count;
 	}
 
+	@Override
 	public boolean containsFoodOrItsFoodGroups(ItemStack food)
 	{
 		Set<FoodGroup> foodGroups = FoodGroupRegistry.getFoodGroupsForFood(food);
@@ -138,6 +149,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	/**
 	 * See {@link #getTotalFoodValuesForFoodGroup}
 	 */
+	@Override
 	public FoodValues getTotalFoodValuesIgnoringFoodGroups(ItemStack food)
 	{
 		return getTotalFoodValuesForFoodGroup(food, null);
@@ -147,6 +159,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 	 * Note: the returned FoodValues is not a standard FoodValues.
 	 * The saturationModifier is set to the total, not to a modifier
 	 */
+	@Override
 	public FoodValues getTotalFoodValuesForFoodGroup(ItemStack food, FoodGroup foodGroup)
 	{
 		int totalHunger = 0;
@@ -170,21 +183,25 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 			return new FoodValues(totalHunger, totalSaturation);
 	}
 
+	@Override
 	public FoodQueue getHistory()
 	{
 		return history;
 	}
 
+	@Override
 	public int getHistoryLengthInRelevantUnits()
 	{
 		return ModConfig.USE_HUNGER_QUEUE ? ((FixedHungerQueue) history).hunger() : history.size();
 	}
 
+	@Override
 	public FoodEaten getLastEatenFood()
 	{
 		return history.peekLast();
 	}
 
+	@Override
 	public Set<FoodGroup> getDistinctFoodGroups()
 	{
 		Set<FoodGroup> distinctFoodGroups = new HashSet<FoodGroup>();
@@ -198,6 +215,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		return distinctFoodGroups;
 	}
 
+	@Override
 	public void reset()
 	{
 		history.clear();
@@ -206,6 +224,7 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		ticksActive = 0;
 	}
 
+	@Override
 	public void validate()
 	{
 		List<FoodEaten> invalidFoods = new ArrayList<FoodEaten>();
@@ -222,10 +241,9 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 
 	public static FoodHistory get(EntityPlayer player)
 	{
-		FoodHistory foodHistory = (FoodHistory) player.getExtendedProperties(TAG_KEY);
-		if (foodHistory == null)
-			foodHistory = new FoodHistory(player);
-		return foodHistory;
+		if (player.hasCapability(CAPABILITY, null))
+			return (FoodHistory) player.getCapability(CAPABILITY, null);
+		return null;
 	}
 
 	@Override
@@ -320,20 +338,25 @@ public class FoodHistory implements IExtendedEntityProperties, ISaveable, IPacka
 		}
 	}
 
-	@Override
-	public void saveNBTData(NBTTagCompound compound)
+	@Override public NBTTagCompound serializeNBT()
 	{
+		NBTTagCompound compound = new NBTTagCompound();
 		writeToNBTData(compound);
+		return compound;
 	}
 
-	@Override
-	public void loadNBTData(NBTTagCompound compound)
+	@Override public void deserializeNBT(NBTTagCompound nbt)
 	{
-		readFromNBTData(compound);
+		readFromNBTData(nbt);
 	}
 
-	@Override
-	public void init(Entity entity, World world)
+	@Override public boolean hasCapability(Capability<?> capability, EnumFacing facing)
 	{
+		return capability == CAPABILITY;
+	}
+
+	@Override public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+	{
+		return capability == CAPABILITY ? (T) this : null;
 	}
 }

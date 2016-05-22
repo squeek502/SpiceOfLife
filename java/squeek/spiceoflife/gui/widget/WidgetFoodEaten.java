@@ -84,7 +84,7 @@ public class WidgetFoodEaten extends Gui
 		int barsNeeded = hungerBarsNeeded();
 
 		GlStateManager.color(1, 1, 1, 1);
-		mc.getTextureManager().bindTexture(Gui.icons);
+		mc.getTextureManager().bindTexture(Gui.ICONS);
 		y += mc.fontRendererObj.FONT_HEIGHT;
 		for (int i = 0; i < barsNeeded * 2; i += 2)
 		{

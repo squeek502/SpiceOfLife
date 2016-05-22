@@ -35,15 +35,15 @@ public class MovementHelper
 	@SubscribeEvent
 	public void onLivingJump(LivingJumpEvent event)
 	{
-		if (event.entityLiving instanceof EntityPlayer)
+		if (event.getEntityLiving() instanceof EntityPlayer)
 		{
-			EntityPlayer player = (EntityPlayer) event.entityLiving;
+			EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 			MovementInfo movementInfo = movementInfoByPlayer.get(player);
 
 			if (movementInfo == null)
 				movementInfo = new MovementInfo();
 
-			movementInfo.lastJump = event.entityLiving.worldObj.getWorldTime();
+			movementInfo.lastJump = event.getEntityLiving().worldObj.getWorldTime();
 			movementInfoByPlayer.put(player, movementInfo);
 		}
 	}

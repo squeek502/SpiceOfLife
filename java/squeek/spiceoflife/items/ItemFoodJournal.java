@@ -1,12 +1,15 @@
 package squeek.spiceoflife.items;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -27,7 +30,7 @@ public class ItemFoodJournal extends Item
 		setMaxStackSize(1);
 		setRegistryName(ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + '.' + ModConfig.ITEM_FOOD_JOURNAL_NAME);
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(CreativeTabs.MISC);
 
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
 		{
@@ -43,11 +46,14 @@ public class ItemFoodJournal extends Item
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
+	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
 	{
 		if (world.isRemote)
+		{
 			Minecraft.getMinecraft().displayGuiScreen(new GuiScreenFoodJournal());
-		return super.onItemRightClick(itemStack, world, player);
+			return new ActionResult(EnumActionResult.SUCCESS, itemStack);
+		}
+		return super.onItemRightClick(itemStack, world, player, hand);
 	}
 
 	public static void giveToPlayer(EntityPlayer player)

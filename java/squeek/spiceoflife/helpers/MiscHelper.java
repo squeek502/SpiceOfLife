@@ -2,8 +2,8 @@ package squeek.spiceoflife.helpers;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -21,14 +21,14 @@ public class MiscHelper
 	public static boolean isMouseOverNothing()
 	{
 		Minecraft mc = Minecraft.getMinecraft();
-		MovingObjectPosition mouseOver = mc.objectMouseOver;
+		RayTraceResult mouseOver = mc.objectMouseOver;
 
-		if (mouseOver == null || mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.MISS)
+		if (mouseOver == null || mouseOver.typeOfHit == RayTraceResult.Type.MISS)
 			return true;
-		else if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+		else if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)
 		{
 			BlockPos pos = mc.objectMouseOver.getBlockPos();
-			return mc.theWorld.getBlockState(pos).getBlock().getMaterial() == Material.air;
+			return mc.theWorld.getBlockState(pos).getMaterial() == Material.AIR;
 		}
 		return false;
 	}

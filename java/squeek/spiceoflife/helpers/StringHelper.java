@@ -1,6 +1,6 @@
 package squeek.spiceoflife.helpers;
 
-import net.minecraft.util.StatCollector;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.text.DecimalFormat;
@@ -11,9 +11,9 @@ public class StringHelper
 {
 	public static String getQuantityDescriptor(int quantity)
 	{
-		return quantity == 1 ? StatCollector.translateToLocal("spiceoflife.quantity.one.time")
-			: (quantity == 2 ? StatCollector.translateToLocalFormatted("spiceoflife.quantity.two.times", quantity)
-			: StatCollector.translateToLocalFormatted("spiceoflife.quantity.x.times", quantity));
+		return quantity == 1 ? I18n.format("spiceoflife.quantity.one.time")
+			: (quantity == 2 ? I18n.format("spiceoflife.quantity.two.times", quantity)
+			: I18n.format("spiceoflife.quantity.x.times", quantity));
 	}
 
 	public static String join(Collection<?> values, String delimiter)

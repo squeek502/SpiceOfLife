@@ -2,11 +2,13 @@ package squeek.spiceoflife.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.helpers.GuiHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class ContainerFoodContainer extends ContainerGeneric
@@ -68,13 +70,14 @@ public class ContainerFoodContainer extends ContainerGeneric
 		return null;
 	}
 
+	@Nullable
 	@Override
-	public ItemStack slotClick(int slotNum, int mouseButton, int modifier, EntityPlayer player)
+	public ItemStack slotClick(int slotNum, int dragType, ClickType clickType, EntityPlayer player)
 	{
 		// make sure the correct ItemStack instance is always used when the player is moving
 		// the food container around while they have it open
 		ItemStack putDownStack = player.inventory.getItemStack();
-		ItemStack pickedUpStack = super.slotClick(slotNum, mouseButton, modifier, player);
+		ItemStack pickedUpStack = super.slotClick(slotNum, dragType, clickType, player);
 
 		if (isFoodContainerWithUUID(pickedUpStack, getUUID()))
 		{

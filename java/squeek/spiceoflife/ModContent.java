@@ -16,19 +16,19 @@ public class ModContent
 	public static void registerItems()
 	{
 		foodJournal = new ItemFoodJournal();
-		GameRegistry.registerItem(foodJournal);
+		GameRegistry.register(foodJournal);
 
 		lunchBox = new ItemFoodContainer(ModConfig.ITEM_LUNCH_BOX_NAME, 6);
-		GameRegistry.registerItem(lunchBox);
+		GameRegistry.register(lunchBox);
 
 		lunchBag = new ItemFoodContainer(ModConfig.ITEM_LUNCH_BAG_NAME, 3);
-		GameRegistry.registerItem(lunchBag);
+		GameRegistry.register(lunchBag);
 	}
 
 	public static void registerRecipes()
 	{
-		GameRegistry.addShapelessRecipe(new ItemStack(foodJournal), new ItemStack(Items.wheat), new ItemStack(Items.paper));
-		GameRegistry.addShapedRecipe(new ItemStack(lunchBox), "_ _", " _ ", '_', new ItemStack(Blocks.heavy_weighted_pressure_plate));
-		GameRegistry.addShapedRecipe(new ItemStack(lunchBag), "p p", " p ", 'p', new ItemStack(Items.paper));
+		GameRegistry.addShapelessRecipe(new ItemStack(foodJournal), new ItemStack(Items.WHEAT), new ItemStack(Items.PAPER));
+		GameRegistry.addShapedRecipe(new ItemStack(lunchBox), "_ _", " _ ", '_', new ItemStack(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE));
+		GameRegistry.addShapedRecipe(new ItemStack(lunchBag), "p p", " p ", 'p', new ItemStack(Items.PAPER));
 	}
 }
