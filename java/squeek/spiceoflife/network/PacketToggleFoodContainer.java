@@ -24,16 +24,20 @@ public class PacketToggleFoodContainer extends PacketBase
 	}
 
 	@Override
-	public PacketBase processAndReply(Side side, EntityPlayer player)
+	public void processInWorldThread(Side side, EntityPlayer player)
 	{
-		ItemStack equippedItem = player.getCurrentEquippedItem();
+		ItemStack equippedItem = player.getHeldItem();
 
 		if (equippedItem != null && FoodHelper.isFoodContainer(equippedItem))
 		{
 			ItemFoodContainer foodContainerItem = ((ItemFoodContainer) equippedItem.getItem());
 			foodContainerItem.setIsOpen(equippedItem, !foodContainerItem.isOpen(equippedItem));
 		}
+	}
 
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
 		return null;
 	}
 }

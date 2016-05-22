@@ -24,9 +24,14 @@ public class PacketConfigSync extends PacketBase
 	}
 
 	@Override
+	public void processInWorldThread(Side side, EntityPlayer player)
+	{
+		ModConfig.instance.processInWorldThread(side, player);
+	}
+
+	@Override
 	public PacketBase processAndReply(Side side, EntityPlayer player)
 	{
 		return ModConfig.instance.processAndReply(side, player);
 	}
-
 }

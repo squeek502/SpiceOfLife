@@ -31,12 +31,16 @@ public class PacketFoodEatenAllTime extends PacketBase
 	}
 
 	@Override
-	public PacketBase processAndReply(Side side, EntityPlayer player)
+	public void processInWorldThread(Side side, EntityPlayer player)
 	{
 		FoodHistory foodHistory = FoodHistory.get(player);
 
 		foodHistory.totalFoodsEatenAllTime = this.foodEatenAllTime;
+	}
 
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
 		return null;
 	}
 }

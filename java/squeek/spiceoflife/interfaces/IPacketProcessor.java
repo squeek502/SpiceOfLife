@@ -7,4 +7,5 @@ import squeek.spiceoflife.network.PacketBase;
 public interface IPacketProcessor
 {
 	PacketBase processAndReply(Side side, EntityPlayer player);
+	void processInWorldThread(Side side, EntityPlayer sidedPlayer);
 }

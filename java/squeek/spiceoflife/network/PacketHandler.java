@@ -1,5 +1,6 @@
 package squeek.spiceoflife.network;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -43,8 +44,14 @@ public class PacketHandler implements IMessageHandler<PacketBase, PacketBase>
 	}
 
 	@Override
-	public PacketBase onMessage(PacketBase message, MessageContext ctx)
+	public PacketBase onMessage(final PacketBase message, final MessageContext ctx)
 	{
+		FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(new Runnable() {
+			@Override public void run()
+			{
+				message.processInWorldThread(ctx.side, NetworkHelper.getSidedPlayer(ctx));
+			}
+		});
 		return message.processAndReply(ctx.side, NetworkHelper.getSidedPlayer(ctx));
 	}
 

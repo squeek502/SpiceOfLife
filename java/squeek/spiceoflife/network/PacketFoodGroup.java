@@ -45,7 +45,7 @@ public class PacketFoodGroup extends PacketBase
 	}
 
 	@Override
-	public PacketBase processAndReply(Side side, EntityPlayer player)
+	public void processInWorldThread(Side side, EntityPlayer player)
 	{
 		if (++foodGroupsRecieved > totalFoodGroups)
 			throw new RuntimeException("Recieved more food groups than should exist (recieved: " + foodGroupsRecieved + ", total: " + totalFoodGroups + ')');
@@ -54,7 +54,11 @@ public class PacketFoodGroup extends PacketBase
 
 		if (foodGroupsRecieved == totalFoodGroups)
 			FoodGroupRegistry.setInStone();
+	}
 
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
 		return null;
 	}
 }

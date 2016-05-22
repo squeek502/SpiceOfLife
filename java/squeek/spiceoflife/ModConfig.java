@@ -440,7 +440,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 	}
 
 	@Override
-	public PacketBase processAndReply(Side side, EntityPlayer player)
+	public void processInWorldThread(Side side, EntityPlayer player)
 	{
 		if (FOOD_MODIFIER_ENABLED)
 		{
@@ -449,7 +449,11 @@ public class ModConfig implements IPackable, IPacketProcessor
 			FoodHistory.get(player).onHistoryTypeChanged();
 			FoodGroupRegistry.clear();
 		}
+	}
 
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
 		return null;
 	}
 

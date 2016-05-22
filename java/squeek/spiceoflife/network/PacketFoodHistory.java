@@ -51,7 +51,7 @@ public class PacketFoodHistory extends PacketBase
 	}
 
 	@Override
-	public PacketBase processAndReply(Side side, EntityPlayer player)
+	public void processInWorldThread(Side side, EntityPlayer player)
 	{
 		FoodHistory foodHistory = FoodHistory.get(player);
 
@@ -65,7 +65,11 @@ public class PacketFoodHistory extends PacketBase
 		{
 			foodHistory.addFood(foodEaten, !shouldOverwrite);
 		}
+	}
 
+	@Override
+	public PacketBase processAndReply(Side side, EntityPlayer player)
+	{
 		return null;
 	}
 }
