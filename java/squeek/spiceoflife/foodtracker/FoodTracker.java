@@ -64,7 +64,7 @@ public class FoodTracker
 		FoodHistory foodHistory = FoodHistory.get((EntityPlayer) event.getEntityLiving());
 		foodHistory.deltaTicksActive(1);
 
-		if (ModConfig.USE_TIME_QUEUE)
+		if (ModConfig.USE_TIME_QUEUE && !ModConfig.USE_HUNGER_QUEUE)
 		{
 			FixedTimeQueue timeQueue = (FixedTimeQueue) foodHistory.getHistory();
 			timeQueue.prune(event.getEntityLiving().worldObj.getTotalWorldTime(), foodHistory.ticksActive);
