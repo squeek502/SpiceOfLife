@@ -194,7 +194,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 	private static final String USE_TIME_QUEUE_COMMENT =
 		"If true, " + FOOD_HISTORY_LENGTH_NAME + " will use time (in Minecraft days) instead of number of foods eaten for its maximum length\n"
 			+ "For example, a " + FOOD_HISTORY_LENGTH_NAME + " length of 12 will store all foods eaten in the last 12 Minecraft days.\n"
-			+ "Note: On servers, time only advances for each player while they are logged in unless " + ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF_NAME + " is set to true";
+			+ "Note: On servers, time only advances for each player while they are logged in unless " + ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF_NAME + " is set to true\n"
+			+ "Also note: " + USE_HUNGER_QUEUE_NAME + " must be false for this config option to take effect";
 
 	public static boolean PROGRESS_TIME_WHILE_LOGGED_OFF = ModConfig.PROGRESS_TIME_WHILE_LOGGED_OFF_DEFAULT;
 	private static final String PROGRESS_TIME_WHILE_LOGGED_OFF_NAME = "use.time.progress.time.while.logged.off";
