@@ -83,6 +83,10 @@ public class FoodGroupConfig
 	{
 		for (File configFile : configFiles)
 		{
+			boolean isJson = FilenameUtils.getExtension(configFile.getName()).equalsIgnoreCase("json");
+			if (!isJson)
+				continue;
+
 			InputStreamReader reader = null;
 			try
 			{
