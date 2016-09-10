@@ -262,6 +262,15 @@ public abstract class ContainerGeneric extends Container
 	@Override
 	public ItemStack slotClick(int slotNum, int mouseButton, int modifier, EntityPlayer player)
 	{
+		// Don't allow the swap if the slot isn't valid for the swapped item
+		if (modifier == 2)
+		{
+			Slot slot1 = (Slot)this.inventorySlots.get(slotNum);
+			ItemStack stack2 = player.inventory.getStackInSlot(mouseButton);
+
+			if (stack2 != null && !slot1.isItemValid(stack2))
+				return slot1.getStack();
+		}
 		return super.slotClick(slotNum, mouseButton, modifier, player);
 	}
 
