@@ -63,7 +63,7 @@ public class FoodModifier
 				event.setDuration(Short.MAX_VALUE);
 
 			if (ModConfig.FOOD_EATING_DURATION_MAX > 0)
-				event.setDuration(Math.max(event.getDuration(), ModConfig.FOOD_EATING_DURATION_MAX));
+				event.setDuration(Math.min(event.getDuration(), ModConfig.FOOD_EATING_DURATION_MAX));
 		}
 	}
 
