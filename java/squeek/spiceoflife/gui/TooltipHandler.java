@@ -81,7 +81,7 @@ public class TooltipHandler
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event)
 	{
-		if (ModConfig.FOOD_MODIFIER_ENABLED && event.getItemStack() != null && FoodHelper.isValidFood(event.getItemStack()))
+		if (ModConfig.FOOD_MODIFIER_ENABLED && event.getEntityPlayer() != null && event.getItemStack() != null && FoodHelper.isValidFood(event.getItemStack()))
 		{
 			int totalFoodEaten = FoodHistory.get(event.getEntityPlayer()).totalFoodsEatenAllTime;
 			List<String> toolTipStringsToAdd = new ArrayList<String>();
