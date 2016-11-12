@@ -1,0 +1,29 @@
+# Tooltip strings
+spiceoflife.tooltip.nutritional.value=Поживна цінність: 
+spiceoflife.tooltip.eaten.recently=З'їдено %s з останніх %d
+spiceoflife.tooltip.eaten.recently.hunger=З'їдено %s в останніх %s голоду
+spiceoflife.tooltip.not.eaten.recently=Ви ще не вживали це
+spiceoflife.tooltip.food.until.enabled.1=Зменшення поживності розпочнеться після
+spiceoflife.tooltip.food.until.enabled.2=вживання будь-якої їжі більше %d %s
+spiceoflife.tooltip.times.singular=рази(-ів)
+spiceoflife.tooltip.times.plural=раз
+spiceoflife.tooltip.hunger=голоду
+spiceoflife.tooltip.food.group=Група їжі: 
+spiceoflife.tooltip.to.close.food.container=Використайте, сидячи, щоб закрити
+spiceoflife.tooltip.to.open.food.container=Використайте, сидячи, щоб відкрити
+spiceoflife.tooltip.can.spill.food=Їжа може випасти, коли відкрито
+
+# Quantity descriptors
+spiceoflife.quantity.one.time=один раз
+spiceoflife.quantity.two.times=двічі
+spiceoflife.quantity.x.times=%d рази(-ів)
+
+# Gui
+spiceoflife.gui.alltime.food.eaten=Їжа, з'їдена за останній час
+spiceoflife.gui.no.food.history.yet=Історія харчування не записується, поки не розпочнеться зменшення поживності
+spiceoflife.gui.no.recent.food.eaten=Їжа ще не була з'їдена
+
+# Items
+item.spiceoflife.bookfoodjournal.name=Журнал харчування
+item.spiceoflife.lunchbox.name=Коробка для ланча
+item.spiceoflife.lunchbag.name=Мішочок для ланчу
