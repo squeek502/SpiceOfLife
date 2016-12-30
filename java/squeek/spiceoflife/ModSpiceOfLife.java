@@ -43,6 +43,10 @@ public class ModSpiceOfLife
 		sourceFile = event.getSourceFile();
 		ModConfig.init(event.getSuggestedConfigurationFile());
 		ModContent.registerItems();
+		if (event.getSide() == Side.CLIENT)
+		{
+			ModContent.registerModels();
+		}
 		ModContent.registerRecipes();
 		CapabilityManager.INSTANCE.register(IFoodHistory.class, new Capability.IStorage<IFoodHistory>()
 		{

@@ -4,6 +4,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import squeek.spiceoflife.items.ItemFoodContainer;
 import squeek.spiceoflife.items.ItemFoodJournal;
 
@@ -23,6 +25,14 @@ public class ModContent
 
 		lunchBag = new ItemFoodContainer(ModConfig.ITEM_LUNCH_BAG_NAME, 3);
 		GameRegistry.register(lunchBag);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void registerModels()
+	{
+		foodJournal.registerModels();
+		lunchBox.registerModels();
+		lunchBag.registerModels();
 	}
 
 	public static void registerRecipes()

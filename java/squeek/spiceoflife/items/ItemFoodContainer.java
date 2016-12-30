@@ -68,11 +68,6 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + '.' + this.itemName);
 		setCreativeTab(CreativeTabs.MISC);
 
-		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
-		{
-			registerModels();
-		}
-
 		// for ItemTossEvent
 		MinecraftForge.EVENT_BUS.register(this);
 	}

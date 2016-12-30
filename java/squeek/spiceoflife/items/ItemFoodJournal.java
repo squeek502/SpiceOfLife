@@ -31,11 +31,6 @@ public class ItemFoodJournal extends Item
 		setRegistryName(ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setUnlocalizedName(ModInfo.MODID.toLowerCase(Locale.ROOT) + '.' + ModConfig.ITEM_FOOD_JOURNAL_NAME);
 		setCreativeTab(CreativeTabs.MISC);
-
-		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
-		{
-			registerModels();
-		}
 	}
 
 	@SideOnly(Side.CLIENT)
