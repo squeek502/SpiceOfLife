@@ -187,7 +187,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	@SubscribeEvent
 	public void onItemToss(ItemTossEvent event)
 	{
-		if (event.getEntityItem().getEntityItem().getItem() instanceof ItemFoodContainer)
+		if (event.getEntityItem().getEntityItem().getItem() == this)
 		{
 			onDroppedByPlayer(event.getEntityItem().getEntityItem(), event.getPlayer());
 		}
