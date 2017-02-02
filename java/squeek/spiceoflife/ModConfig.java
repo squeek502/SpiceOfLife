@@ -154,7 +154,7 @@ public class ModConfig implements IPackable, IPacketProcessor
 		"If true, foods' saturation modifier will be multiplied by the current nutritional value\n"
 			+ "NOTE: When " + ModConfig.AFFECT_FOOD_HUNGER_VALUES_NAME + " is true, saturation bonuses of foods will automatically decrease as the hunger value of the food decreases\n"
 			+ "Setting this to true when " + ModConfig.AFFECT_FOOD_HUNGER_VALUES_NAME + " is true will make saturation bonuses decrease disproportionately more than hunger values\n"
-			+ "Setting this to true and " + ModConfig.AFFECT_FOOD_SATURATION_MODIFIERS_NAME + " to false will make diminishing returns affect saturation only";
+			+ "Setting this to true and " + ModConfig.AFFECT_FOOD_HUNGER_VALUES_NAME + " to false will make diminishing returns affect saturation only";
 
 	public static boolean AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS = ModConfig.AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_DEFAULT;
 	private static final String AFFECT_NEGATIVE_FOOD_SATURATION_MODIFIERS_NAME = "affect.negative.food.saturation.modifiers";
@@ -223,7 +223,8 @@ public class ModConfig implements IPackable, IPacketProcessor
 			+ "\ttotal_food_eaten : The all-time total number of times any food has been eaten by the player\n"
 			+ "\tfood_group_count : The number of food groups that the food belongs to\n"
 			+ "\tdistinct_food_groups_eaten : The number of distinct food groups in the player's current food history\n"
-			+ "\ttotal_food_groups : The total number of enabled food groups\n";
+			+ "\ttotal_food_groups : The total number of enabled food groups\n"
+			+ "\texact_count : The number of times the food (ignoring food groups) has been eaten within the food history\n";
 
 	public static boolean GIVE_FOOD_JOURNAL_ON_START = ModConfig.GIVE_FOOD_JOURNAL_ON_START_DEFAULT;
 	private static final String GIVE_FOOD_JOURNAL_ON_START_NAME = "give.food.journal.as.starting.item";

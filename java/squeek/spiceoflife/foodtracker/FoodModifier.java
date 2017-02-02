@@ -110,6 +110,7 @@ public class FoodModifier
 			.and("food_group_count", new BigDecimal(FoodGroupRegistry.getFoodGroupsForFood(food).size()))
 			.and("distinct_food_groups_eaten", new BigDecimal(foodHistory.getDistinctFoodGroups().size()))
 			.and("total_food_groups", new BigDecimal(FoodGroupRegistry.numFoodGroups()))
+			.and("exact_count", new BigDecimal(foodHistory.getFoodCountIgnoringFoodGroups(food)))
 			.eval();
 
 		return result.floatValue();
