@@ -7,7 +7,10 @@ import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class MealPrioritizationHelper
 {
@@ -55,13 +58,7 @@ public class MealPrioritizationHelper
 		@Override
 		public int compare(InventoryFoodInfo a, InventoryFoodInfo b)
 		{
-			int compareResult = Float.compare(b.diminishingReturnsModifier, a.diminishingReturnsModifier);
-			if (compareResult == 0)
-			{
-				Random random = new Random();
-				return integerCompare(random.nextInt(), random.nextInt());
-			}
-			return compareResult;
+			return Float.compare(b.diminishingReturnsModifier, a.diminishingReturnsModifier);
 		}
 	};
 
@@ -124,6 +121,7 @@ public class MealPrioritizationHelper
 	public static List<InventoryFoodInfo> findBestFoodsForPlayerAccountingForVariety(EntityPlayer player, IInventory inventory)
 	{
 		List<InventoryFoodInfo> allFoodInfo = getFoodInfoFromInventoryForPlayer(player, inventory);
+		Collections.shuffle(allFoodInfo);
 		Collections.sort(allFoodInfo, diminishedComparator);
 		return allFoodInfo;
 	}
