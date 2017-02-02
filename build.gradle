@@ -32,6 +32,11 @@ sourceSets.main{
 		srcDirs 'resources' //set the resources folder as the /resources subfolder
 	}
 }
+sourceSets.test {
+	java {
+		srcDirs 'tests'
+	}
+}
 
 repositories {
 	maven {
@@ -42,6 +47,7 @@ repositories {
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar,*.zip')
     compile "applecore:AppleCore:1.7.10-1.3.2:deobf"
+	testCompile "junit:junit:4.11"
 }
 
 // variable replacement in source files
