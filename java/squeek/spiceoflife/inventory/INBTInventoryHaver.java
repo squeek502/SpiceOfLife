@@ -2,6 +2,8 @@ package squeek.spiceoflife.inventory;
 
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
 public interface INBTInventoryHaver
 {
 	int getSizeInventory();
@@ -14,5 +16,5 @@ public interface INBTInventoryHaver
 
 	void onInventoryChanged(NBTInventory inventory);
 
-	boolean isItemValidForSlot(NBTInventory inventory, int slotNum, ItemStack itemStack);
+	boolean isItemValidForSlot(NBTInventory inventory, int slotNum, @Nonnull ItemStack itemStack);
 }

@@ -20,6 +20,7 @@ import squeek.spiceoflife.ModContent;
 import squeek.spiceoflife.ModInfo;
 import squeek.spiceoflife.gui.GuiScreenFoodJournal;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
 public class ItemFoodJournal extends Item
@@ -41,26 +42,28 @@ public class ItemFoodJournal extends Item
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
+	@Nonnull
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand)
 	{
+		ItemStack itemStack = player.getHeldItem(hand);
 		if (world.isRemote)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(new GuiScreenFoodJournal());
-			return new ActionResult(EnumActionResult.SUCCESS, itemStack);
+			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStack);
 		}
-		return super.onItemRightClick(itemStack, world, player, hand);
+		return super.onItemRightClick(world, player, hand);
 	}
 
 	public static void giveToPlayer(EntityPlayer player)
 	{
-		if (player != null && !player.worldObj.isRemote)
+		if (player != null && !player.world.isRemote)
 		{
 			ItemStack itemStack = new ItemStack(ModContent.foodJournal);
 			// try add, otherwise spawn in the world
 			if (!player.inventory.addItemStackToInventory(itemStack))
 			{
-				EntityItem entityItem = new EntityItem(player.worldObj, player.posX + 0.5f, player.posY + 0.5f, player.posZ + 0.5f, itemStack);
-				player.worldObj.spawnEntityInWorld(entityItem);
+				EntityItem entityItem = new EntityItem(player.world, player.posX + 0.5f, player.posY + 0.5f, player.posZ + 0.5f, itemStack);
+				player.world.spawnEntity(entityItem);
 			}
 		}
 	}

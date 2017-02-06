@@ -28,7 +28,7 @@ import squeek.spiceoflife.network.PacketHandler;
 import java.io.File;
 import java.util.concurrent.Callable;
 
-@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "required-after:AppleCore")
+@Mod(modid = ModInfo.MODID, version = ModInfo.VERSION, dependencies = "required-after:applecore")
 public class ModSpiceOfLife
 {
 	public static final Logger Log = LogManager.getLogger(ModInfo.MODID);

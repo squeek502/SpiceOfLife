@@ -13,6 +13,7 @@ import squeek.spiceoflife.foodtracker.FoodModifier;
 import squeek.spiceoflife.helpers.OreDictionaryHelper;
 import squeek.spiceoflife.interfaces.IPackable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class FoodGroup implements IPackable
@@ -71,7 +72,7 @@ public class FoodGroup implements IPackable
 			for (String itemString : itemStrings)
 			{
 				ItemStack item = getItemFromString(itemString);
-				if (item != null)
+				if (item != ItemStack.EMPTY)
 					addFood(item);
 			}
 		}
@@ -93,7 +94,7 @@ public class FoodGroup implements IPackable
 				for (String itemString : excludedItemStrings)
 				{
 					ItemStack item = getItemFromString(itemString);
-					if (item != null)
+					if (item != ItemStack.EMPTY)
 						excludeFood(item);
 				}
 			}
@@ -165,7 +166,7 @@ public class FoodGroup implements IPackable
 		addFood(new FoodGroupMember(oredictName));
 	}
 
-	public void addFood(ItemStack itemStack)
+	public void addFood(@Nonnull ItemStack itemStack)
 	{
 		addFood(new FoodGroupMember(itemStack));
 	}
@@ -180,7 +181,7 @@ public class FoodGroup implements IPackable
 		excludeFood(new FoodGroupMember(oredictName));
 	}
 
-	public void excludeFood(ItemStack itemStack)
+	public void excludeFood(@Nonnull ItemStack itemStack)
 	{
 		excludeFood(new FoodGroupMember(itemStack));
 	}
@@ -190,6 +191,7 @@ public class FoodGroup implements IPackable
 		excluded.add(foodMember);
 	}
 
+	@Nonnull
 	public ItemStack getItemFromString(String itemString)
 	{
 		String[] itemStringParts = itemString.split(":");
@@ -203,7 +205,7 @@ public class FoodGroup implements IPackable
 				return new ItemStack(item, 1, metadata);
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	public boolean hidden()

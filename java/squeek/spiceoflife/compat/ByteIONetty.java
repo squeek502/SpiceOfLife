@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
+import javax.annotation.Nonnull;
+
 public class ByteIONetty implements IByteIO
 {
 	public ByteBuf buf;
@@ -104,6 +106,7 @@ public class ByteIONetty implements IByteIO
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack readItemStack()
 	{
 		return ByteBufUtils.readItemStack(buf);
@@ -199,7 +202,7 @@ public class ByteIONetty implements IByteIO
 	}
 
 	@Override
-	public IByteIO writeItemStack(ItemStack itemStack)
+	public IByteIO writeItemStack(@Nonnull ItemStack itemStack)
 	{
 		ByteBufUtils.writeItemStack(buf, itemStack);
 		return this;

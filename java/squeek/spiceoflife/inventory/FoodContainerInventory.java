@@ -8,12 +8,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import squeek.spiceoflife.items.ItemFoodContainer;
 
+import javax.annotation.Nonnull;
+
 public class FoodContainerInventory extends NBTInventory
 {
 	protected ItemFoodContainer itemFoodContainer;
-	protected ItemStack itemStackFoodContainer;
+	@Nonnull protected ItemStack itemStackFoodContainer = ItemStack.EMPTY;
 
-	public FoodContainerInventory(ItemFoodContainer itemFoodContainer, ItemStack itemStackFoodContainer)
+	public FoodContainerInventory(ItemFoodContainer itemFoodContainer, @Nonnull ItemStack itemStackFoodContainer)
 	{
 		super(itemFoodContainer);
 		this.itemFoodContainer = itemFoodContainer;
@@ -40,12 +42,12 @@ public class FoodContainerInventory extends NBTInventory
 	@SideOnly(Side.CLIENT)
 	public void findMatchingClientItemStack()
 	{
-		EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
+		EntityPlayer player = FMLClientHandler.instance().getClient().player;
 		if (player.openContainer != null && player.openContainer instanceof ContainerFoodContainer)
 		{
 			ContainerFoodContainer openFoodContainer = (ContainerFoodContainer) player.openContainer;
 			ItemStack matchingFoodContainer = openFoodContainer.findFoodContainerWithUUID(itemFoodContainer.getUUID(itemStackFoodContainer));
-			if (matchingFoodContainer != null)
+			if (matchingFoodContainer != ItemStack.EMPTY)
 				itemStackFoodContainer = matchingFoodContainer;
 		}
 	}

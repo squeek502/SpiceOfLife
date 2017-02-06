@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import squeek.spiceoflife.helpers.GuiHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
@@ -29,11 +30,12 @@ public class ContainerFoodContainer extends ContainerGeneric
 		this.addPlayerInventorySlots(playerInventory, 51);
 	}
 
-	public void setFoodContainerItemStack(ItemStack itemStack)
+	public void setFoodContainerItemStack(@Nonnull ItemStack itemStack)
 	{
 		foodContainerInventory.itemStackFoodContainer = itemStack;
 	}
 
+	@Nonnull
 	public ItemStack getItemStack()
 	{
 		return foodContainerInventory.itemStackFoodContainer;
@@ -45,17 +47,18 @@ public class ContainerFoodContainer extends ContainerGeneric
 		// the client could have a different ItemStack than the one the 
 		// container was initialized with (due to server syncing), so
 		// we need to find the new one
-		if (player.worldObj.isRemote)
+		if (player.world.isRemote)
 		{
 			setFoodContainerItemStack(findFoodContainerWithUUID(getUUID()));
 		}
 
-		if (getItemStack() != null)
+		if (getItemStack() != ItemStack.EMPTY)
 			((ItemFoodContainer) getItemStack().getItem()).setIsOpen(getItemStack(), false);
 
 		super.onContainerClosed(player);
 	}
 
+	@Nonnull
 	public ItemStack findFoodContainerWithUUID(UUID uuid)
 	{
 		for (Object inventorySlotObj : this.inventorySlots)
@@ -67,10 +70,10 @@ public class ContainerFoodContainer extends ContainerGeneric
 				return itemStack;
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
-	@Nullable
+	@Nonnull
 	@Override
 	public ItemStack slotClick(int slotNum, int dragType, ClickType clickType, EntityPlayer player)
 	{
@@ -91,9 +94,9 @@ public class ContainerFoodContainer extends ContainerGeneric
 		return pickedUpStack;
 	}
 
-	public boolean isFoodContainerWithUUID(ItemStack itemStack, UUID uuid)
+	public boolean isFoodContainerWithUUID(@Nonnull ItemStack itemStack, UUID uuid)
 	{
-		return itemStack != null && itemStack.getItem() instanceof ItemFoodContainer && ((ItemFoodContainer) itemStack.getItem()).getUUID(itemStack).equals(uuid);
+		return !itemStack.isEmpty() && itemStack.getItem() instanceof ItemFoodContainer && ((ItemFoodContainer) itemStack.getItem()).getUUID(itemStack).equals(uuid);
 	}
 
 	public UUID getUUID()

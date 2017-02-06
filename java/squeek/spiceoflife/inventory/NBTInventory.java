@@ -2,18 +2,25 @@ package squeek.spiceoflife.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
+import squeek.spiceoflife.helpers.InventoryHelper;
 import squeek.spiceoflife.interfaces.ISaveable;
+
+import javax.annotation.Nonnull;
+
+import static net.minecraft.util.NonNullList.withSize;
 
 public class NBTInventory implements ISaveable, IInventory
 {
-	protected ItemStack[] inventoryItems;
+	protected NonNullList<ItemStack> inventoryItems;
 	protected INBTInventoryHaver inventoryHaver = null;
 
 	public NBTInventory()
@@ -23,10 +30,15 @@ public class NBTInventory implements ISaveable, IInventory
 
 	public NBTInventory(int inventorySize)
 	{
-		this(new ItemStack[inventorySize]);
+		this(NonNullList.withSize(inventorySize, ItemStack.EMPTY));
 	}
 
 	public NBTInventory(ItemStack[] inventoryItems)
+	{
+		this(InventoryHelper.itemStackArrayToList(inventoryItems));
+	}
+
+	public NBTInventory(NonNullList<ItemStack> inventoryItems)
 	{
 		this.inventoryItems = inventoryItems;
 	}
@@ -56,7 +68,7 @@ public class NBTInventory implements ISaveable, IInventory
 	{
 		for (ItemStack itemStack : inventoryItems)
 		{
-			if (itemStack != null)
+			if (itemStack != ItemStack.EMPTY)
 				return false;
 		}
 		return true;
@@ -72,7 +84,7 @@ public class NBTInventory implements ISaveable, IInventory
 	{
 		for (ItemStack itemStack : inventoryItems)
 		{
-			if (itemStack == null || itemStack.stackSize < Math.min(getInventoryStackLimit(), itemStack.getMaxStackSize()))
+			if (itemStack == ItemStack.EMPTY || itemStack.getCount() < Math.min(getInventoryStackLimit(), itemStack.getMaxStackSize()))
 				return false;
 		}
 		return true;
@@ -89,27 +101,35 @@ public class NBTInventory implements ISaveable, IInventory
 	@Override
 	public int getSizeInventory()
 	{
-		return inventoryItems.length;
+		return inventoryItems.size();
 	}
 
 	@Override
+	public boolean isEmpty()
+	{
+		return isInventoryEmpty();
+	}
+
+	@Override
+	@Nonnull
 	public ItemStack getStackInSlot(int slotNum)
 	{
 		if (isValidSlotNum(slotNum))
-			return inventoryItems[slotNum];
+			return inventoryItems.get(slotNum);
 		else
-			return null;
+			return ItemStack.EMPTY;
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack decrStackSize(int slotNum, int count)
 	{
 		ItemStack itemStack = getStackInSlot(slotNum);
 
-		if (itemStack != null)
+		if (itemStack != ItemStack.EMPTY)
 		{
-			if (itemStack.stackSize <= count)
-				setInventorySlotContents(slotNum, null);
+			if (itemStack.getCount() <= count)
+				setInventorySlotContents(slotNum, ItemStack.EMPTY);
 			else
 			{
 				itemStack = itemStack.splitStack(count);
@@ -121,34 +141,36 @@ public class NBTInventory implements ISaveable, IInventory
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack removeStackFromSlot(int slotNum)
 	{
 		ItemStack item = getStackInSlot(slotNum);
-		setInventorySlotContents(slotNum, null);
+		setInventorySlotContents(slotNum, ItemStack.EMPTY);
 		return item;
 	}
 
 	@Override
-	public void setInventorySlotContents(int slotNum, ItemStack itemStack)
+	public void setInventorySlotContents(int slotNum, @Nonnull ItemStack itemStack)
 	{
 		if (!isValidSlotNum(slotNum))
 			return;
 
-		boolean wasEmpty = getStackInSlot(slotNum) == null;
-		inventoryItems[slotNum] = itemStack;
+		boolean wasEmpty = getStackInSlot(slotNum) == ItemStack.EMPTY;
+		inventoryItems.set(slotNum, itemStack);
 
-		if (itemStack != null && itemStack.stackSize > getInventoryStackLimit())
-			itemStack.stackSize = getInventoryStackLimit();
+		if (itemStack != ItemStack.EMPTY && itemStack.getCount() > getInventoryStackLimit())
+			itemStack.setCount(getInventoryStackLimit());
 
-		if (wasEmpty && itemStack != null)
+		if (wasEmpty && itemStack != ItemStack.EMPTY)
 			onSlotFilled(slotNum);
-		else if (!wasEmpty && itemStack == null)
+		else if (!wasEmpty && itemStack == ItemStack.EMPTY)
 			onSlotEmptied(slotNum);
 
 		markDirty();
 	}
 
 	@Override
+	@Nonnull
 	public String getName()
 	{
 		if (inventoryHaver != null)
@@ -160,13 +182,11 @@ public class NBTInventory implements ISaveable, IInventory
 	@Override
 	public boolean hasCustomName()
 	{
-		if (inventoryHaver != null)
-			return inventoryHaver.hasCustomName(this);
-		else
-			return false;
+		return inventoryHaver != null && inventoryHaver.hasCustomName(this);
 	}
 
 	@Override
+	@Nonnull
 	public ITextComponent getDisplayName()
 	{
 		return this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName());
@@ -191,27 +211,24 @@ public class NBTInventory implements ISaveable, IInventory
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slotNum, ItemStack itemStack)
+	public boolean isItemValidForSlot(int slotNum, @Nonnull ItemStack itemStack)
 	{
-		if (inventoryHaver != null)
-			return inventoryHaver.isItemValidForSlot(this, slotNum, itemStack);
-		else
-			return true;
+		return inventoryHaver == null || inventoryHaver.isItemValidForSlot(this, slotNum, itemStack);
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer)
+	public boolean isUsableByPlayer(@Nonnull EntityPlayer entityplayer)
 	{
 		return true;
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player)
+	public void openInventory(@Nonnull EntityPlayer player)
 	{
 	}
 
 	@Override
-	public void closeInventory(EntityPlayer player)
+	public void closeInventory(@Nonnull EntityPlayer player)
 	{
 	}
 
@@ -223,7 +240,7 @@ public class NBTInventory implements ISaveable, IInventory
 		{
 			ItemStack stack = getStackInSlot(slotNum);
 
-			if (stack != null)
+			if (stack != ItemStack.EMPTY)
 			{
 				NBTTagCompound item = new NBTTagCompound();
 				item.setByte("Slot", (byte) slotNum);
@@ -238,14 +255,14 @@ public class NBTInventory implements ISaveable, IInventory
 	public void readFromNBTData(NBTTagCompound data)
 	{
 		NBTTagList items = data.getTagList("Items", Constants.NBT.TAG_COMPOUND);
-		for (int slotNum = 0; slotNum < items.tagCount(); slotNum++)
+		for (int i = 0; i < items.tagCount(); i++)
 		{
-			NBTTagCompound item = items.getCompoundTagAt(slotNum);
+			NBTTagCompound item = items.getCompoundTagAt(i);
 			int slot = item.getByte("Slot");
 
 			if (slot >= 0 && slot < getSizeInventory())
 			{
-				setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(item));
+				setInventorySlotContents(slot, new ItemStack(item));
 			}
 		}
 	}

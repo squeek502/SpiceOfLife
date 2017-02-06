@@ -15,6 +15,7 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.items.ItemFoodContainer;
 
+import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -89,7 +90,7 @@ public class FoodModifier
 		FoodModifier.GLOBAL.setFormula(ModConfig.FOOD_MODIFIER_FORMULA);
 	}
 
-	public static float getFoodGroupModifier(FoodHistory foodHistory, ItemStack food, FoodGroup foodGroup)
+	public static float getFoodGroupModifier(FoodHistory foodHistory, @Nonnull ItemStack food, FoodGroup foodGroup)
 	{
 		FoodModifier effectiveFoodModifier = foodGroup != null ? foodGroup.getFoodModifier() : FoodModifier.GLOBAL;
 		int count = foodHistory.getFoodCountForFoodGroup(food, foodGroup);
@@ -116,12 +117,12 @@ public class FoodModifier
 		return result.floatValue();
 	}
 
-	public static float getFoodModifier(EntityPlayer player, ItemStack food)
+	public static float getFoodModifier(EntityPlayer player, @Nonnull ItemStack food)
 	{
 		return getFoodModifier(FoodHistory.get(player), food);
 	}
 
-	public static float getFoodModifier(FoodHistory foodHistory, ItemStack food)
+	public static float getFoodModifier(FoodHistory foodHistory, @Nonnull ItemStack food)
 	{
 		if (!ModConfig.FOOD_MODIFIER_ENABLED)
 			return 1f;

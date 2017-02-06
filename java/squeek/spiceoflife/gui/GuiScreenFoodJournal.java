@@ -25,6 +25,7 @@ import squeek.spiceoflife.gui.widget.WidgetFoodEaten;
 import squeek.spiceoflife.helpers.MiscHelper;
 import squeek.spiceoflife.helpers.StringHelper;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 	protected int pageNum = 0;
 	protected static final int numPerPage = 5;
 	protected int numPages;
-	public ItemStack hoveredStack = null;
+	@Nonnull public ItemStack hoveredStack = ItemStack.EMPTY;
 
 	protected GuiButton buttonNextPage;
 	protected GuiButton buttonPrevPage;
@@ -59,7 +60,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 	{
 
 		@Override
-		public boolean canInteractWith(EntityPlayer entityplayer)
+		public boolean canInteractWith(@Nonnull EntityPlayer entityplayer)
 		{
 			return false;
 		}
@@ -77,7 +78,8 @@ public class GuiScreenFoodJournal extends GuiContainer
 		this.buttonList.add(buttonSortDirection = new WidgetButtonSortDirection(3, this.width / 2 - 55, 2 + 16, false));
 
 		foodEatenWidgets.clear();
-		FoodHistory foodHistory = FoodHistory.get(mc.thePlayer);
+		FoodHistory foodHistory = FoodHistory.get(mc.player);
+
 		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || foodHistory.totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
 		{
 			for (FoodEaten foodEaten : foodHistory.getHistory())
@@ -100,7 +102,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 	public static String getTimeEatenString(FoodEaten foodEaten)
 	{
 		Minecraft mc = Minecraft.getMinecraft();
-		long elapsedTime = foodEaten.elapsedTime(mc.theWorld.getTotalWorldTime(), FoodHistory.get(mc.thePlayer).ticksActive);
+		long elapsedTime = foodEaten.elapsedTime(mc.world.getTotalWorldTime(), FoodHistory.get(mc.player).ticksActive);
 		double daysElapsed = elapsedTime / (double) MiscHelper.TICKS_PER_DAY;
 		String numDays = dfOne.format(daysElapsed);
 		String singularOrPlural = numDays.equals("1") ? "spiceoflife.gui.x.day" : "spiceoflife.gui.x.days";
@@ -111,7 +113,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 	public static String getExpiresInString(FoodEaten foodEaten)
 	{
 		Minecraft mc = Minecraft.getMinecraft();
-		FoodHistory foodHistory = FoodHistory.get(mc.thePlayer);
+		FoodHistory foodHistory = FoodHistory.get(mc.player);
 
 		if (ModConfig.USE_HUNGER_QUEUE)
 		{
@@ -127,7 +129,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 		else if (ModConfig.USE_TIME_QUEUE)
 		{
 			FixedTimeQueue queue = (FixedTimeQueue) foodHistory.getHistory();
-			long elapsedTime = foodEaten.elapsedTime(mc.theWorld.getTotalWorldTime(), foodHistory.ticksActive);
+			long elapsedTime = foodEaten.elapsedTime(mc.world.getTotalWorldTime(), foodHistory.ticksActive);
 			long maxTime = queue.getMaxTime();
 			long timeUntilExpire = maxTime - elapsedTime;
 			double daysUntilExpire = timeUntilExpire / (double) MiscHelper.TICKS_PER_DAY;
@@ -172,7 +174,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 			fontRendererObj.drawString(pageIndicator, x + this.bookImageWidth - this.fontRendererObj.getStringWidth(pageIndicator) - 44, y + 16, 0);
 		}
 
-		String numFoodsEatenAllTime = Integer.toString(FoodHistory.get(mc.thePlayer).totalFoodsEatenAllTime);
+		String numFoodsEatenAllTime = Integer.toString(FoodHistory.get(mc.player).totalFoodsEatenAllTime);
 		int allTimeW = fontRendererObj.getStringWidth(numFoodsEatenAllTime);
 		int allTimeX = width / 2 - allTimeW / 2 - 5;
 		int allTimeY = y + 158;
@@ -183,7 +185,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 			((GuiButton) objButton).drawButton(mc, mouseX, mouseY);
 		}
 
-		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || FoodHistory.get(mc.thePlayer).totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
+		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || FoodHistory.get(mc.player).totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
 		{
 			if (!foodEatenWidgets.isEmpty())
 			{
@@ -203,7 +205,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 				}
 				GlStateManager.popMatrix();
 
-				hoveredStack = null;
+				hoveredStack = ItemStack.EMPTY;
 				foodEatenIndex = startIndex;
 				while (foodEatenIndex < foodEatenWidgets.size() && foodEatenIndex < endIndex)
 				{
@@ -215,7 +217,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 					if (isMouseInsideBox(mouseX, mouseY, localX, localY, 16, 16))
 					{
 						hoveredStack = foodEatenWidget.foodEaten.itemStack;
-						if (hoveredStack != null)
+						if (hoveredStack != ItemStack.EMPTY)
 							this.renderToolTip(hoveredStack, mouseX, mouseY);
 					}
 					else if (isMouseInsideBox(mouseX, mouseY, localX + WidgetFoodEaten.PADDING_LEFT, localY, foodEatenWidget.width(), 16))
@@ -250,7 +252,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 		GlStateManager.disableLighting();
 	}
 
-	protected void drawItemStack(ItemStack stack, int x, int y)
+	protected void drawItemStack(@Nonnull ItemStack stack, int x, int y)
 	{
 		zLevel = 100.0F;
 		itemRender.zLevel = 100.0F;

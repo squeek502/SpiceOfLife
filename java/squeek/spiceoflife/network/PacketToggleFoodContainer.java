@@ -28,7 +28,7 @@ public class PacketToggleFoodContainer extends PacketBase
 	{
 		ItemStack equippedItem = player.getHeldItemMainhand();
 
-		if (equippedItem != null && FoodHelper.isFoodContainer(equippedItem))
+		if (!equippedItem.isEmpty() && FoodHelper.isFoodContainer(equippedItem))
 		{
 			ItemFoodContainer foodContainerItem = ((ItemFoodContainer) equippedItem.getItem());
 			foodContainerItem.setIsOpen(equippedItem, !foodContainerItem.isOpen(equippedItem));

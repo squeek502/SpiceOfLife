@@ -5,17 +5,18 @@ import net.minecraftforge.oredict.OreDictionary;
 import squeek.spiceoflife.compat.IByteIO;
 import squeek.spiceoflife.interfaces.IPackable;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
 public class FoodGroupMember implements IPackable
 {
 	String oredictName = null;
-	ItemStack itemStack = null;
+	@Nonnull ItemStack itemStack = ItemStack.EMPTY;
 
 	public List<ItemStack> getBaseItemList()
 	{
-		return itemStack != null ? Collections.singletonList(itemStack) : OreDictionary.getOres(oredictName);
+		return itemStack != ItemStack.EMPTY ? Collections.singletonList(itemStack) : OreDictionary.getOres(oredictName);
 	}
 
 	/*
@@ -30,7 +31,7 @@ public class FoodGroupMember implements IPackable
 		this.oredictName = oredictName;
 	}
 
-	public FoodGroupMember(ItemStack itemStack)
+	public FoodGroupMember(@Nonnull ItemStack itemStack)
 	{
 		this.itemStack = itemStack;
 	}

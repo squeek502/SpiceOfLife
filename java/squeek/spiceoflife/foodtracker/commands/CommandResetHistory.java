@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import squeek.spiceoflife.foodtracker.FoodHistory;
 import squeek.spiceoflife.foodtracker.FoodTracker;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -17,19 +18,21 @@ import java.util.List;
 public class CommandResetHistory extends CommandBase
 {
 	@Override
-	public String getCommandName()
+	@Nonnull
+	public String getName()
 	{
 		return "spiceoflife";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender commandSender)
+	@Nonnull
+	public String getUsage(@Nonnull ICommandSender commandSender)
 	{
 		return "/spiceoflife reset [player]";
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender commandSender, String[] args) throws CommandException
+	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException
 	{
 		if (args.length > 0)
 		{
@@ -38,23 +41,29 @@ public class CommandResetHistory extends CommandBase
 				EntityPlayerMP playerToReset;
 				playerToReset = args.length > 1 ? getPlayer(server, commandSender, args[1]) : getCommandSenderAsPlayer(commandSender);
 				FoodHistory foodHistoryToReset = FoodHistory.get(playerToReset);
-				foodHistoryToReset.reset();
-				FoodTracker.syncFoodHistory(foodHistoryToReset);
-				notifyCommandListener(commandSender, this, 0, "Reset all 'The Spice of Life' mod data for " + playerToReset.getDisplayName());
+				if (foodHistoryToReset != null)
+				{
+					foodHistoryToReset.reset();
+					FoodTracker.syncFoodHistory(foodHistoryToReset);
+					notifyCommandListener(commandSender, this, 0, "Reset all 'The Spice of Life' mod data for " + playerToReset.getDisplayName());
+				}
+				else
+					notifyCommandListener(commandSender, this, 0, "Unexpected error (null food history) while resetting 'The Spice of Life' mod data for " + playerToReset.getDisplayName());
 				return;
 			}
 		}
-		throw new WrongUsageException(getCommandName() + " reset [player]");
+		throw new WrongUsageException(getName() + " reset [player]");
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] curArgs, @Nullable BlockPos pos)
+	@Nonnull
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] curArgs, @Nullable BlockPos pos)
 	{
 		if (curArgs.length == 1)
 			return Collections.singletonList("reset");
 		else if (curArgs.length == 2)
-			return getListOfStringsMatchingLastWord(curArgs, server.getAllUsernames());
+			return getListOfStringsMatchingLastWord(curArgs, server.getOnlinePlayerNames());
 		else
-			return null;
+			return Collections.emptyList();
 	}
 }

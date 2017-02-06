@@ -4,9 +4,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +16,27 @@ import java.util.Random;
 
 public class InventoryHelper
 {
-	public static final Method hopperInsertIntoInventory = ReflectionHelper.findMethod(TileEntityHopper.class, null, new String[]{"insertStack", "func_174916_c", "c"}, IInventory.class, ItemStack.class, int.class, EnumFacing.class);
+	public static final Method hopperInsertIntoInventory = ReflectionHelper.findMethod(TileEntityHopper.class, null, new String[]{"insertStack", "func_174916_c", "c"}, IInventory.class, IInventory.class, ItemStack.class, int.class, EnumFacing.class);
 
 	public static IInventory getInventoryAtLocation(World world, int x, int y, int z)
 	{
 		return TileEntityHopper.getInventoryAtPosition(world, x, y, z);
 	}
 
-	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory)
+	@Nonnull
+	public static ItemStack insertStackIntoInventory(@Nonnull ItemStack itemStack, IInventory inventory)
 	{
 		return insertStackIntoInventory(itemStack, inventory, EnumFacing.UP);
 	}
 
-	public static ItemStack insertStackIntoInventory(ItemStack itemStack, IInventory inventory, EnumFacing direction)
+	@Nonnull
+	public static ItemStack insertStackIntoInventory(@Nonnull ItemStack itemStack, IInventory inventory, EnumFacing direction)
 	{
-		return TileEntityHopper.putStackInInventoryAllSlots(inventory, itemStack, direction);
+		return TileEntityHopper.putStackInInventoryAllSlots(null, inventory, itemStack, direction);
 	}
 
-	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory)
+	@Nonnull
+	public static ItemStack insertStackIntoInventoryOnce(@Nonnull ItemStack itemStack, IInventory inventory)
 	{
 		return insertStackIntoInventoryOnce(itemStack, inventory, EnumFacing.UP);
 	}
@@ -41,15 +46,16 @@ public class InventoryHelper
 	 *
 	 * @return The remainder
 	 */
-	public static ItemStack insertStackIntoInventoryOnce(ItemStack itemStack, IInventory inventory, EnumFacing direction)
+	@Nonnull
+	public static ItemStack insertStackIntoInventoryOnce(@Nonnull ItemStack itemStack, IInventory inventory, EnumFacing direction)
 	{
-		int originalStackSize = itemStack.stackSize;
+		int originalStackSize = itemStack.getCount();
 
 		for (int l = 0; l < inventory.getSizeInventory(); ++l)
 		{
 			try
 			{
-				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, inventory, itemStack, l, direction);
+				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, null, inventory, itemStack, l, direction);
 			}
 			catch (RuntimeException e)
 			{
@@ -60,13 +66,13 @@ public class InventoryHelper
 				e.printStackTrace();
 			}
 
-			if (itemStack == null || itemStack.stackSize != originalStackSize)
+			if (itemStack == ItemStack.EMPTY || itemStack.getCount() != originalStackSize)
 				break;
 		}
 
-		if (itemStack != null && itemStack.stackSize == 0)
+		if (itemStack.isEmpty())
 		{
-			itemStack = null;
+			itemStack = ItemStack.EMPTY;
 		}
 
 		return itemStack;
@@ -77,7 +83,7 @@ public class InventoryHelper
 		List<Integer> nonEmptySlotIndexes = new ArrayList<Integer>(inventory.getSizeInventory());
 		for (int slotNum = 0; slotNum < inventory.getSizeInventory(); slotNum++)
 		{
-			if (inventory.getStackInSlot(slotNum) != null)
+			if (!inventory.getStackInSlot(slotNum).isEmpty())
 				nonEmptySlotIndexes.add(slotNum);
 		}
 		return nonEmptySlotIndexes;
@@ -93,13 +99,25 @@ public class InventoryHelper
 			return 0;
 	}
 
+	@Nonnull
 	public static ItemStack removeRandomSingleItemFromInventory(IInventory inventory, Random random)
 	{
 		int randomNonEmptySlotIndex = getRandomNonEmptySlotInInventory(inventory, random);
 
-		if (inventory.getStackInSlot(randomNonEmptySlotIndex) != null)
+		if (inventory.getStackInSlot(randomNonEmptySlotIndex) != ItemStack.EMPTY)
 			return inventory.decrStackSize(randomNonEmptySlotIndex, 1);
 		else
-			return null;
+			return ItemStack.EMPTY;
+	}
+
+	public static NonNullList<ItemStack> itemStackArrayToList(ItemStack[] array)
+	{
+		NonNullList<ItemStack> list = NonNullList.withSize(array.length, ItemStack.EMPTY);
+		for (int i=0; i<array.length; i++)
+		{
+			if (!array[i].isEmpty())
+				list.set(i, array[i]);
+		}
+		return list;
 	}
 }

@@ -4,10 +4,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nonnull;
+
 public class OreDictionaryHelper
 {
 	// taken from OreDictionary
-	public static int getItemStackHash(ItemStack itemStack)
+	public static int getItemStackHash(@Nonnull ItemStack itemStack)
 	{
 		int hash = getWildCardItemStackHash(itemStack);
 		if (itemStack.getItemDamage() != OreDictionary.WILDCARD_VALUE)
@@ -17,7 +19,7 @@ public class OreDictionaryHelper
 		return hash;
 	}
 
-	public static int getWildCardItemStackHash(ItemStack itemStack)
+	public static int getWildCardItemStackHash(@Nonnull ItemStack itemStack)
 	{
 		return getItemHash(itemStack.getItem());
 	}

@@ -18,6 +18,7 @@ import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.KeyHelper;
 import squeek.spiceoflife.helpers.StringHelper;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -65,7 +66,7 @@ public class TooltipHandler
 		return ColorHelper.getRelativeColor(foodModifier, 0D, 1D) + df.format(foodModifier * 100f) + '%';
 	}
 
-	public String getEatenRecentlyTooltip(FoodHistory foodHistory, ItemStack itemStack, FoodGroup foodGroup, boolean shouldShowNutritionalValue)
+	public String getEatenRecentlyTooltip(FoodHistory foodHistory, @Nonnull ItemStack itemStack, FoodGroup foodGroup, boolean shouldShowNutritionalValue)
 	{
 		int count = foodHistory.getFoodCountForFoodGroup(itemStack, foodGroup);
 		String prefix = (foodGroup != null ? foodGroup.formatString(TextFormatting.ITALIC.toString() + foodGroup) + ' ' : "") + TextFormatting.RESET.toString() + TextFormatting.DARK_AQUA.toString() + TextFormatting.ITALIC;
@@ -81,7 +82,7 @@ public class TooltipHandler
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event)
 	{
-		if (ModConfig.FOOD_MODIFIER_ENABLED && event.getEntityPlayer() != null && event.getItemStack() != null && FoodHelper.isValidFood(event.getItemStack()))
+		if (ModConfig.FOOD_MODIFIER_ENABLED && event.getEntityPlayer() != null && !event.getItemStack().isEmpty() && FoodHelper.isValidFood(event.getItemStack()))
 		{
 			int totalFoodEaten = FoodHistory.get(event.getEntityPlayer()).totalFoodsEatenAllTime;
 			List<String> toolTipStringsToAdd = new ArrayList<String>();

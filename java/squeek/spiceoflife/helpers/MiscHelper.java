@@ -28,7 +28,7 @@ public class MiscHelper
 		else if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)
 		{
 			BlockPos pos = mc.objectMouseOver.getBlockPos();
-			return mc.theWorld.getBlockState(pos).getMaterial() == Material.AIR;
+			return mc.world.getBlockState(pos).getMaterial() == Material.AIR;
 		}
 		return false;
 	}

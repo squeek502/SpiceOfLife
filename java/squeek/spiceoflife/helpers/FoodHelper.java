@@ -7,24 +7,26 @@ import squeek.applecore.api.AppleCoreAPI;
 import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.items.ItemFoodContainer;
 
+import javax.annotation.Nonnull;
+
 public class FoodHelper
 {
-	public static boolean isValidFood(ItemStack itemStack)
+	public static boolean isValidFood(@Nonnull ItemStack itemStack)
 	{
 		return isFood(itemStack) && !isFoodContainer(itemStack);
 	}
 
-	public static boolean canFoodDiminish(ItemStack itemStack)
+	public static boolean canFoodDiminish(@Nonnull ItemStack itemStack)
 	{
 		return !FoodGroupRegistry.isFoodBlacklisted(itemStack);
 	}
 
-	public static boolean isFood(ItemStack itemStack)
+	public static boolean isFood(@Nonnull ItemStack itemStack)
 	{
 		return AppleCoreAPI.accessor.isFood(itemStack);
 	}
 
-	public static boolean isFoodContainer(ItemStack itemStack)
+	public static boolean isFoodContainer(@Nonnull ItemStack itemStack)
 	{
 		return itemStack.getItem() instanceof ItemFoodContainer;
 	}
@@ -34,7 +36,7 @@ public class FoodHelper
 		return AppleCoreAPI.accessor.getExhaustion(player);
 	}
 
-	public static boolean isDirectlyEdible(ItemStack itemStack)
+	public static boolean isDirectlyEdible(@Nonnull ItemStack itemStack)
 	{
 		return !(itemStack.getItem() == Items.CAKE || isFoodContainer(itemStack));
 	}

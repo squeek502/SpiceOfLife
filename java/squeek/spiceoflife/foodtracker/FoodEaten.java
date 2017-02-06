@@ -11,12 +11,13 @@ import squeek.spiceoflife.foodtracker.foodgroups.FoodGroupRegistry;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 public class FoodEaten implements IPackable, ISaveable
 {
 	public FoodValues foodValues = FoodEaten.dummyFoodValues;
-	public ItemStack itemStack = null;
+	@Nonnull public ItemStack itemStack = ItemStack.EMPTY;
 	public long worldTimeEaten = 0;
 	public long playerTimeEaten = 0;
 
@@ -26,7 +27,7 @@ public class FoodEaten implements IPackable, ISaveable
 	{
 	}
 
-	public FoodEaten(ItemStack food, EntityPlayer eater)
+	public FoodEaten(@Nonnull ItemStack food, EntityPlayer eater)
 	{
 		this.itemStack = food;
 		this.playerTimeEaten = FoodHistory.get(eater).ticksActive;
@@ -49,7 +50,7 @@ public class FoodEaten implements IPackable, ISaveable
 	@Override
 	public void writeToNBTData(NBTTagCompound nbtFood)
 	{
-		if (itemStack != null)
+		if (itemStack != ItemStack.EMPTY)
 			itemStack.writeToNBT(nbtFood);
 		if (foodValues != null && foodValues.hunger != 0)
 			nbtFood.setShort("Hunger", (short) foodValues.hunger);
@@ -64,7 +65,9 @@ public class FoodEaten implements IPackable, ISaveable
 	@Override
 	public void readFromNBTData(NBTTagCompound nbtFood)
 	{
-		itemStack = ItemStack.loadItemStackFromNBT(nbtFood);
+		itemStack = new ItemStack(nbtFood);
+		if (itemStack.isEmpty())
+			itemStack = ItemStack.EMPTY;
 		foodValues = new FoodValues(nbtFood.getShort("Hunger"), nbtFood.getFloat("Saturation"));
 		worldTimeEaten = nbtFood.getLong("WorldTime");
 		playerTimeEaten = nbtFood.getLong("PlayerTime");

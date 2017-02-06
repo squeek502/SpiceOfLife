@@ -7,6 +7,7 @@ import squeek.spiceoflife.compat.PacketDispatcher;
 import squeek.spiceoflife.helpers.OreDictionaryHelper;
 import squeek.spiceoflife.network.PacketFoodGroup;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class FoodGroupRegistry
@@ -47,7 +48,7 @@ public class FoodGroupRegistry
 		return foodGroups.containsKey(identifier);
 	}
 
-	public static Set<FoodGroup> getFoodGroupsForFood(ItemStack food)
+	public static Set<FoodGroup> getFoodGroupsForFood(@Nonnull ItemStack food)
 	{
 		Set<FoodGroup> wildCardFoodGroups = foodToIncludedFoodGroups.get(OreDictionaryHelper.getWildCardItemStackHash(food));
 		Set<FoodGroup> exactFoodGroups = foodToIncludedFoodGroups.get(OreDictionaryHelper.getItemStackHash(food));
@@ -83,7 +84,7 @@ public class FoodGroupRegistry
 		return false;
 	}
 
-	public static boolean isFoodBlacklisted(ItemStack food)
+	public static boolean isFoodBlacklisted(@Nonnull ItemStack food)
 	{
 		if (!hasBlacklist && !ModConfig.USE_FOOD_GROUPS_AS_WHITELISTS)
 			return false;

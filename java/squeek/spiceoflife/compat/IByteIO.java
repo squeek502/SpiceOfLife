@@ -3,6 +3,8 @@ package squeek.spiceoflife.compat;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import javax.annotation.Nonnull;
+
 public interface IByteIO
 {
 
@@ -32,7 +34,7 @@ public interface IByteIO
 
 	double readDouble();
 
-	ItemStack readItemStack();
+	@Nonnull ItemStack readItemStack();
 
 	NBTTagCompound readTag();
 
@@ -60,7 +62,7 @@ public interface IByteIO
 
 	IByteIO writeZero(int length);
 
-	IByteIO writeItemStack(ItemStack itemStack);
+	IByteIO writeItemStack(@Nonnull ItemStack itemStack);
 
 	IByteIO writeTag(NBTTagCompound tag);
 

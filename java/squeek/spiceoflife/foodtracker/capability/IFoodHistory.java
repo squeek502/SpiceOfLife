@@ -10,6 +10,7 @@ import squeek.spiceoflife.foodtracker.foodqueue.FoodQueue;
 import squeek.spiceoflife.interfaces.IPackable;
 import squeek.spiceoflife.interfaces.ISaveable;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 public interface IFoodHistory extends ISaveable, IPackable, INBTSerializable<NBTTagCompound>
@@ -24,9 +25,9 @@ public interface IFoodHistory extends ISaveable, IPackable, INBTSerializable<NBT
 	int getHistoryLengthInRelevantUnits();
 	FoodEaten getLastEatenFood();
 	Set<FoodGroup> getDistinctFoodGroups();
-	int getFoodCountIgnoringFoodGroups(ItemStack food);
-	int getFoodCountForFoodGroup(ItemStack food, FoodGroup foodGroup);
-	FoodValues getTotalFoodValuesIgnoringFoodGroups(ItemStack food);
-	FoodValues getTotalFoodValuesForFoodGroup(ItemStack food, FoodGroup foodGroup);
-	boolean containsFoodOrItsFoodGroups(ItemStack food);
+	int getFoodCountIgnoringFoodGroups(@Nonnull ItemStack food);
+	int getFoodCountForFoodGroup(@Nonnull ItemStack food, FoodGroup foodGroup);
+	FoodValues getTotalFoodValuesIgnoringFoodGroups(@Nonnull ItemStack food);
+	FoodValues getTotalFoodValuesForFoodGroup(@Nonnull ItemStack food, FoodGroup foodGroup);
+	boolean containsFoodOrItsFoodGroups(@Nonnull ItemStack food);
 }

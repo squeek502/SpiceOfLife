@@ -12,6 +12,8 @@ import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.items.ItemFoodContainer;
 
+import javax.annotation.Nonnull;
+
 public class GuiHelper implements IGuiHandler
 {
 	public enum GuiIds
@@ -28,13 +30,13 @@ public class GuiHelper implements IGuiHandler
 		NetworkRegistry.INSTANCE.registerGuiHandler(ModSpiceOfLife.instance, new GuiHelper());
 	}
 
-	public static boolean openGuiOfItemStack(EntityPlayer player, ItemStack itemStack)
+	public static boolean openGuiOfItemStack(EntityPlayer player, @Nonnull ItemStack itemStack)
 	{
-		if (!player.worldObj.isRemote)
+		if (!player.world.isRemote)
 		{
 			if (itemStack.getItem() instanceof ItemFoodContainer)
 			{
-				player.openGui(ModSpiceOfLife.instance, GuiIds.FOOD_CONTAINER.ordinal(), player.worldObj, (int) player.posX, (int) player.posY, (int) player.posZ);
+				player.openGui(ModSpiceOfLife.instance, GuiIds.FOOD_CONTAINER.ordinal(), player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
 				return true;
 			}
 			return false;
@@ -60,7 +62,7 @@ public class GuiHelper implements IGuiHandler
 		{
 			case FOOD_CONTAINER:
 				ItemStack heldItem = player.getHeldItemMainhand();
-				if (heldItem != null && heldItem.getItem() instanceof ItemFoodContainer)
+				if (!heldItem.isEmpty() && heldItem.getItem() instanceof ItemFoodContainer)
 				{
 					FoodContainerInventory foodContainerInventory = ((ItemFoodContainer) heldItem.getItem()).getInventory(heldItem);
 					return isClientSide ? new GuiFoodContainer(player.inventory, foodContainerInventory) : new ContainerFoodContainer(player.inventory, foodContainerInventory);

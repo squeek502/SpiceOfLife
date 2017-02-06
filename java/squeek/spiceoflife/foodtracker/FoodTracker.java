@@ -22,6 +22,8 @@ import squeek.spiceoflife.items.ItemFoodJournal;
 import squeek.spiceoflife.network.PacketFoodEatenAllTime;
 import squeek.spiceoflife.network.PacketFoodHistory;
 
+import javax.annotation.Nonnull;
+
 public class FoodTracker
 {
 	/**
@@ -30,7 +32,7 @@ public class FoodTracker
 	@SubscribeEvent
 	public void onFoodEaten(FoodEvent.FoodEaten event)
 	{
-		if (event.player.worldObj.isRemote)
+		if (event.player.world.isRemote)
 			return;
 
 		FoodEaten foodEaten = new FoodEaten(event.food, event.player);
@@ -45,9 +47,9 @@ public class FoodTracker
 	@SubscribeEvent
 	public void onAttachCapability(AttachCapabilitiesEvent.Entity event)
 	{
-		if (event.getEntity() instanceof EntityPlayer)
+		if (event.getObject() instanceof EntityPlayer)
 		{
-			event.addCapability(FoodHistory.CAPABILITY_ID, new FoodHistory((EntityPlayer) event.getEntity()));
+			event.addCapability(FoodHistory.CAPABILITY_ID, new FoodHistory((EntityPlayer) event.getObject()));
 		}
 	}
 
@@ -67,7 +69,7 @@ public class FoodTracker
 		if (ModConfig.USE_TIME_QUEUE && !ModConfig.USE_HUNGER_QUEUE)
 		{
 			FixedTimeQueue timeQueue = (FixedTimeQueue) foodHistory.getHistory();
-			timeQueue.prune(event.getEntityLiving().worldObj.getTotalWorldTime(), foodHistory.ticksActive);
+			timeQueue.prune(event.getEntityLiving().world.getTotalWorldTime(), foodHistory.ticksActive);
 		}
 	}
 
@@ -157,7 +159,7 @@ public class FoodTracker
 	public static boolean addFoodEatenByPlayer(FoodEaten foodEaten, EntityPlayer player)
 	{
 		// client needs to be told by the server otherwise the client can get out of sync easily
-		if (!player.worldObj.isRemote && player instanceof EntityPlayerMP)
+		if (!player.world.isRemote && player instanceof EntityPlayerMP)
 			PacketDispatcher.get().sendTo(new PacketFoodHistory(foodEaten), (EntityPlayerMP) player);
 
 		return FoodHistory.get(player).addFood(foodEaten);
@@ -168,6 +170,7 @@ public class FoodTracker
 		return FoodHistory.get(player).getHistoryLengthInRelevantUnits();
 	}
 
+	@Nonnull
 	public static ItemStack getFoodLastEatenBy(EntityPlayer player)
 	{
 		return FoodHistory.get(player).getLastEatenFood().itemStack;

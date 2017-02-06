@@ -23,6 +23,7 @@ import squeek.spiceoflife.helpers.FoodHelper;
 import squeek.spiceoflife.helpers.MiscHelper;
 import squeek.spiceoflife.items.ItemFoodJournal;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -89,7 +90,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 			totalFoodsEatenAllTime++;
 
 		boolean isAtThreshold = countsTowardsAllTime && totalFoodsEatenAllTime == ModConfig.FOOD_EATEN_THRESHOLD;
-		if (player != null && !player.worldObj.isRemote)
+		if (player != null && !player.world.isRemote)
 		{
 			if (ModConfig.GIVE_FOOD_JOURNAL_ON_DIMINISHING_RETURNS && !wasGivenFoodJournal && isAtThreshold)
 			{
@@ -106,19 +107,19 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 	}
 
 	@Override
-	public int getFoodCountIgnoringFoodGroups(ItemStack food)
+	public int getFoodCountIgnoringFoodGroups(@Nonnull ItemStack food)
 	{
 		return getFoodCountForFoodGroup(food, null);
 	}
 
 	@Override
-	public int getFoodCountForFoodGroup(ItemStack food, FoodGroup foodGroup)
+	public int getFoodCountForFoodGroup(@Nonnull ItemStack food, FoodGroup foodGroup)
 	{
 		int count = 0;
 
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack == null)
+			if (foodEaten.itemStack.isEmpty())
 				continue;
 
 			if (food.isItemEqual(foodEaten.itemStack) || foodEaten.getFoodGroups().contains(foodGroup))
@@ -130,12 +131,12 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 	}
 
 	@Override
-	public boolean containsFoodOrItsFoodGroups(ItemStack food)
+	public boolean containsFoodOrItsFoodGroups(@Nonnull ItemStack food)
 	{
 		Set<FoodGroup> foodGroups = FoodGroupRegistry.getFoodGroupsForFood(food);
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack == null)
+			if (foodEaten.itemStack.isEmpty())
 				continue;
 
 			if (food.isItemEqual(foodEaten.itemStack) || MiscHelper.collectionsOverlap(foodGroups, foodEaten.getFoodGroups()))
@@ -150,7 +151,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 	 * See {@link #getTotalFoodValuesForFoodGroup}
 	 */
 	@Override
-	public FoodValues getTotalFoodValuesIgnoringFoodGroups(ItemStack food)
+	public FoodValues getTotalFoodValuesIgnoringFoodGroups(@Nonnull ItemStack food)
 	{
 		return getTotalFoodValuesForFoodGroup(food, null);
 	}
@@ -160,14 +161,14 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 	 * The saturationModifier is set to the total, not to a modifier
 	 */
 	@Override
-	public FoodValues getTotalFoodValuesForFoodGroup(ItemStack food, FoodGroup foodGroup)
+	public FoodValues getTotalFoodValuesForFoodGroup(@Nonnull ItemStack food, FoodGroup foodGroup)
 	{
 		int totalHunger = 0;
 		float totalSaturation = 0f;
 
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack == null)
+			if (foodEaten.itemStack.isEmpty())
 				continue;
 
 			if (food.isItemEqual(foodEaten.itemStack) || foodEaten.getFoodGroups().contains(foodGroup))
@@ -207,7 +208,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 		Set<FoodGroup> distinctFoodGroups = new HashSet<FoodGroup>();
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack == null)
+			if (foodEaten.itemStack.isEmpty())
 				continue;
 
 			distinctFoodGroups.addAll(foodEaten.getFoodGroups());
@@ -239,11 +240,16 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 		totalFoodsEatenAllTime -= invalidFoods.size();
 	}
 
+	@Nonnull
 	public static FoodHistory get(EntityPlayer player)
 	{
 		if (player.hasCapability(CAPABILITY, null))
-			return (FoodHistory) player.getCapability(CAPABILITY, null);
-		return null;
+		{
+			FoodHistory history = (FoodHistory) player.getCapability(CAPABILITY, null);
+			if (history != null)
+				return history;
+		}
+		throw new RuntimeException("[The Spice Of Life] Food history capability not found for " + player.toString());
 	}
 
 	@Override
@@ -350,12 +356,12 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 		readFromNBTData(nbt);
 	}
 
-	@Override public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+	@Override public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing)
 	{
 		return capability == CAPABILITY;
 	}
 
-	@Override public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+	@Override public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing)
 	{
 		return capability == CAPABILITY ? (T) this : null;
 	}

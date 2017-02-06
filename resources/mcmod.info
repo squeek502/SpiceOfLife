@@ -1,6 +1,6 @@
 [
 {
-  "modid": "SpiceOfLife",
+  "modid": "spiceoflife",
   "name": "The Spice of Life",
   "description": "Encourages dietary variety through diminishing returns.",
   "version": "${version}",

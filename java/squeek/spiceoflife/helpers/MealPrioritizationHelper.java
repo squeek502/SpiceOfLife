@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,7 @@ public class MealPrioritizationHelper
 {
 	public static class InventoryFoodInfo
 	{
-		public ItemStack itemStack;
+		@Nonnull public ItemStack itemStack = ItemStack.EMPTY;
 		public FoodValues defaultFoodValues;
 		public float diminishingReturnsModifier = 1;
 		public FoodValues modifiedFoodValues;
@@ -26,7 +27,7 @@ public class MealPrioritizationHelper
 		{
 		}
 
-		public InventoryFoodInfo(int slotNum, ItemStack itemStack, EntityPlayer player)
+		public InventoryFoodInfo(int slotNum, @Nonnull ItemStack itemStack, EntityPlayer player)
 		{
 			this.itemStack = itemStack;
 			this.slotNum = slotNum;
@@ -164,7 +165,7 @@ public class MealPrioritizationHelper
 		for (int slotNum = 0; slotNum < inventory.getSizeInventory(); slotNum++)
 		{
 			ItemStack stackInSlot = inventory.getStackInSlot(slotNum);
-			if (stackInSlot == null)
+			if (stackInSlot.isEmpty())
 				continue;
 			if (FoodHelper.isFood(stackInSlot))
 				foodInfo.add(new InventoryFoodInfo(slotNum, stackInSlot, player));

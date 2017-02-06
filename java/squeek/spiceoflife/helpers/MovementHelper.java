@@ -26,7 +26,7 @@ public class MovementHelper
 		MovementInfo movementInfo = movementInfoByPlayer.get(player);
 		if (movementInfo != null)
 		{
-			return player.worldObj.getWorldTime() - movementInfo.lastJump <= 2;
+			return player.world.getWorldTime() - movementInfo.lastJump <= 2;
 		}
 		else
 			return false;
@@ -43,7 +43,7 @@ public class MovementHelper
 			if (movementInfo == null)
 				movementInfo = new MovementInfo();
 
-			movementInfo.lastJump = event.getEntityLiving().worldObj.getWorldTime();
+			movementInfo.lastJump = event.getEntityLiving().world.getWorldTime();
 			movementInfoByPlayer.put(player, movementInfo);
 		}
 	}
