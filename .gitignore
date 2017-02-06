@@ -2,12 +2,18 @@ eclipse
 run
 libs
 media
+classes
+*.bat
+builds
+sources
 
 # Created by https://www.gitignore.io/api/gradle,intellij,eclipse,windows,osx,linux
 
 ### Gradle ###
-.gradle
+gradle/
+.gradle/
 build/
+gradlew
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -173,4 +179,3 @@ Temporary Items
 
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
-
