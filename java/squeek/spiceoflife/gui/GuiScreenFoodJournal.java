@@ -9,8 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -51,18 +49,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 
 	public GuiScreenFoodJournal()
 	{
-		super(new DummyContainer());
-	}
-
-	private static class DummyContainer extends Container
-	{
-
-		@Override
-		public boolean canInteractWith(EntityPlayer entityplayer)
-		{
-			return false;
-		}
-
+		super(Minecraft.getMinecraft().thePlayer.inventoryContainer);
 	}
 
 	@SuppressWarnings("unchecked")
