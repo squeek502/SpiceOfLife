@@ -1,8 +1,8 @@
 package squeek.spiceoflife.helpers;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 import squeek.applecore.api.food.FoodValues;
 import squeek.spiceoflife.foodtracker.FoodModifier;
 
@@ -17,7 +17,8 @@ public class MealPrioritizationHelper
 {
 	public static class InventoryFoodInfo
 	{
-		@Nonnull public ItemStack itemStack = ItemStack.EMPTY;
+		@Nonnull
+		public ItemStack itemStack = ItemStack.EMPTY;
 		public FoodValues defaultFoodValues;
 		public float diminishingReturnsModifier = 1;
 		public FoodValues modifiedFoodValues;
@@ -104,7 +105,7 @@ public class MealPrioritizationHelper
 		}
 	}
 
-	public static int findBestFoodForPlayerToEat(EntityPlayer player, IInventory inventory)
+	public static int findBestFoodForPlayerToEat(EntityPlayer player, IItemHandler inventory)
 	{
 		List<InventoryFoodInfo> allFoodInfo = getFoodInfoFromInventoryForPlayer(player, inventory);
 		InventoryFoodInfo bestFoodInfo = null;
@@ -119,7 +120,7 @@ public class MealPrioritizationHelper
 		return bestFoodInfo != null ? bestFoodInfo.slotNum : 0;
 	}
 
-	public static List<InventoryFoodInfo> findBestFoodsForPlayerAccountingForVariety(EntityPlayer player, IInventory inventory)
+	public static List<InventoryFoodInfo> findBestFoodsForPlayerAccountingForVariety(EntityPlayer player, IItemHandler inventory)
 	{
 		List<InventoryFoodInfo> allFoodInfo = getFoodInfoFromInventoryForPlayer(player, inventory);
 		Collections.shuffle(allFoodInfo);
@@ -127,7 +128,7 @@ public class MealPrioritizationHelper
 		return allFoodInfo;
 	}
 
-	public static List<InventoryFoodInfo> findBestFoodsForPlayerAccountingForVariety(EntityPlayer player, IInventory inventory, int limit)
+	public static List<InventoryFoodInfo> findBestFoodsForPlayerAccountingForVariety(EntityPlayer player, IItemHandler inventory, int limit)
 	{
 		List<InventoryFoodInfo> bestFoods = findBestFoodsForPlayerAccountingForVariety(player, inventory);
 		if (bestFoods.size() > limit)
@@ -158,11 +159,11 @@ public class MealPrioritizationHelper
 		return stratifiedFoods;
 	}
 
-	public static List<InventoryFoodInfo> getFoodInfoFromInventoryForPlayer(EntityPlayer player, IInventory inventory)
+	public static List<InventoryFoodInfo> getFoodInfoFromInventoryForPlayer(EntityPlayer player, IItemHandler inventory)
 	{
 		List<InventoryFoodInfo> foodInfo = new ArrayList<InventoryFoodInfo>();
 
-		for (int slotNum = 0; slotNum < inventory.getSizeInventory(); slotNum++)
+		for (int slotNum = 0; slotNum < inventory.getSlots(); slotNum++)
 		{
 			ItemStack stackInSlot = inventory.getStackInSlot(slotNum);
 			if (stackInSlot.isEmpty())

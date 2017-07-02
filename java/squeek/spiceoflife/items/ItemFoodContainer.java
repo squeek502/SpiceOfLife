@@ -2,22 +2,21 @@ package squeek.spiceoflife.items;
 
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,13 +26,20 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
 import squeek.applecore.api.food.IEdible;
 import squeek.spiceoflife.ModConfig;
 import squeek.spiceoflife.ModInfo;
-import squeek.spiceoflife.helpers.*;
+import squeek.spiceoflife.helpers.FoodHelper;
+import squeek.spiceoflife.helpers.GuiHelper;
+import squeek.spiceoflife.helpers.InventoryHelper;
+import squeek.spiceoflife.helpers.MealPrioritizationHelper;
 import squeek.spiceoflife.helpers.MealPrioritizationHelper.InventoryFoodInfo;
+import squeek.spiceoflife.helpers.MiscHelper;
+import squeek.spiceoflife.helpers.MovementHelper;
 import squeek.spiceoflife.inventory.ContainerFoodContainer;
 import squeek.spiceoflife.inventory.FoodContainerInventory;
 import squeek.spiceoflife.inventory.INBTInventoryHaver;
@@ -43,7 +49,6 @@ import squeek.spiceoflife.network.PacketHandler;
 import squeek.spiceoflife.network.PacketToggleFoodContainer;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -150,14 +155,14 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		return new FoodContainerInventory(this, itemStack);
 	}
 
-	public void tryDumpFoodInto(@Nonnull ItemStack itemStack, IInventory inventory, EntityPlayer player)
+	public void tryDumpFoodInto(@Nonnull ItemStack itemStack, IItemHandler inventory, EntityPlayer player)
 	{
 		FoodContainerInventory foodContainerInventory = getInventory(itemStack);
 		for (int slotNum = 0; slotNum < foodContainerInventory.getSizeInventory(); slotNum++)
 		{
 			ItemStack stackInSlot = foodContainerInventory.getStackInSlot(slotNum);
 
-			if (stackInSlot == ItemStack.EMPTY)
+			if (stackInSlot.isEmpty())
 				continue;
 
 			stackInSlot = InventoryHelper.insertStackIntoInventory(stackInSlot, inventory);
@@ -165,7 +170,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		}
 	}
 
-	public void tryPullFoodFrom(@Nonnull ItemStack itemStack, IInventory inventory, EntityPlayer player)
+	public void tryPullFoodFrom(@Nonnull ItemStack itemStack, IItemHandlerModifiable inventory, EntityPlayer player)
 	{
 		List<InventoryFoodInfo> foodsToPull = MealPrioritizationHelper.findBestFoodsForPlayerAccountingForVariety(player, inventory);
 		if (!foodsToPull.isEmpty())
@@ -175,11 +180,11 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 			{
 				ItemStack stackInSlot = inventory.getStackInSlot(foodToPull.slotNum);
 
-				if (stackInSlot == ItemStack.EMPTY)
+				if (stackInSlot.isEmpty())
 					continue;
 
-				stackInSlot = InventoryHelper.insertStackIntoInventoryOnce(stackInSlot, foodContainerInventory);
-				inventory.setInventorySlotContents(foodToPull.slotNum, stackInSlot);
+				stackInSlot = InventoryHelper.insertStackIntoInventoryOnce(stackInSlot, foodContainerInventory.getWrapper());
+				inventory.setStackInSlot(foodToPull.slotNum, stackInSlot);
 			}
 		}
 	}
@@ -246,7 +251,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 
 				if (chanceToDrop > 0 && random.nextFloat() <= chanceToDrop)
 				{
-					ItemStack itemToDrop = InventoryHelper.removeRandomSingleItemFromInventory(getInventory(itemStack), random);
+					ItemStack itemToDrop = InventoryHelper.removeRandomSingleItemFromInventory(getInventory(itemStack).getWrapper(), random);
 					player.dropItem(itemToDrop, true);
 				}
 			}
@@ -279,11 +284,11 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		ItemStack itemStack = player.getHeldItem(hand);
 		if (!world.isRemote && isOpen(itemStack))
 		{
-			IInventory inventoryHit = InventoryHelper.getInventoryAtLocation(world, pos.getX(), pos.getY(), pos.getZ());
-			if (inventoryHit != null && inventoryHit.isUsableByPlayer(player))
+			IItemHandler inventoryHit = InventoryHelper.getInventoryAtLocation(world, pos);
+			if (inventoryHit != null && inventoryHit instanceof IItemHandlerModifiable)
 			{
 				tryDumpFoodInto(itemStack, inventoryHit, player);
-				tryPullFoodFrom(itemStack, inventoryHit, player);
+				tryPullFoodFrom(itemStack, (IItemHandlerModifiable) inventoryHit, player);
 
 				return EnumActionResult.SUCCESS;
 			}
@@ -350,7 +355,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		if (entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer) entityLiving;
-			IInventory inventory = getInventory(itemStack);
+			IItemHandlerModifiable inventory = getInventory(itemStack).getWrapper();
 
 			int slotWithBestFood = MealPrioritizationHelper.findBestFoodForPlayerToEat(player, inventory);
 			ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
@@ -361,7 +366,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 				if (foodToEat.getCount() <= 0)
 					foodToEat = ItemStack.EMPTY;
 
-				inventory.setInventorySlotContents(slotWithBestFood, foodToEat);
+				inventory.setStackInSlot(slotWithBestFood, foodToEat);
 			}
 		}
 		return super.onItemUseFinish(itemStack, world, entityLiving);
@@ -369,7 +374,7 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 
 	public ItemStack getBestFoodForPlayerToEat(ItemStack itemStack, EntityPlayer player)
 	{
-		IInventory inventory = getInventory(itemStack);
+		IItemHandler inventory = getInventory(itemStack).getWrapper();
 		int slotWithBestFood = MealPrioritizationHelper.findBestFoodForPlayerToEat(player, inventory);
 		return inventory.getStackInSlot(slotWithBestFood);
 	}

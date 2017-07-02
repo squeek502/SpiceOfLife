@@ -1,44 +1,56 @@
 package squeek.spiceoflife.helpers;
 
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Method;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class InventoryHelper
 {
-	public static final Method hopperInsertIntoInventory = ReflectionHelper.findMethod(TileEntityHopper.class, null, new String[]{"insertStack", "func_174916_c", "c"}, IInventory.class, IInventory.class, ItemStack.class, int.class, EnumFacing.class);
-
-	public static IInventory getInventoryAtLocation(World world, int x, int y, int z)
+	@Nullable
+	public static IItemHandler getInventoryAtLocation(World world, BlockPos pos)
 	{
-		return TileEntityHopper.getInventoryAtPosition(world, x, y, z);
+		TileEntity tile = world.getTileEntity(pos);
+		return getInventoryFromTile(tile, EnumFacing.UP);
+	}
+
+	@Nullable
+	public static IItemHandler getInventoryFromTile(@Nullable TileEntity tile, @Nullable EnumFacing side)
+	{
+		if (tile == null)
+			return null;
+
+		if (tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side))
+			return tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
+
+		if (tile instanceof ISidedInventory)
+			return new SidedInvWrapper((ISidedInventory) tile, side);
+
+		if (tile instanceof IInventory)
+			return new InvWrapper((IInventory) tile);
+
+		return null;
 	}
 
 	@Nonnull
-	public static ItemStack insertStackIntoInventory(@Nonnull ItemStack itemStack, IInventory inventory)
+	public static ItemStack insertStackIntoInventory(@Nonnull ItemStack itemStack, IItemHandler inventory)
 	{
-		return insertStackIntoInventory(itemStack, inventory, EnumFacing.UP);
-	}
-
-	@Nonnull
-	public static ItemStack insertStackIntoInventory(@Nonnull ItemStack itemStack, IInventory inventory, EnumFacing direction)
-	{
-		return TileEntityHopper.putStackInInventoryAllSlots(null, inventory, itemStack, direction);
-	}
-
-	@Nonnull
-	public static ItemStack insertStackIntoInventoryOnce(@Nonnull ItemStack itemStack, IInventory inventory)
-	{
-		return insertStackIntoInventoryOnce(itemStack, inventory, EnumFacing.UP);
+		return ItemHandlerHelper.insertItemStacked(inventory, itemStack, false);
 	}
 
 	/**
@@ -47,26 +59,15 @@ public class InventoryHelper
 	 * @return The remainder
 	 */
 	@Nonnull
-	public static ItemStack insertStackIntoInventoryOnce(@Nonnull ItemStack itemStack, IInventory inventory, EnumFacing direction)
+	public static ItemStack insertStackIntoInventoryOnce(@Nonnull ItemStack itemStack, IItemHandler inventory)
 	{
 		int originalStackSize = itemStack.getCount();
 
-		for (int l = 0; l < inventory.getSizeInventory(); ++l)
+		for (int slotIndex = 0; slotIndex < inventory.getSlots(); ++slotIndex)
 		{
-			try
-			{
-				itemStack = (ItemStack) hopperInsertIntoInventory.invoke(null, null, inventory, itemStack, l, direction);
-			}
-			catch (RuntimeException e)
-			{
-				throw e;
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			itemStack = inventory.insertItem(slotIndex, itemStack, false);
 
-			if (itemStack == ItemStack.EMPTY || itemStack.getCount() != originalStackSize)
+			if (itemStack.isEmpty() || itemStack.getCount() != originalStackSize)
 				break;
 		}
 
@@ -78,10 +79,10 @@ public class InventoryHelper
 		return itemStack;
 	}
 
-	public static List<Integer> getNonEmptySlotsInInventory(IInventory inventory)
+	public static List<Integer> getNonEmptySlotsInInventory(IItemHandler inventory)
 	{
-		List<Integer> nonEmptySlotIndexes = new ArrayList<Integer>(inventory.getSizeInventory());
-		for (int slotNum = 0; slotNum < inventory.getSizeInventory(); slotNum++)
+		List<Integer> nonEmptySlotIndexes = new ArrayList<Integer>(inventory.getSlots());
+		for (int slotNum = 0; slotNum < inventory.getSlots(); slotNum++)
 		{
 			if (!inventory.getStackInSlot(slotNum).isEmpty())
 				nonEmptySlotIndexes.add(slotNum);
@@ -89,7 +90,7 @@ public class InventoryHelper
 		return nonEmptySlotIndexes;
 	}
 
-	public static int getRandomNonEmptySlotInInventory(IInventory inventory, Random random)
+	public static int getRandomNonEmptySlotInInventory(IItemHandler inventory, Random random)
 	{
 		List<Integer> nonEmptySlots = getNonEmptySlotsInInventory(inventory);
 
@@ -100,12 +101,12 @@ public class InventoryHelper
 	}
 
 	@Nonnull
-	public static ItemStack removeRandomSingleItemFromInventory(IInventory inventory, Random random)
+	public static ItemStack removeRandomSingleItemFromInventory(IItemHandler inventory, Random random)
 	{
 		int randomNonEmptySlotIndex = getRandomNonEmptySlotInInventory(inventory, random);
 
-		if (inventory.getStackInSlot(randomNonEmptySlotIndex) != ItemStack.EMPTY)
-			return inventory.decrStackSize(randomNonEmptySlotIndex, 1);
+		if (!inventory.getStackInSlot(randomNonEmptySlotIndex).isEmpty())
+			return inventory.extractItem(randomNonEmptySlotIndex, 1, false);
 		else
 			return ItemStack.EMPTY;
 	}
@@ -113,7 +114,7 @@ public class InventoryHelper
 	public static NonNullList<ItemStack> itemStackArrayToList(ItemStack[] array)
 	{
 		NonNullList<ItemStack> list = NonNullList.withSize(array.length, ItemStack.EMPTY);
-		for (int i=0; i<array.length; i++)
+		for (int i = 0; i < array.length; i++)
 		{
 			if (!array[i].isEmpty())
 				list.set(i, array[i]);

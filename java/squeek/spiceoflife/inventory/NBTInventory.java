@@ -2,21 +2,20 @@ package squeek.spiceoflife.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import squeek.spiceoflife.helpers.InventoryHelper;
 import squeek.spiceoflife.interfaces.ISaveable;
 
 import javax.annotation.Nonnull;
-
-import static net.minecraft.util.NonNullList.withSize;
 
 public class NBTInventory implements ISaveable, IInventory
 {
@@ -47,6 +46,14 @@ public class NBTInventory implements ISaveable, IInventory
 	{
 		this(inventoryHaver.getSizeInventory());
 		this.inventoryHaver = inventoryHaver;
+	}
+
+	/*
+	 * IItemHandler compat
+	 */
+	public IItemHandlerModifiable getWrapper()
+	{
+		return new InvWrapper(this);
 	}
 
 	/*
