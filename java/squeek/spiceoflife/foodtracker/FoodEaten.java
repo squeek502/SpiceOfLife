@@ -29,7 +29,10 @@ public class FoodEaten implements IPackable, ISaveable
 
 	public FoodEaten(@Nonnull ItemStack food, EntityPlayer eater)
 	{
-		this.itemStack = food;
+		// copy to avoid itemStack becoming isEmpty if count is modified after this
+		this.itemStack = food.copy();
+		// set count to at least one to avoid any isEmpty shenanigans when saving/loading
+		this.itemStack.setCount(Math.max(1, this.itemStack.getCount()));
 		this.playerTimeEaten = FoodHistory.get(eater).ticksActive;
 		this.worldTimeEaten = eater.getEntityWorld().getTotalWorldTime();
 	}
@@ -66,8 +69,6 @@ public class FoodEaten implements IPackable, ISaveable
 	public void readFromNBTData(NBTTagCompound nbtFood)
 	{
 		itemStack = new ItemStack(nbtFood);
-		if (itemStack.isEmpty())
-			itemStack = ItemStack.EMPTY;
 		foodValues = new FoodValues(nbtFood.getShort("Hunger"), nbtFood.getFloat("Saturation"));
 		worldTimeEaten = nbtFood.getLong("WorldTime");
 		playerTimeEaten = nbtFood.getLong("PlayerTime");

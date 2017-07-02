@@ -38,7 +38,7 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:4.11'
-    deobfCompile "applecore:AppleCore:1.11.2-2.1.1+229.dd354:deobf"
+    deobfCompile "applecore:AppleCore:1.11.2-2.2.0+264.3f5bf:deobf"
 }
 
 task copyEvalExLicense(type:Copy){

@@ -119,7 +119,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack.isEmpty())
+			if (foodEaten.itemStack == ItemStack.EMPTY)
 				continue;
 
 			if (food.isItemEqual(foodEaten.itemStack) || foodEaten.getFoodGroups().contains(foodGroup))
@@ -136,7 +136,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 		Set<FoodGroup> foodGroups = FoodGroupRegistry.getFoodGroupsForFood(food);
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack.isEmpty())
+			if (foodEaten.itemStack == ItemStack.EMPTY)
 				continue;
 
 			if (food.isItemEqual(foodEaten.itemStack) || MiscHelper.collectionsOverlap(foodGroups, foodEaten.getFoodGroups()))
@@ -168,7 +168,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack.isEmpty())
+			if (foodEaten.itemStack == ItemStack.EMPTY)
 				continue;
 
 			if (food.isItemEqual(foodEaten.itemStack) || foodEaten.getFoodGroups().contains(foodGroup))
@@ -208,7 +208,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 		Set<FoodGroup> distinctFoodGroups = new HashSet<FoodGroup>();
 		for (FoodEaten foodEaten : history)
 		{
-			if (foodEaten.itemStack.isEmpty())
+			if (foodEaten.itemStack == ItemStack.EMPTY)
 				continue;
 
 			distinctFoodGroups.addAll(foodEaten.getFoodGroups());
