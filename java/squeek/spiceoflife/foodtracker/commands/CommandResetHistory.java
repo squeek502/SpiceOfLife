@@ -45,10 +45,10 @@ public class CommandResetHistory extends CommandBase
 				{
 					foodHistoryToReset.reset();
 					FoodTracker.syncFoodHistory(foodHistoryToReset);
-					notifyCommandListener(commandSender, this, 0, "Reset all 'The Spice of Life' mod data for " + playerToReset.getDisplayName());
+					notifyCommandListener(commandSender, this, "Reset all 'The Spice of Life' mod data for " + playerToReset.getName());
 				}
 				else
-					notifyCommandListener(commandSender, this, 0, "Unexpected error (null food history) while resetting 'The Spice of Life' mod data for " + playerToReset.getDisplayName());
+					notifyCommandListener(commandSender, this, "Unexpected error (null food history) while resetting 'The Spice of Life' mod data for " + playerToReset.getName());
 				return;
 			}
 		}
