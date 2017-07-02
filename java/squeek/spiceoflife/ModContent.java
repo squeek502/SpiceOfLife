@@ -34,11 +34,4 @@ public class ModContent
 		lunchBox.registerModels();
 		lunchBag.registerModels();
 	}
-
-	public static void registerRecipes()
-	{
-		GameRegistry.addShapelessRecipe(new ItemStack(foodJournal), new ItemStack(Items.WHEAT), new ItemStack(Items.PAPER));
-		GameRegistry.addShapedRecipe(new ItemStack(lunchBox), "_ _", " _ ", '_', new ItemStack(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE));
-		GameRegistry.addShapedRecipe(new ItemStack(lunchBag), "p p", " p ", 'p', new ItemStack(Items.PAPER));
-	}
 }

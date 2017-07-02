@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "spiceoflife:lunchbox"
+  },
+  "pattern": [
+    " _ ",
+    "_ _",
+    " _ "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "_": {
+      "item": "minecraft:heavy_weighted_pressure_plate"
+    }
+  }
+}

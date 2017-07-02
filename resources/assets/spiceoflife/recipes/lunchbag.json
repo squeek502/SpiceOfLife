@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "spiceoflife:lunchbag"
+  },
+  "pattern": [
+    " p ",
+    "p p",
+    " p "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "p": {
+      "item": "minecraft:paper"
+    }
+  }
+}

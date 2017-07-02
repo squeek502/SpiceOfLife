@@ -7,16 +7,16 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 minecraft {
-    version = "1.11.2-13.20.0.2201"
+    version = "14.21.0.2340"
     runDir = "run"
-    mappings = "snapshot_20161220"
+    mappings = "snapshot_20170620"
 
     replace "\${version}", project.version
     replaceIn "ModInfo.java"
@@ -38,7 +38,7 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:4.11'
-    deobfCompile "applecore:AppleCore:1.11.2-2.2.0+264.3f5bf:deobf"
+    deobfCompile "applecore:AppleCore:1.12-2.2.1+263.7303c:deobf"
 }
 
 task copyEvalExLicense(type:Copy){

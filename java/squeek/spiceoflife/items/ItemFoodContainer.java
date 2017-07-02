@@ -3,6 +3,7 @@ package squeek.spiceoflife.items;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -49,6 +50,7 @@ import squeek.spiceoflife.network.PacketHandler;
 import squeek.spiceoflife.network.PacketToggleFoodContainer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -193,9 +195,9 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	@SubscribeEvent
 	public void onItemToss(ItemTossEvent event)
 	{
-		if (event.getEntityItem().getEntityItem().getItem() == this)
+		if (event.getEntityItem().getItem().getItem() == this)
 		{
-			onDroppedByPlayer(event.getEntityItem().getEntityItem(), event.getPlayer());
+			onDroppedByPlayer(event.getEntityItem().getItem(), event.getPlayer());
 		}
 	}
 
@@ -261,9 +263,10 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 	}
 
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer player, List<String> toolTip, boolean isAdvanced)
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack itemStack, @Nullable World world, List<String> toolTip, ITooltipFlag tooltipFlag)
 	{
-		super.addInformation(itemStack, player, toolTip, isAdvanced);
+		super.addInformation(itemStack, world, toolTip, tooltipFlag);
 
 		String openCloseLineColor = TextFormatting.GRAY.toString();
 		if (isOpen(itemStack))

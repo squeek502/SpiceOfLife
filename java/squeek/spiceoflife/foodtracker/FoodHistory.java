@@ -174,7 +174,7 @@ public class FoodHistory implements IFoodHistory, ICapabilitySerializable<NBTTag
 			if (food.isItemEqual(foodEaten.itemStack) || foodEaten.getFoodGroups().contains(foodGroup))
 			{
 				totalHunger += foodEaten.foodValues.hunger;
-				totalSaturation += foodEaten.foodValues.getSaturationIncrement();
+				totalSaturation += foodEaten.foodValues.getUnboundedSaturationIncrement();
 			}
 		}
 

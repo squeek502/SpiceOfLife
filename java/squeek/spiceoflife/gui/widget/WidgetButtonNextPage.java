@@ -26,11 +26,11 @@ public class WidgetButtonNextPage extends GuiButton
 	 * Draws this button to the screen.
 	 */
 	@Override
-	public void drawButton(Minecraft par1Minecraft, int par2, int par3)
+	public void drawButton(Minecraft par1Minecraft, int par2, int par3, float partialTicks)
 	{
 		if (this.visible)
 		{
-			boolean flag = par2 >= this.xPosition && par3 >= this.yPosition && par2 < this.xPosition + this.width && par3 < this.yPosition + this.height;
+			boolean flag = par2 >= this.x && par3 >= this.y && par2 < this.x + this.width && par3 < this.y + this.height;
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			par1Minecraft.getTextureManager().bindTexture(bookGui);
 			int k = 0;
@@ -46,7 +46,7 @@ public class WidgetButtonNextPage extends GuiButton
 				l += 13;
 			}
 
-			this.drawTexturedModalRect(this.xPosition, this.yPosition, k, l, 23, 13);
+			this.drawTexturedModalRect(this.x, this.y, k, l, 23, 13);
 		}
 	}
 }

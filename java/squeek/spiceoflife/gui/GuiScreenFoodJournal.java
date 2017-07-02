@@ -158,18 +158,18 @@ public class GuiScreenFoodJournal extends GuiContainer
 			int firstItemNum = sortedDescending ? totalNum - startIndex : startIndex + 1;
 			int lastItemNum = sortedDescending ? Math.max(1, totalNum - endIndex + 1) : Math.min(totalNum, endIndex);
 			String pageIndicator = I18n.format("spiceoflife.gui.items.on.page", firstItemNum, lastItemNum, totalNum);
-			fontRendererObj.drawString(pageIndicator, x + this.bookImageWidth - this.fontRendererObj.getStringWidth(pageIndicator) - 44, y + 16, 0);
+			fontRenderer.drawString(pageIndicator, x + this.bookImageWidth - this.fontRenderer.getStringWidth(pageIndicator) - 44, y + 16, 0);
 		}
 
 		String numFoodsEatenAllTime = Integer.toString(FoodHistory.get(mc.player).totalFoodsEatenAllTime);
-		int allTimeW = fontRendererObj.getStringWidth(numFoodsEatenAllTime);
+		int allTimeW = fontRenderer.getStringWidth(numFoodsEatenAllTime);
 		int allTimeX = width / 2 - allTimeW / 2 - 5;
 		int allTimeY = y + 158;
-		fontRendererObj.drawString(numFoodsEatenAllTime, allTimeX, allTimeY, 0xa0a0a0);
+		fontRenderer.drawString(numFoodsEatenAllTime, allTimeX, allTimeY, 0xa0a0a0);
 
 		for (Object objButton : this.buttonList)
 		{
-			((GuiButton) objButton).drawButton(mc, mouseX, mouseY);
+			((GuiButton) objButton).drawButton(mc, mouseX, mouseY, f);
 		}
 
 		if (!ModConfig.CLEAR_HISTORY_ON_FOOD_EATEN_THRESHOLD || FoodHistory.get(mc.player).totalFoodsEatenAllTime >= ModConfig.FOOD_EATEN_THRESHOLD)
@@ -183,7 +183,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 				{
 					WidgetFoodEaten foodEatenWidget = foodEatenWidgets.get(foodEatenIndex);
 					int localX = x + 36;
-					int localY = y + 32 + (int) ((foodEatenIndex - startIndex) * fontRendererObj.FONT_HEIGHT * 2.5f);
+					int localY = y + 32 + (int) ((foodEatenIndex - startIndex) * fontRenderer.FONT_HEIGHT * 2.5f);
 					foodEatenWidget.draw(localX, localY);
 					if (foodEatenWidget.foodEaten.itemStack != ItemStack.EMPTY)
 						drawItemStack(foodEatenWidget.foodEaten.itemStack, localX, localY);
@@ -199,7 +199,7 @@ public class GuiScreenFoodJournal extends GuiContainer
 					WidgetFoodEaten foodEatenWidget = foodEatenWidgets.get(foodEatenIndex);
 
 					int localX = x + 36;
-					int localY = y + 32 + (int) ((foodEatenIndex - startIndex) * fontRendererObj.FONT_HEIGHT * 2.5f);
+					int localY = y + 32 + (int) ((foodEatenIndex - startIndex) * fontRenderer.FONT_HEIGHT * 2.5f);
 
 					if (isMouseInsideBox(mouseX, mouseY, localX, localY, 16, 16))
 					{
@@ -213,9 +213,9 @@ public class GuiScreenFoodJournal extends GuiContainer
 						int foodIndex = sortedDescending ? Math.max(1, totalNum - foodEatenIndex) : foodEatenIndex + 1;
 						toolTipStrings.add(I18n.format("spiceoflife.gui.food.num", foodIndex));
 						toolTipStrings.add(TextFormatting.GRAY + getTimeEatenString(foodEatenWidget.foodEaten));
-						List<String> splitExpiresIn = fontRendererObj.listFormattedStringToWidth(TextFormatting.DARK_AQUA.toString() + TextFormatting.ITALIC + getExpiresInString(foodEatenWidget.foodEaten), 150);
+						List<String> splitExpiresIn = fontRenderer.listFormattedStringToWidth(TextFormatting.DARK_AQUA.toString() + TextFormatting.ITALIC + getExpiresInString(foodEatenWidget.foodEaten), 150);
 						toolTipStrings.addAll(splitExpiresIn);
-						this.drawHoveringText(toolTipStrings, mouseX, mouseY, fontRendererObj);
+						this.drawHoveringText(toolTipStrings, mouseX, mouseY, fontRenderer);
 					}
 
 					foodEatenIndex++;
@@ -223,17 +223,17 @@ public class GuiScreenFoodJournal extends GuiContainer
 			}
 			else
 			{
-				this.fontRendererObj.drawSplitString(I18n.format("spiceoflife.gui.no.recent.food.eaten"), x + 36, y + 16 + 16, 116, 0x404040);
+				this.fontRenderer.drawSplitString(I18n.format("spiceoflife.gui.no.recent.food.eaten"), x + 36, y + 16 + 16, 116, 0x404040);
 			}
 		}
 		else
 		{
-			this.fontRendererObj.drawSplitString(I18n.format("spiceoflife.gui.no.food.history.yet"), x + 36, y + 16 + 16, 116, 0x404040);
+			this.fontRenderer.drawSplitString(I18n.format("spiceoflife.gui.no.food.history.yet"), x + 36, y + 16 + 16, 116, 0x404040);
 		}
 
-		if (isMouseInsideBox(mouseX, mouseY, allTimeX, allTimeY, allTimeW, fontRendererObj.FONT_HEIGHT))
+		if (isMouseInsideBox(mouseX, mouseY, allTimeX, allTimeY, allTimeW, fontRenderer.FONT_HEIGHT))
 		{
-			this.drawHoveringText(Collections.singletonList(I18n.format("spiceoflife.gui.alltime.food.eaten")), mouseX, mouseY, fontRendererObj);
+			this.drawHoveringText(Collections.singletonList(I18n.format("spiceoflife.gui.alltime.food.eaten")), mouseX, mouseY, fontRenderer);
 		}
 
 		GlStateManager.disableLighting();

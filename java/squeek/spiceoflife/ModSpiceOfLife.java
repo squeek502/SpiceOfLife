@@ -47,7 +47,6 @@ public class ModSpiceOfLife
 		{
 			ModContent.registerModels();
 		}
-		ModContent.registerRecipes();
 		CapabilityManager.INSTANCE.register(IFoodHistory.class, new Capability.IStorage<IFoodHistory>()
 		{
 			@Override

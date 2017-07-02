@@ -30,11 +30,11 @@ public class WidgetButtonSortDirection extends GuiButton
 	 * Draws this button to the screen.
 	 */
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY)
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
 	{
 		if (this.visible)
 		{
-			boolean isHovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+			boolean isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			mc.getTextureManager().bindTexture(modIcons);
 			int x = 0;
@@ -50,7 +50,7 @@ public class WidgetButtonSortDirection extends GuiButton
 				x += this.width * 2;
 			}
 
-			this.drawTexturedModalRect(this.xPosition, this.yPosition, x, y, width, height);
+			this.drawTexturedModalRect(this.x, this.y, x, y, width, height);
 		}
 	}
 }

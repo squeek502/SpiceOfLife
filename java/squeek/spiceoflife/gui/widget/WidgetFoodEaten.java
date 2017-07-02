@@ -28,7 +28,7 @@ public class WidgetFoodEaten extends Gui
 		// truncate name if necessary
 		String displayName = foodEaten.itemStack.getDisplayName();
 		boolean truncated = false;
-		while (mc.fontRendererObj.getStringWidth(displayName) > 93)
+		while (mc.fontRenderer.getStringWidth(displayName) > 93)
 		{
 			displayName = displayName.substring(0, displayName.length() - 1);
 			truncated = true;
@@ -41,7 +41,7 @@ public class WidgetFoodEaten extends Gui
 
 	public int textWidth()
 	{
-		return mc.fontRendererObj.getStringWidth(getDisplayName());
+		return mc.fontRenderer.getStringWidth(getDisplayName());
 	}
 
 	public int hungerBarsWidth()
@@ -79,13 +79,13 @@ public class WidgetFoodEaten extends Gui
 		if (defaultFoodValues == null)
 			return;
 
-		mc.fontRendererObj.drawString(getDisplayName(), x, y, ColorHelper.getRelativeColorInt(foodEaten.foodValues.hunger, 0, defaultFoodValues.hunger));
+		mc.fontRenderer.drawString(getDisplayName(), x, y, ColorHelper.getRelativeColorInt(foodEaten.foodValues.hunger, 0, defaultFoodValues.hunger));
 
 		int barsNeeded = hungerBarsNeeded();
 
 		GlStateManager.color(1, 1, 1, 1);
 		mc.getTextureManager().bindTexture(Gui.ICONS);
-		y += mc.fontRendererObj.FONT_HEIGHT;
+		y += mc.fontRenderer.FONT_HEIGHT;
 		for (int i = 0; i < barsNeeded * 2; i += 2)
 		{
 			this.drawTexturedModalRect(x, y, 16, 27, 9, 9);

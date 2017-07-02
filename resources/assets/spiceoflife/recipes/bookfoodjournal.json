@@ -1,0 +1,10 @@
+{
+  "result": {
+    "item": "spiceoflife:bookfoodjournal"
+  },
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "minecraft:wheat" },
+    { "item": "minecraft:paper" }
+  ]
+}

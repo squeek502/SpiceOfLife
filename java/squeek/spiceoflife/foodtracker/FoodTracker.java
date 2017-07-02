@@ -1,5 +1,6 @@
 package squeek.spiceoflife.foodtracker;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -45,7 +46,7 @@ public class FoodTracker
 	 * Add relevant extended entity data whenever an entity comes into existence
 	 */
 	@SubscribeEvent
-	public void onAttachCapability(AttachCapabilitiesEvent.Entity event)
+	public void onAttachCapability(AttachCapabilitiesEvent<Entity> event)
 	{
 		if (event.getObject() instanceof EntityPlayer)
 		{
