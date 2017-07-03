@@ -9,7 +9,11 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,11 +46,6 @@ public class ModSpiceOfLife
 	{
 		sourceFile = event.getSourceFile();
 		ModConfig.init(event.getSuggestedConfigurationFile());
-		ModContent.registerItems();
-		if (event.getSide() == Side.CLIENT)
-		{
-			ModContent.registerModels();
-		}
 		CapabilityManager.INSTANCE.register(IFoodHistory.class, new Capability.IStorage<IFoodHistory>()
 		{
 			@Override
