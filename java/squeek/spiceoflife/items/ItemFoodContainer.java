@@ -21,6 +21,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -364,12 +365,13 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 			ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
 			if (foodToEat != ItemStack.EMPTY)
 			{
-				foodToEat.onItemUseFinish(world, player);
+				ItemStack result = foodToEat.onItemUseFinish(world, player);
+				result = ForgeEventFactory.onItemUseFinish(player, foodToEat, 32, result);
 
-				if (foodToEat.getCount() <= 0)
-					foodToEat = ItemStack.EMPTY;
+				if (result.isEmpty() || result.getCount() <= 0)
+					result = ItemStack.EMPTY;
 
-				inventory.setStackInSlot(slotWithBestFood, foodToEat);
+				inventory.setStackInSlot(slotWithBestFood, result);
 			}
 		}
 		return super.onItemUseFinish(itemStack, world, entityLiving);
