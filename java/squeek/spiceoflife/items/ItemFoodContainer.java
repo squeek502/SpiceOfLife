@@ -19,6 +19,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
@@ -335,12 +336,13 @@ public class ItemFoodContainer extends Item implements INBTInventoryHaver, IEdib
 		ItemStack foodToEat = inventory.getStackInSlot(slotWithBestFood);
 		if (foodToEat != null)
 		{
-			foodToEat.onFoodEaten(world, player);
+			ItemStack result = foodToEat.onFoodEaten(world, player);
+			result = ForgeEventFactory.onItemUseFinish(player, foodToEat, 32, result);
 
-			if (foodToEat.stackSize <= 0)
-				foodToEat = null;
+			if (result == null || result.stackSize <= 0)
+				result = null;
 
-			inventory.setInventorySlotContents(slotWithBestFood, foodToEat);
+			inventory.setInventorySlotContents(slotWithBestFood, result);
 		}
 		return super.onEaten(itemStack, world, player);
 	}
