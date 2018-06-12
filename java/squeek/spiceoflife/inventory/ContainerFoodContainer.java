@@ -35,6 +35,20 @@ public class ContainerFoodContainer extends ContainerGeneric
 		foodContainerInventory.itemStackFoodContainer = itemStack;
 	}
 
+	@Override
+	protected void addHotbarSlot(InventoryPlayer playerInventory, int slotNum, int x, int y)
+	{
+		ItemStack stackInSlot = playerInventory.getStackInSlot(slotNum);
+		if (isFoodContainerWithUUID(stackInSlot, getUUID()))
+		{
+			addSlotToContainer(new SlotLocked(playerInventory, slotNum, x, y));
+		}
+		else
+		{
+			super.addHotbarSlot(playerInventory, slotNum, x, y);
+		}
+	}
+
 	@Nonnull
 	public ItemStack getItemStack()
 	{
@@ -52,8 +66,8 @@ public class ContainerFoodContainer extends ContainerGeneric
 			setFoodContainerItemStack(findFoodContainerWithUUID(getUUID()));
 		}
 
-		if (getItemStack() != ItemStack.EMPTY)
-			((ItemFoodContainer) getItemStack().getItem()).setIsOpen(getItemStack(), false);
+		if (!getItemStack().isEmpty())
+			foodContainerInventory.itemFoodContainer.setIsOpen(getItemStack(), false);
 
 		super.onContainerClosed(player);
 	}
@@ -73,27 +87,6 @@ public class ContainerFoodContainer extends ContainerGeneric
 		return ItemStack.EMPTY;
 	}
 
-	@Nonnull
-	@Override
-	public ItemStack slotClick(int slotNum, int dragType, ClickType clickType, EntityPlayer player)
-	{
-		// make sure the correct ItemStack instance is always used when the player is moving
-		// the food container around while they have it open
-		ItemStack putDownStack = player.inventory.getItemStack();
-		ItemStack pickedUpStack = super.slotClick(slotNum, dragType, clickType, player);
-
-		if (isFoodContainerWithUUID(pickedUpStack, getUUID()))
-		{
-			setFoodContainerItemStack(pickedUpStack);
-		}
-		else if (slotNum >= 0 && isFoodContainerWithUUID(putDownStack, getUUID()) && isFoodContainerWithUUID(getSlot(slotNum).getStack(), getUUID()))
-		{
-			setFoodContainerItemStack(getSlot(slotNum).getStack());
-		}
-
-		return pickedUpStack;
-	}
-
 	public boolean isFoodContainerWithUUID(@Nonnull ItemStack itemStack, UUID uuid)
 	{
 		return !itemStack.isEmpty() && itemStack.getItem() instanceof ItemFoodContainer && ((ItemFoodContainer) itemStack.getItem()).getUUID(itemStack).equals(uuid);
@@ -101,6 +94,6 @@ public class ContainerFoodContainer extends ContainerGeneric
 
 	public UUID getUUID()
 	{
-		return ((ItemFoodContainer) getItemStack().getItem()).getUUID(getItemStack());
+		return foodContainerInventory.itemFoodContainer.getUUID(getItemStack());
 	}
 }

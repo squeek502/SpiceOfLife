@@ -2,6 +2,7 @@ package squeek.spiceoflife.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -106,8 +107,31 @@ public abstract class ContainerGeneric extends Container
 		// hotbar
 		for (int col = 0; col < 9; ++col)
 		{
-			this.addSlotToContainer(new Slot(playerInventory, col, xStart + col * 18, yStart + 58));
+			this.addHotbarSlot(playerInventory, col, xStart + col * 18, yStart + 58);
 		}
+	}
+
+	protected void addHotbarSlot(InventoryPlayer playerInventory, int slotNum, int x, int y)
+	{
+		this.addSlotToContainer(new Slot(playerInventory, slotNum, x, y));
+	}
+
+	@Override
+	@Nonnull
+	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player)
+	{
+		// prevent swapping using number keys
+		if (clickTypeIn == ClickType.SWAP && dragType >= 0 && dragType < 9)
+		{
+			int hotbarSlotIndex = this.inventorySlots.size() - 9 + dragType;
+			Slot hotbarSlot = getSlot(hotbarSlotIndex);
+			Slot swapSlot = getSlot(slotId);
+			if (hotbarSlot instanceof SlotLocked || swapSlot instanceof SlotLocked)
+			{
+				return ItemStack.EMPTY;
+			}
+		}
+		return super.slotClick(slotId, dragType, clickTypeIn, player);
 	}
 
 	@Override
@@ -153,112 +177,6 @@ public abstract class ContainerGeneric extends Container
 
 		// returning null stops it from attempting to fill consecutive slots with the remaining stack
 		return ItemStack.EMPTY;
-	}
-
-	public int getEffectiveMaxStackSizeForSlot(int slotNum, @Nonnull ItemStack itemStack)
-	{
-		int effectiveMaxStackSize = itemStack.getMaxStackSize();
-		if (slotNum < inventory.getSizeInventory())
-			effectiveMaxStackSize = Math.min(effectiveMaxStackSize, this.inventory.getInventoryStackLimit());
-		return effectiveMaxStackSize;
-	}
-
-	@Override
-	protected boolean mergeItemStack(@Nonnull ItemStack itemStack, int startSlotNum, int endSlotNum, boolean checkBackwards)
-	{
-		boolean didMerge = false;
-		int k = startSlotNum;
-
-		if (checkBackwards)
-		{
-			k = endSlotNum - 1;
-		}
-
-		Slot slot;
-		ItemStack itemstack1;
-
-		if (itemStack.isStackable())
-		{
-			while (itemStack.getCount()	 > 0 && (!checkBackwards && k < endSlotNum || checkBackwards && k >= startSlotNum))
-			{
-				slot = this.inventorySlots.get(k);
-				itemstack1 = slot.getStack();
-
-				if (itemstack1 != ItemStack.EMPTY && itemstack1.getItem() == itemStack.getItem() && (!itemStack.getHasSubtypes() || itemStack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(itemStack, itemstack1) && slot.isItemValid(itemStack))
-				{
-					int l = itemstack1.getCount() + itemStack.getCount();
-					int effectiveMaxStackSize = getEffectiveMaxStackSizeForSlot(k, itemStack);
-
-					if (l <= effectiveMaxStackSize)
-					{
-						itemStack.setCount(0);
-						itemstack1.setCount(l);
-						slot.onSlotChanged();
-						didMerge = true;
-						break;
-					}
-					else if (itemstack1.getCount() < effectiveMaxStackSize)
-					{
-						itemStack.setCount(itemStack.getCount() - (effectiveMaxStackSize - itemstack1.getCount()));
-						itemstack1.setCount(effectiveMaxStackSize);
-						slot.onSlotChanged();
-						didMerge = true;
-						break;
-					}
-				}
-
-				if (checkBackwards)
-				{
-					--k;
-				}
-				else
-				{
-					++k;
-				}
-			}
-		}
-
-		if (itemStack.getCount() > 0)
-		{
-			if (checkBackwards)
-			{
-				k = endSlotNum - 1;
-			}
-			else
-			{
-				k = startSlotNum;
-			}
-
-			while (!checkBackwards && k < endSlotNum || checkBackwards && k >= startSlotNum)
-			{
-				slot = this.inventorySlots.get(k);
-				itemstack1 = slot.getStack();
-
-				if (itemstack1 == ItemStack.EMPTY && slot.isItemValid(itemStack))
-				{
-					int effectiveMaxStackSize = getEffectiveMaxStackSizeForSlot(k, itemStack);
-					ItemStack transferedStack = itemStack.copy();
-					if (transferedStack.getCount() > effectiveMaxStackSize)
-						transferedStack.setCount(effectiveMaxStackSize);
-					slot.putStack(transferedStack);
-					slot.onSlotChanged();
-					itemStack.setCount(itemStack.getCount() - transferedStack.getCount());
-					didMerge = true;
-					break;
-				}
-
-				if (checkBackwards)
-				{
-					--k;
-				}
-				else
-				{
-					++k;
-				}
-			}
-		}
-
-		return didMerge;
 	}
 
 	@Override
