@@ -5,19 +5,24 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import squeek.spiceoflife.helpers.InventoryHelper;
 import squeek.spiceoflife.interfaces.ISaveable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class NBTInventory implements ISaveable, IInventory
+public class NBTInventory implements ISaveable, IInventory, ICapabilityProvider
 {
 	protected NonNullList<ItemStack> inventoryItems;
 	protected INBTInventoryHaver inventoryHaver = null;
@@ -51,7 +56,7 @@ public class NBTInventory implements ISaveable, IInventory
 	/*
 	 * IItemHandler compat
 	 */
-	public IItemHandlerModifiable getWrapper()
+	public IItemHandlerModifiable getItemHandler()
 	{
 		return new InvWrapper(this);
 	}
@@ -75,7 +80,7 @@ public class NBTInventory implements ISaveable, IInventory
 	{
 		for (ItemStack itemStack : inventoryItems)
 		{
-			if (itemStack != ItemStack.EMPTY)
+			if (!itemStack.isEmpty())
 				return false;
 		}
 		return true;
@@ -91,7 +96,7 @@ public class NBTInventory implements ISaveable, IInventory
 	{
 		for (ItemStack itemStack : inventoryItems)
 		{
-			if (itemStack == ItemStack.EMPTY || itemStack.getCount() < Math.min(getInventoryStackLimit(), itemStack.getMaxStackSize()))
+			if (itemStack.isEmpty() || itemStack.getCount() < Math.min(getInventoryStackLimit(), itemStack.getMaxStackSize()))
 				return false;
 		}
 		return true;
@@ -133,7 +138,7 @@ public class NBTInventory implements ISaveable, IInventory
 	{
 		ItemStack itemStack = getStackInSlot(slotNum);
 
-		if (itemStack != ItemStack.EMPTY)
+		if (!itemStack.isEmpty())
 		{
 			if (itemStack.getCount() <= count)
 				setInventorySlotContents(slotNum, ItemStack.EMPTY);
@@ -162,15 +167,15 @@ public class NBTInventory implements ISaveable, IInventory
 		if (!isValidSlotNum(slotNum))
 			return;
 
-		boolean wasEmpty = getStackInSlot(slotNum) == ItemStack.EMPTY;
+		boolean wasEmpty = getStackInSlot(slotNum).isEmpty();
 		inventoryItems.set(slotNum, itemStack);
 
-		if (itemStack != ItemStack.EMPTY && itemStack.getCount() > getInventoryStackLimit())
+		if (!itemStack.isEmpty() && itemStack.getCount() > getInventoryStackLimit())
 			itemStack.setCount(getInventoryStackLimit());
 
-		if (wasEmpty && itemStack != ItemStack.EMPTY)
+		if (wasEmpty && !itemStack.isEmpty())
 			onSlotFilled(slotNum);
-		else if (!wasEmpty && itemStack == ItemStack.EMPTY)
+		else if (!wasEmpty && itemStack.isEmpty())
 			onSlotEmptied(slotNum);
 
 		markDirty();
@@ -247,7 +252,7 @@ public class NBTInventory implements ISaveable, IInventory
 		{
 			ItemStack stack = getStackInSlot(slotNum);
 
-			if (stack != ItemStack.EMPTY)
+			if (!stack.isEmpty())
 			{
 				NBTTagCompound item = new NBTTagCompound();
 				item.setByte("Slot", (byte) slotNum);
@@ -294,5 +299,22 @@ public class NBTInventory implements ISaveable, IInventory
 	@Override
 	public void clear()
 	{
+	}
+
+	@Override
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
+	{
+		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
+	}
+
+	@Nullable
+	@Override
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
+	{
+		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+		{
+			return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getItemHandler());
+		}
+		return null;
 	}
 }
