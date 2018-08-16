@@ -45,7 +45,9 @@ public class StringHelper
 
 	public static Locale getMinecraftLocale()
 	{
-		String[] parts = FMLCommonHandler.instance().getCurrentLanguage().split("_");
+		String currentLanguage = FMLCommonHandler.instance().getCurrentLanguage();
+		if(currentLanguage==null) return new Locale("en","us");
+		String[] parts = currentLanguage.split("_");
 		String langCode = parts[0];
 		String regionCode = parts.length > 1 ? parts[1] : null;
 		return regionCode != null ? new Locale(langCode, regionCode) : new Locale(langCode);
